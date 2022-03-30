@@ -118,9 +118,9 @@ const CekTanah = ({navigation}) => {
                         <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>{currentDate}</Text>
                     </View>
                 </View>
-            <View style={styles.ButtonSimpanPengukuran}>
+            <TouchableOpacity style={styles.ButtonSimpanPengukuran}>
             <Text style={{fontFamily:'Poppins-Bold', fontSize:12, color:'white'}}>Simpan Hasil Pengukuran</Text>
-            </View>
+            </TouchableOpacity>
         </View>
         </ScrollView>
         

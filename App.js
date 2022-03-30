@@ -7,6 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Dashboard from './screen/Dashboard';
 import DetailSensor from './screen/DetailSensor';
 import Login from './screen/Login';
+import CekTanah from './screen/CekTanah';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,7 @@ function App() {
         <Stack.Screen name="Login" component={Login} options={{headerShown:false}} />
         <Stack.Screen name="Dashboard" component={Dashboard} options={{headerShown:false}} />
         <Stack.Screen name="DetailSensor" component={DetailSensor} />
+        <Stack.Screen name="CekTanah" component={CekTanah} options={{headerShown:false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

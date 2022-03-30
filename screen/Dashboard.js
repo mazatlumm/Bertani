@@ -2,8 +2,6 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, ScrollView
 import React from 'react'
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
-import TopBarIcon2 from '../assets/images/TopBarIcon2.png'
-import MenuIcon from '../assets/images/menuicon.png'
 import Farmer from '../assets/images/farmer.png'
 import iconsetcanal from '../assets/images/iconsetcanal.png'
 import tanaman from '../assets/images/tanaman.png'
@@ -11,13 +9,13 @@ import iconHome from '../assets/images/iconHome.png'
 import iconLove from '../assets/images/iconLove.png'
 import iconBag from '../assets/images/iconBag.png'
 import iconUser from '../assets/images/iconUser.png'
+import TopBar from './TopBar';
 
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0))-45;
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))-45;
 
 const Dashboard = ({navigation}) => {
 
-  console.log(windowWidth);
   let [fontsLoaded] = useFonts({
     'Philosopher': require('../assets/fonts/Philosopher-Regular.ttf'),
     'Philosopher-Bold': require('../assets/fonts/Philosopher-Bold.ttf'),
@@ -31,29 +29,19 @@ const Dashboard = ({navigation}) => {
 
   return (
     <View style={{ flex: 1, alignItems: 'center', height:windowHeight}}>
-      <ScrollView style={{marginBottom:50}}>
+      <ScrollView style={{marginBottom:50, width:'100%'}}>
+          
           {/* Top Bar */}
-          <View style={styles.TopBarBox}>
-            <View style={{flex:0.5,}}>
-              <Image source={TopBarIcon2} style={{width:35, resizeMode:'contain'}} />
-            </View>
-            <View style={{flex:2, justifyContent:'flex-start'}}>
-              <Text style={{ fontFamily: 'Philosopher-Bold', fontSize: 25, marginLeft:10 }}>Kelas Bertani</Text>
-            </View>
-            <TouchableOpacity style={{flex:0.5,}}>
-              <Image source={MenuIcon} style={{width:35, resizeMode:'contain'}} />
-            </TouchableOpacity>
-          </View>
+          <TopBar />
 
-      
           {/* Greating Text Box Hijau */}
           <View style={{width:'100%', paddingHorizontal:20}}>
             <View style={styles.BoxGreating}>
               <Image source={Farmer} style={styles.FarmerImg} />
-              <View style={{width:200, marginLeft:15, marginTop:45}}>
+              <View style={{width:175, marginLeft:15, marginTop:45}}>
                 <Text style={styles.TextGreating}>Teknologi AI dan IoT Pertanian</Text>
               </View>
-              <View style={{width:180, marginLeft:15, marginTop:20}}>
+              <View style={{width:160, marginLeft:15, marginTop:20}}>
                 <Text style={styles.TextGreatingExpln}>Monitoring & Control 100% Online 24/7</Text>
               </View>
             </View>
@@ -70,46 +58,46 @@ const Dashboard = ({navigation}) => {
           </View>
 
           <View style={{width:'100%', marginTop:20, alignItems:'flex-start', paddingHorizontal:23}}>
-            <Text style={{fontFamily:'Poppins-Bold', fontSize:14, color:'#0D986A'}}>Automatic & Control Pengairan</Text>
+            <Text style={{fontFamily:'Poppins-Bold', fontSize:12, color:'#0D986A'}}>Automatic & Control Pengairan</Text>
             <View style={{borderBottomWidth:2, borderBottomColor:'#0D986A', width:40, marginTop:5}}></View>
           </View>
 
           <TouchableOpacity style={{width:'100%', paddingHorizontal:20, marginTop:10, alignItems:'center', justifyContent:'center', position:'relative'}}>
               <View style={styles.JajarGenjang}>
               </View>
-              <Text style={{fontFamily:'Poppins-Regular', fontSize:16, color:'black', position:'absolute', left:50, top:25}}>6 Sensor Aktif</Text>
-              <Text style={{fontFamily:'Philosopher-Bold', fontSize:30, color:'black', position:'absolute', left:50, top:50}}>Lahan 1</Text>
-              <Text style={{fontFamily:'Philosopher', fontSize:16, color:'black', position:'absolute', left:50, top:85}}>Komoditas Tembakau</Text>
-              <View style={{position:'absolute', right:0, bottom:30}}>
+              <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', position:'absolute', left:50, top:25}}>6 Sensor Aktif</Text>
+              <Text style={{fontFamily:'Philosopher-Bold', fontSize:24, color:'black', position:'absolute', left:50, top:50}}>Lahan 1</Text>
+              <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black', position:'absolute', left:50, top:85}}>Komoditas Tembakau</Text>
+              <View style={{position:'absolute', right:0, bottom:40}}>
                 <Image source={tanaman} style={{width:200, height:200,resizeMode:'contain'}} />
               </View>
               <View style={{position:'absolute', left:50, bottom:50, flexDirection:'row', alignItems:'center'}}>
-                <Text style={{color:'black',fontFamily:'Poppins-Regular'}}>TEMP : </Text>
-                <Text style={{color:'black',fontFamily:'Poppins-Bold', paddingLeft:5, fontSize:20}}>20°C</Text>
-                <Text style={{color:'black',fontFamily:'Poppins-Regular', paddingLeft:10}}>HUM : </Text>
-                <Text style={{color:'black',fontFamily:'Poppins-Bold', paddingLeft:5, fontSize:20}}>50%</Text>
+                <Text style={{color:'black',fontFamily:'Poppins-Regular', fontSize:12}}>TEMP : </Text>
+                <Text style={{color:'black',fontFamily:'Poppins-Bold', paddingLeft:0, fontSize:14}}>20°C</Text>
+                <Text style={{color:'black',fontFamily:'Poppins-Regular', paddingLeft:10, fontSize:12}}>HUM : </Text>
+                <Text style={{color:'black',fontFamily:'Poppins-Bold', paddingLeft:0, fontSize:14}}>50%</Text>
               </View>
-              <View style={{position:'absolute', left:50, bottom:30}}>
-                <Text style={{fontFamily:'Philosopher', fontSize:14, color:'black'}}>Lokasi : Ds. Grogol, Kec, Diwek, Kab. Jombang</Text>
+              <View style={{position:'absolute', left:50, bottom:20, width:260}}>
+                <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black'}}>Lokasi : Ds. Grogol, Kec, Diwek, Kab. Jombang</Text>
               </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={{width:'100%', marginTop:20, paddingHorizontal:20, position:'relative'}}>
+          <TouchableOpacity style={{width:'100%', marginTop:20, paddingHorizontal:20, position:'relative', marginBottom:10}} onPress={()=>navigation.navigate('CekTanah')}>
             <View style={{height:160, backgroundColor:'#8CEC8A', opacity:0.3, borderRadius:20}}>
             </View>
             <View style={{width:240, position:'absolute', left:40, top:20}}>
-              <Text style={{fontFamily:'Philosopher', fontSize:24, color:'black', position:'absolute'}}>Cek Kesuburan Tanah Lahan Pertanian</Text>
+              <Text style={{fontFamily:'Philosopher-Bold', fontSize:18, color:'black', position:'absolute'}}>Cek Kesuburan Tanah Lahan Pertanian</Text>
             </View>
             <View style={{width:160, position:'absolute', left:40, top:80}}>
-              <Text style={{fontFamily:'Poppins-Bold', fontSize:14, color:'#0D986A', position:'absolute'}}>Hidupkan perangkat IoT dan tancapkan sensor ke tanah</Text>
+              <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'#0D986A', position:'absolute'}}>Hidupkan perangkat IoT dan tancapkan sensor ke tanah</Text>
             </View>
             <View style={{width:50,height:50, borderRadius:25, position:'absolute', backgroundColor:'#0D986A', right:40, top:20}}></View>
             <View style={{width:15,height:15, borderRadius:15/2, position:'absolute', backgroundColor:'#0D986A', left:30, top:5}}></View>
             <View style={{width:10,height:10, borderRadius:10/2, position:'absolute', backgroundColor:'#0D986A', left:23, top:30}}></View>
             <View style={{width:30,height:30, borderRadius:30/2, position:'absolute', backgroundColor:'#0D986A', right:23, top:70}}></View>
             <View style={{width:20,height:20, borderRadius:20/2, position:'absolute', backgroundColor:'#0D986A', left:170, bottom:10}}></View>
-            <TouchableOpacity style={{backgroundColor:'#0D986A', borderRadius:10, paddingHorizontal:20, paddingVertical:5, position:'absolute', bottom:30, right:80}}>
-              <Text style={{fontFamily:'Poppins-Bold', fontSize:18, color:'white'}}>Mulai</Text>
+            <TouchableOpacity style={{backgroundColor:'#0D986A', borderRadius:10, paddingHorizontal:20, paddingVertical:5, position:'absolute', bottom:30, right:80}} onPress={()=>navigation.navigate('CekTanah')}>
+              <Text style={{fontFamily:'Poppins-Bold', fontSize:12, color:'white'}}>Mulai</Text>
             </TouchableOpacity>
           </TouchableOpacity>
         </ScrollView>
@@ -153,18 +141,19 @@ const styles = StyleSheet.create({
   FarmerImg:{
     width:175, 
     height:175,
+    resizeMode:'contain',
     position:'absolute',
     right:0,
     bottom:0
   },
   TextGreating:{
     fontFamily:'Philosopher-Bold',
-    fontSize:24,
+    fontSize:20,
     color:'black'
   },
   TextGreatingExpln:{
     fontFamily:'Poppins-Regular',
-    fontSize:14,
+    fontSize:12,
     color:'black'
   },
   BoxScanTanaman:{
@@ -186,7 +175,7 @@ const styles = StyleSheet.create({
   },
   TextScan:{
     fontFamily:'Poppins-Regular',
-    fontSize:18,
+    fontSize:12,
     color:'black'
   },
   JajarGenjang:{

@@ -62,7 +62,7 @@ const Dashboard = ({navigation}) => {
             <View style={{borderBottomWidth:2, borderBottomColor:'#0D986A', width:40, marginTop:5}}></View>
           </View>
 
-          <TouchableOpacity style={{width:'100%', paddingHorizontal:20, marginTop:10, alignItems:'center', justifyContent:'center', position:'relative'}}>
+          <TouchableOpacity style={{width:'100%', paddingHorizontal:20, marginTop:10, alignItems:'center', justifyContent:'center', position:'relative'}} onPress={()=>navigation.navigate('DetailController')}>
               <View style={styles.JajarGenjang}>
               </View>
               <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', position:'absolute', left:50, top:25}}>6 Sensor Aktif</Text>

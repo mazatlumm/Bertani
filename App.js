@@ -8,6 +8,7 @@ import Dashboard from './screen/Dashboard';
 import DetailSensor from './screen/DetailSensor';
 import Login from './screen/Login';
 import CekTanah from './screen/CekTanah';
+import DetailController from './screen/DetailController';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +20,7 @@ function App() {
         <Stack.Screen name="Dashboard" component={Dashboard} options={{headerShown:false}} />
         <Stack.Screen name="DetailSensor" component={DetailSensor} />
         <Stack.Screen name="CekTanah" component={CekTanah} options={{headerShown:false}} />
+        <Stack.Screen name="DetailController" component={DetailController} options={{headerShown:false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

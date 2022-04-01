@@ -4,6 +4,10 @@ import TopImage from '../assets/images/LoginImage.png'
 import IconUsername from '../assets/images/IconUsername.png'
 import IconPassword from '../assets/images/IconPassword.png'
 
+// Icon
+import { FontAwesome } from '@expo/vector-icons';
+import { EvilIcons } from '@expo/vector-icons';
+
 const Login = ({navigation}) => {
   return (
     <View style={{ flex: 1}}>
@@ -17,7 +21,7 @@ const Login = ({navigation}) => {
                 placeholder='Username'
                 style={styles.TextInput}
                 />
-                <Image source={IconUsername} style={{resizeMode:'contain',height:'50%', flex:1, marginTop:10, justifyContent:'flex-end'}} />
+                <FontAwesome name="user" size={24} color="black" />
             </View>
             <View style={styles.BoxInput}>
                 <TextInput 
@@ -25,7 +29,7 @@ const Login = ({navigation}) => {
                 style={styles.TextInput}
                 secureTextEntry={true}
                 />
-                 <Image source={IconPassword} style={{resizeMode:'contain',height:'50%', flex:1, marginTop:10, justifyContent:'flex-end'}} />
+                <FontAwesome name="lock" size={26} color="black" />
             </View>
 
             <TouchableOpacity style={styles.LoginButton} onPress={()=>navigation.navigate('Dashboard')}>
@@ -52,7 +56,8 @@ const styles = StyleSheet.create({
     BoxInput:{
         borderBottomWidth:1,
         marginBottom:20,
-        flexDirection:'row'
+        flexDirection:'row',
+        alignItems:'center',
     },
     TextInput:{
         fontSize:16,

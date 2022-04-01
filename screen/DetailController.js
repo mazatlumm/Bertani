@@ -47,11 +47,11 @@ const DetailController = ({navigation}) => {
   return (
     <View style={{ flex: 1, alignItems: 'center'}}>
         <ScrollView style={{marginBottom:50, width:windowWidth}}>
-            <View style={{position:'absolute', width:windowWidth, height:90, backgroundColor:'#9CE5CB', top:0, left:0, zIndex:-2}}></View>
+            <View style={styles.ColorTopBar}></View>
             {/* Top Bar */}
             <TopBarDetailController />
 
-            <View style={{marginTop:25, flexDirection:'row', borderBottomWidth:0.2, paddingVertical:5, marginHorizontal:20}}>
+            <View style={{marginTop:10, flexDirection:'row', borderBottomWidth:0.2, paddingVertical:5, marginHorizontal:20}}>
                 <View style={{marginTop:10, flex:2}}>
                     <Text style={styles.TextPoppins}>PERANGKAT</Text>
                     <Text style={styles.TextPoppinsBold}>Lahan 1</Text>
@@ -68,12 +68,14 @@ const DetailController = ({navigation}) => {
 
             <View style={{marginHorizontal:20, marginTop:10}}>
                 <Text style={styles.TextPoppins}>Waktu Saat ini  : {currentDate}</Text>
+                <Text style={styles.TextPoppins}>Komoditas  : Tembakau</Text>
+                <Text style={styles.TextPoppins}>Lokasi  : Ds. Grogol, Kec, Diwek, Kab. Jombang</Text>
             </View>
 
             {/* Kanal */}
             <View style={{paddingHorizontal:20}}>
                 {/* Kanal 1 */}
-                <View style={{marginTop:20}}>
+                <View style={{marginTop:10}}>
                     <Text style={styles.TextPoppinsBold}>KANAL 1</Text>
                     <View style={styles.CardKanal}>
                         <Text style={styles.TextPoppins}>SENS001</Text>
@@ -217,7 +219,7 @@ const DetailController = ({navigation}) => {
                 </View>
 
                 {/* Kanal 4 */}
-                <View style={{marginTop:20}}>
+                <View style={{marginTop:20, marginBottom:10}}>
                     <Text style={styles.TextPoppinsBold}>KANAL 4</Text>
                     <View style={styles.CardKanal}>
                         <Text style={styles.TextPoppins}>SENS001</Text>
@@ -288,6 +290,22 @@ const DetailController = ({navigation}) => {
 export default DetailController
 
 const styles = StyleSheet.create({
+    ColorTopBar:{
+        position:'absolute', 
+        width:windowWidth,
+        ...Platform.select({
+            ios:{
+                height:90,
+            },
+            android:{
+                height:70
+            }
+        }), 
+        backgroundColor:'#9CE5CB', 
+        top:0, 
+        left:0, 
+        zIndex:-2
+    },
     H1Philoshoper:{
         fontFamily:'Philosopher-Bold',
         color:'black',

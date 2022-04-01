@@ -21,7 +21,7 @@ const TopBarDetailController = () => {
       }
 
   return (
-    <View style={{paddingHorizontal:20, width:'100%', marginTop:25}}>
+    <View style={{paddingHorizontal:20, width:'100%'}}>
         <View style={styles.TopBarBox}>
             <View style={{flex:3, justifyContent:'flex-start'}}>
                 <Text style={styles.TopBarText}>Detail Controller</Text>
@@ -38,7 +38,14 @@ export default TopBarDetailController
 
 const styles = StyleSheet.create({
     TopBarBox:{
-      marginTop:25, 
+      ...Platform.select({
+        ios:{
+          marginTop:50,
+        },
+        android:{
+          marginTop:35
+        }
+      }),
       width:'100%', 
       alignItems:'flex-start', 
       flexDirection:'row',

@@ -10,6 +10,7 @@ import Login from './screen/Login';
 import CekTanah from './screen/CekTanah';
 import DetailController from './screen/DetailController';
 import SettingController from './screen/SettingController';
+import QRScanner from './screen/QRScanner';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ function App() {
         <Stack.Screen name="CekTanah" component={CekTanah} options={{headerShown:false}} />
         <Stack.Screen name="DetailController" component={DetailController} options={{headerShown:false}} />
         <Stack.Screen name="SettingController" component={SettingController} options={{headerShown:false}} />
+        <Stack.Screen name="QRScanner" component={QRScanner} options={{headerShown:false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

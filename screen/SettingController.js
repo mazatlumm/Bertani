@@ -68,7 +68,7 @@ const SettingController = ({navigation}) => {
                         <View style={styles.FormInputBoxGroup}>
                             <TextInput style={styles.TextInputForm} />
                         </View>
-                        <TouchableOpacity style={styles.IconFormGroup}>
+                        <TouchableOpacity style={styles.IconFormGroup} onPress={()=>navigation.navigate('QRScanner')}>
                             <MaterialCommunityIcons name="qrcode-scan" size={24} color="black" />
                         </TouchableOpacity>
                     </View>

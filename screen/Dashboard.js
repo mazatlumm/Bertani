@@ -11,6 +11,9 @@ import iconBag from '../assets/images/iconBag.png'
 import iconUser from '../assets/images/iconUser.png'
 import TopBar from './TopBar';
 
+// Icon
+import { AntDesign } from '@expo/vector-icons';
+
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0))-45;
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))-45;
 
@@ -52,8 +55,8 @@ const Dashboard = ({navigation}) => {
             <TouchableOpacity style={styles.BoxScanTanaman}>
               <Text style={styles.TextScan}>Scan Tanaman</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.BoxSetKanal}>
-              <Image source={iconsetcanal} style={{width:20, height:18, resizeMode:'contain'}} />
+            <TouchableOpacity style={styles.BoxSetKanal} onPress={()=>navigation.navigate('TambahController')}>
+              <AntDesign name="pluscircleo" size={20} color="black" />
             </TouchableOpacity>
           </View>
 

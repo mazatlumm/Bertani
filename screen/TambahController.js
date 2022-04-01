@@ -57,7 +57,7 @@ const SettingController = ({navigation, route}) => {
             <View style={{paddingHorizontal:20, width:'100%'}}>
                 <View style={styles.TopBarBox}>
                     <View style={{flex:3, justifyContent:'flex-start'}}>
-                        <Text style={styles.TopBarText}>Setting Controller</Text>
+                        <Text style={styles.TopBarText}>Tambah Controller</Text>
                     </View>
                     <TouchableOpacity style={{flex:0.5, alignItems:'flex-end'}} onPress={()=> navigation.goBack() }>
                     <Ionicons name="arrow-back-circle-outline" size={26} color="black" />

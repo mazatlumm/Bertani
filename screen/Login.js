@@ -1,16 +1,32 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput } from 'react-native'
+import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput, ScrollView } from 'react-native'
 import React from 'react'
 import TopImage from '../assets/images/LoginImage.png'
 import IconUsername from '../assets/images/IconUsername.png'
 import IconPassword from '../assets/images/IconPassword.png'
+import AppLoading from 'expo-app-loading';
+import { useFonts } from 'expo-font';
 
 // Icon
 import { FontAwesome } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
 
 const Login = ({navigation}) => {
+
+    let [fontsLoaded] = useFonts({
+        'Philosopher': require('../assets/fonts/Philosopher-Regular.ttf'),
+        'Philosopher-Bold': require('../assets/fonts/Philosopher-Bold.ttf'),
+        'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
+        'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
+      });
+    
+    
+    if (!fontsLoaded) {
+    return <AppLoading />;
+    }
+
   return (
     <View style={{ flex: 1}}>
+        <ScrollView>
         <View style={{alignItems: 'center', marginBottom:30}}>
             <Image source={TopImage} style={{width:'100%', resizeMode:'cover',height:400}} />
         </View>
@@ -42,6 +58,7 @@ const Login = ({navigation}) => {
             </View>
            
         </View>
+        </ScrollView>
     </View>
   )
 }
@@ -60,10 +77,11 @@ const styles = StyleSheet.create({
         alignItems:'center',
     },
     TextInput:{
-        fontSize:16,
-        marginVertical:10,
+        fontSize:12,
+        marginVertical:5,
         flex:5,
-        color:'black'
+        color:'black',
+        fontFamily:'Poppins-Regular'
     },
     LoginButton:{
         height:40,
@@ -84,7 +102,8 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     TextFooter:{
-        fontSize:14,
-        color:'grey'
+        fontSize:12,
+        color:'grey',
+        fontFamily:'Poppins-Regular',
     }
 })

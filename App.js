@@ -11,6 +11,7 @@ import CekTanah from './screen/CekTanah';
 import DetailController from './screen/DetailController';
 import SettingController from './screen/SettingController';
 import QRScanner from './screen/QRScanner';
+import TambahController from './screen/TambahController';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +26,7 @@ function App() {
         <Stack.Screen name="DetailController" component={DetailController} options={{headerShown:false}} />
         <Stack.Screen name="SettingController" component={SettingController} options={{headerShown:false}} />
         <Stack.Screen name="QRScanner" component={QRScanner} options={{headerShown:false}} />
+        <Stack.Screen name="TambahController" component={TambahController} options={{headerShown:false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

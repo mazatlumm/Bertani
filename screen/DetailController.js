@@ -1,7 +1,5 @@
 import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView, Image, Platform } from 'react-native'
 import React, {useEffect, useState} from 'react'
-import TopBar from './TopBar';
-import TopBarDetailController from './TopBarDetailController';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 
@@ -13,6 +11,7 @@ import iconUser from '../assets/images/iconUser.png'
 // Icon
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
+import { EvilIcons } from '@expo/vector-icons';
 
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0));
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))
@@ -49,7 +48,16 @@ const DetailController = ({navigation}) => {
         <ScrollView style={{marginBottom:50, width:windowWidth}}>
             <View style={styles.ColorTopBar}></View>
             {/* Top Bar */}
-            <TopBarDetailController />
+            <View style={{paddingHorizontal:20, width:'100%'}}>
+                <View style={styles.TopBarBox}>
+                    <View style={{flex:3, justifyContent:'flex-start'}}>
+                        <Text style={styles.TopBarText}>Detail Controller</Text>
+                    </View>
+                    <TouchableOpacity style={{flex:0.5, alignItems:'flex-end'}} onPress={()=> navigation.navigate('SettingController')}>
+                        <EvilIcons name="gear" size={26} color="black" />
+                    </TouchableOpacity>
+                </View>
+            </View>
 
             <View style={{marginTop:10, flexDirection:'row', borderBottomWidth:0.2, paddingVertical:5, marginHorizontal:20}}>
                 <View style={{marginTop:10, flex:2}}>
@@ -290,6 +298,32 @@ const DetailController = ({navigation}) => {
 export default DetailController
 
 const styles = StyleSheet.create({
+    TopBarBox:{
+    ...Platform.select({
+        ios:{
+        marginTop:50,
+        },
+        android:{
+        marginTop:35
+        }
+    }),
+    width:'100%', 
+    alignItems:'flex-start', 
+    flexDirection:'row',
+    alignItems:'center',
+    },
+    TopBarText:{
+    fontFamily: 'Philosopher-Bold', 
+    ...Platform.select({
+        ios:{
+        fontSize:24
+        }, 
+        android:{
+        fontSize:18
+        }
+    }), 
+    marginLeft:10 
+    },
     ColorTopBar:{
         position:'absolute', 
         width:windowWidth,

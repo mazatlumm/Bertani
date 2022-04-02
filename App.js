@@ -12,6 +12,10 @@ import DetailController from './screen/DetailController';
 import SettingController from './screen/SettingController';
 import QRScanner from './screen/QRScanner';
 import TambahController from './screen/TambahController';
+import Profile from './screen/Profile';
+import TambahPengguna from './screen/TambahPengguna';
+import PushNotification from './screen/PushNotification';
+import UbahProfile from './screen/UbahProfile';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +31,10 @@ function App() {
         <Stack.Screen name="SettingController" component={SettingController} options={{headerShown:false}} />
         <Stack.Screen name="QRScanner" component={QRScanner} options={{headerShown:false}} />
         <Stack.Screen name="TambahController" component={TambahController} options={{headerShown:false}} />
+        <Stack.Screen name="Profile" component={Profile} options={{headerShown:false}} />
+        <Stack.Screen name="TambahPengguna" component={TambahPengguna} options={{headerShown:false}} />
+        <Stack.Screen name="PushNotification" component={PushNotification} options={{headerShown:false}} />
+        <Stack.Screen name="UbahProfile" component={UbahProfile} options={{headerShown:false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -113,10 +113,10 @@ const Dashboard = ({navigation}) => {
           <TouchableOpacity style={{flex:1, alignItems:'center'}}>
             <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}}>
+          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('PushNotification')}>
             <Image source={iconBag} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}}>
+          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
             <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
         </View>

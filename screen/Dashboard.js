@@ -52,7 +52,7 @@ const Dashboard = ({navigation}) => {
           
           {/* Scan Tanaman */}
           <View style={{flexDirection:'row', width:'100%', paddingHorizontal:20, marginTop:20}}>
-            <TouchableOpacity style={styles.BoxScanTanaman}>
+            <TouchableOpacity style={styles.BoxScanTanaman} onPress={()=>navigation.navigate('DetectNitrogen')}>
               <Text style={styles.TextScan}>Scan Tanaman</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.BoxSetKanal} onPress={()=>navigation.navigate('TambahController')}>
@@ -106,7 +106,7 @@ const Dashboard = ({navigation}) => {
         </ScrollView>
 
         {/* Bottom Navigation */}
-        <View style={{position:'absolute', bottom:0, left:0, flexDirection:'row', backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20 , paddingTop:15, paddingBottom:10, justifyContent:'center', alignItems:'center'}}>
+        <View style={{position:'absolute', bottom:0, left:0, flexDirection:'row', backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20 , paddingTop:15, paddingBottom:10, justifyContent:'center', alignItems:'center', width:'100%'}}>
           <TouchableOpacity style={{flex:1, alignItems:'center'}}>
             <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>

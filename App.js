@@ -16,6 +16,7 @@ import Profile from './screen/Profile';
 import TambahPengguna from './screen/TambahPengguna';
 import PushNotification from './screen/PushNotification';
 import UbahProfile from './screen/UbahProfile';
+import DetectNitrogen from './screen/DetectNitrogen';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +36,7 @@ function App() {
         <Stack.Screen name="TambahPengguna" component={TambahPengguna} options={{headerShown:false}} />
         <Stack.Screen name="PushNotification" component={PushNotification} options={{headerShown:false}} />
         <Stack.Screen name="UbahProfile" component={UbahProfile} options={{headerShown:false}} />
+        <Stack.Screen name="DetectNitrogen" component={DetectNitrogen} options={{headerShown:false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -89,7 +89,7 @@ const SettingController = ({navigation, route}) => {
                     </View>
                 </View>
                 <View style={styles.FormInput}>
-                    <Text style={styles.TextPoppins}>Komoditas</Text>
+                    <Text style={styles.TextPoppins}>Tanaman</Text>
                     <View style={styles.FormInputBox}>
                         <TextInput style={styles.TextInputForm} />
                     </View>

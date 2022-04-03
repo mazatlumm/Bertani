@@ -64,6 +64,10 @@ const Profile = ({navigation}) => {
                         <Text style={styles.TextBtn}>Ubah Akses</Text>
                         <AntDesign name="key" size={14} color="white" style={{marginLeft:5}} />
                     </TouchableOpacity>
+                    <TouchableOpacity style={styles.BoxBtnLogout} onPress={()=>navigation.navigate('Login')}>
+                        <Text style={styles.TextBtn}>Logout</Text>
+                        <AntDesign name="logout" size={14} color="white" style={{marginLeft:5}} />
+                    </TouchableOpacity>
                 </View>
             </View>
 
@@ -200,6 +204,16 @@ const styles = StyleSheet.create({
     },
     BoxBtn:{
         backgroundColor:'grey',
+        borderRadius:10,
+        paddingHorizontal:10,
+        paddingVertical:5,
+        marginTop:5,
+        alignItems:'center',
+        flexDirection:'row',
+        justifyContent:'center'
+    },
+    BoxBtnLogout:{
+        backgroundColor:'red',
         borderRadius:10,
         paddingHorizontal:10,
         paddingVertical:5,

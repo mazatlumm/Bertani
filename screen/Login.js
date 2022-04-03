@@ -1,5 +1,6 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput, ScrollView } from 'react-native'
-import React from 'react'
+import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput, ScrollView, Alert } from 'react-native'
+import React, {useEffect, useState} from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import TopImage from '../assets/images/LoginImage.png'
 import IconUsername from '../assets/images/IconUsername.png'
 import IconPassword from '../assets/images/IconPassword.png'
@@ -11,6 +12,49 @@ import { FontAwesome } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
 
 const Login = ({navigation}) => {
+
+    const [Username, setUsername] = useState('');
+    const [Password, setPassword] = useState('');
+    const [SeePassword, setSeePassword] = useState(true);
+    const [HideShowPassword, setHideShowPassword] = useState(true);
+    const [IconPassword, setIconPassword] = useState('eye-slash');
+
+    useEffect(() => {
+        LihatDataUser()
+    }, []);
+
+    const LihatPassword = () => {
+        setSeePassword(!SeePassword);
+        if(SeePassword == false){
+            setHideShowPassword(true);
+            setIconPassword('eye-slash')
+        }else{
+            setHideShowPassword(false);
+            setIconPassword('eye');
+        }
+    }
+
+    const LihatDataUser = async () => {
+        try {
+        const jsonValue = await AsyncStorage.getItem('@DataUser')
+        const ParsingDataUser = JSON.parse(jsonValue);
+        console.log(ParsingDataUser[0].nama)
+        return jsonValue != null ? JSON.parse(jsonValue) : null;
+        } catch(e) {
+        // error reading value
+        }
+    }
+    
+
+    const SimpanDataUSer = async (value) => {
+        try {
+          const jsonValue = JSON.stringify(value)
+          await AsyncStorage.setItem('@DataUser', jsonValue)
+          console.log('Simpan Data User')
+        } catch (e) {
+          // saving error
+        }
+      }
 
     let [fontsLoaded] = useFonts({
         'Philosopher': require('../assets/fonts/Philosopher-Regular.ttf'),
@@ -24,6 +68,44 @@ const Login = ({navigation}) => {
     return <AppLoading />;
     }
 
+    // API Login App
+    const getDataUsingPost = () => {
+        //POST json
+    var dataToSend = { username: Username, password: Password};
+    //making data to send on server
+    var formBody = [];
+    for (var key in dataToSend) {
+      var encodedKey = encodeURIComponent(key);
+      var encodedValue = encodeURIComponent(dataToSend[key]);
+      formBody.push(encodedKey + '=' + encodedValue);
+    }
+    formBody = formBody.join('&');
+    //POST request
+    fetch('http://localhost:8888/kelasbertani/api/user/login', {
+      method: 'POST', //Request Type
+      body: formBody, //post body
+      headers: {
+        //Header Defination
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+      },
+    })
+      .then((response) => response.json())
+      //If response is in json then in success
+      .then((responseJson) => {
+        if(responseJson.status == true){
+            SimpanDataUSer(responseJson.result)
+            navigation.navigate('Dashboard');
+        }else{
+            Alert.alert('Status Login', 'Username & Password Tidak Sesuai');
+        }
+        console.log(responseJson.result);
+      })
+      //If response is not in json then in error
+      .catch((error) => {
+        console.error(error);
+      });
+    };
+
   return (
     <View style={{ flex: 1}}>
         <ScrollView>
@@ -36,19 +118,25 @@ const Login = ({navigation}) => {
                 <TextInput 
                 placeholder='Username'
                 style={styles.TextInput}
+                onChangeText={Username => setUsername(Username)}
+                defaultValue={Username}
                 />
-                <FontAwesome name="user" size={24} color="black" />
+                <FontAwesome name="user" size={20} color="black" />
             </View>
             <View style={styles.BoxInput}>
                 <TextInput 
                 placeholder='Password'
                 style={styles.TextInput}
-                secureTextEntry={true}
+                secureTextEntry={HideShowPassword}
+                onChangeText={Password => setPassword(Password)}
+                defaultValue={Password}
                 />
-                <FontAwesome name="lock" size={26} color="black" />
+                <TouchableOpacity onPress={()=>LihatPassword()}>
+                    <FontAwesome name={IconPassword} size={20} color="black" />
+                </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.LoginButton} onPress={()=>navigation.navigate('Dashboard')}>
+            <TouchableOpacity style={styles.LoginButton} onPress={()=>getDataUsingPost()}>
                 <Text style={styles.TextLoginButton}>Masuk</Text>
             </TouchableOpacity>
 

@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, Dimensions, TouchableOpacity, Image, Platform } from 'react-native'
 import React, {useEffect, useState} from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import TopBar from './TopBar';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
@@ -37,6 +38,25 @@ const Profile = ({navigation}) => {
       if (!fontsLoaded) {
         return <AppLoading />;
       }
+
+      const HapusDataUser = async () => {
+        try {
+            await AsyncStorage.removeItem('@DataUser');
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Login' }],
+            });
+            navigation.navigate('Login');
+            return true;
+        }
+        catch(exception) {
+            return false;
+        }
+      }
+
+      const LogoutGo = () => {
+        HapusDataUser();
+      }
   return (
     <View style={{ flex: 1, alignItems: 'center'}}>
         <ScrollView style={{marginBottom:50, width:windowWidth}}>
@@ -64,7 +84,7 @@ const Profile = ({navigation}) => {
                         <Text style={styles.TextBtn}>Ubah Akses</Text>
                         <AntDesign name="key" size={14} color="white" style={{marginLeft:5}} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.BoxBtnLogout} onPress={()=>navigation.navigate('Login')}>
+                    <TouchableOpacity style={styles.BoxBtnLogout} onPress={()=>LogoutGo()}>
                         <Text style={styles.TextBtn}>Logout</Text>
                         <AntDesign name="logout" size={14} color="white" style={{marginLeft:5}} />
                     </TouchableOpacity>

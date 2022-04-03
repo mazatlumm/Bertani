@@ -18,10 +18,12 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "kelasbertani.com"
+      "bundleIdentifier": "kelasbertani.com",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "package": "kelasbertani.com",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

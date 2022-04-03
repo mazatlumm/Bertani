@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, ScrollView} from 'react-native'
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import Farmer from '../assets/images/farmer.png'
@@ -19,6 +19,10 @@ const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))-45;
 
 const Dashboard = ({navigation}) => {
 
+  useEffect(() => {
+   
+  }, [])
+  
   let [fontsLoaded] = useFonts({
     'Philosopher': require('../assets/fonts/Philosopher-Regular.ttf'),
     'Philosopher-Bold': require('../assets/fonts/Philosopher-Bold.ttf'),

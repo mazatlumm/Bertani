@@ -81,7 +81,7 @@ const Login = ({navigation}) => {
     }
     formBody = formBody.join('&');
     //POST request
-    fetch('http://localhost:8888/kelasbertani/api/user/login', {
+    fetch('https://alicestech.com/kelasbertani/api/user/login', {
       method: 'POST', //Request Type
       body: formBody, //post body
       headers: {

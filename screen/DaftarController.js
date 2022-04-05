@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
-import {ProgressChart} from 'react-native-chart-kit'
+import { useIsFocused } from '@react-navigation/native';
 
 import iconLove from '../assets/images/iconLove.png'
 import iconHome from '../assets/images/iconHome.png'
@@ -33,7 +33,7 @@ const DaftarController = ({navigation, route}) => {
             if(CountingRender == 0){
                 setIDUser(route.params.IDUser);
                 setIDController(route.params.IDController);
-                GetControllerUpdate(route.params.IDUser, route.params.IDController)
+                GetControllerUpdate(route.params.IDUser)
                 CountingRender = 1;
             }
         
@@ -56,16 +56,18 @@ const DaftarController = ({navigation, route}) => {
         }
     }
 
-    const DetailControllerCek = (id_controller) => {
-        navigation.navigate('DetailController', {IDUser:IDUser, IDController:id_controller})
+    const DetailControllerCek = (id_controller, id_device) => {
+        navigation.navigate('DetailController', {IDUser:IDUser, IDController:id_controller, IDDevice:id_device})
     }
+
+    const isFocused = useIsFocused();
 
     useEffect(() => {
         CountingRender = 0;
-    }, []);
+    }, [isFocused]);
 
-    const Item = ({ nama_perangkat, id_controller, lokasi, hum_max, hum_min, NamaTanaman }) => (
-        <TouchableOpacity style={{width:'100%', marginTop:30, alignItems:'center', justifyContent:'center', position:'relative'}} onPress={()=>DetailControllerCek(id_controller)}>
+    const Item = ({ nama_perangkat, id_controller, lokasi, hum_max, hum_min, NamaTanaman, IDDevice }) => (
+        <TouchableOpacity style={{width:'100%', marginTop:30, alignItems:'center', justifyContent:'center', position:'relative'}} onPress={()=>DetailControllerCek(id_controller, IDDevice)}>
               <View style={styles.JajarGenjang}>
               </View>
               <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', position:'absolute', left:50, top:25}}>Detail Data</Text>
@@ -86,7 +88,7 @@ const DaftarController = ({navigation, route}) => {
           </TouchableOpacity>
     );
 
-    const renderItem = ({ item }) => <Item nama_perangkat={item.nama_perangkat} id_controller={item.id_controller} lokasi={item.lokasi} hum_min={item.hum_min} hum_max={item.hum_max} NamaTanaman={item.tanaman} />;
+    const renderItem = ({ item }) => <Item nama_perangkat={item.nama_perangkat} id_controller={item.id_controller} lokasi={item.lokasi} hum_min={item.hum_min} hum_max={item.hum_max} NamaTanaman={item.tanaman} IDDevice={item.id_device} />;
 
 
     let [fontsLoaded] = useFonts({

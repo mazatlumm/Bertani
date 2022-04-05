@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView, Image, Platform, FlatList } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView, Image, Platform, FlatList, Alert } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppLoading from 'expo-app-loading';
@@ -32,6 +32,9 @@ const DetailController = ({navigation, route}) => {
     const [Lokasi, setLokasi] = useState('Alamat Perangkat');
     const [LastUpdate, setLastUpdate] = useState('');
     const [StatusDevice, setStatusDevice] = useState('');
+    const [IDDevice, setIDDevice] = useState('');
+    const [IDController, setIDController] = useState('');
+    const [IDUser, setIDUser] = useState('');
     const [DataKanal1, setDataKanal1] = useState([]);
     const [DataKanal2, setDataKanal2] = useState([]);
     const [DataKanal3, setDataKanal3] = useState([]);
@@ -46,6 +49,9 @@ const DetailController = ({navigation, route}) => {
             // console.log(route.params.IDUser)
             // console.log(route.params.IDController)
             if(CountingRender == 0){
+                setIDDevice(route.params.IDDevice);
+                setIDUser(route.params.IDUser);
+                setIDController(route.params.IDController);
                 GetControllerUpdate(route.params.IDUser, route.params.IDController)
                 CountingRender = 1;
             }
@@ -85,7 +91,7 @@ const DetailController = ({navigation, route}) => {
         strokeWidth: 2, // optional, default 3
         barPercentage: 0.5,
         useShadowColorFromDataset: false // optional
-      };
+    };
 
     const GetKanalUpdate = async (id_device_induk) => {
         try {
@@ -276,6 +282,32 @@ const DetailController = ({navigation, route}) => {
         );
     };
 
+    const HapusController = () => {
+        Alert.alert(
+            "Apakah Anda Yakin?",
+            "Perangkat Anda Akan Terhapus Secara Permanen",
+            [
+              {
+                text: "Batal",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel"
+              },
+              { text: "Lanjutkan", onPress: () => ApiHapusController() }
+        ])
+    }
+
+    const ApiHapusController = () => {
+        fetch('https://alicestech.com/kelasbertani/api/controller/hapus?id_device=' + IDDevice)
+        .then((response) => response.json())
+        .then((json) => {
+            console.log(json);
+            if(json.status == true){
+                navigation.navigate('DaftarController', {IDUser:IDUser, IDController:IDController})
+            }
+        })
+        .catch((error) => console.error(error))
+    }
+
     useEffect(() => {
         UpdateCurrentTime();
         CountingRender = 0;
@@ -336,10 +368,19 @@ const DetailController = ({navigation, route}) => {
                 </View>
             </View>
 
-            <View style={{marginHorizontal:20, marginTop:10}}>
-                <Text style={styles.TextPoppins}>Waktu Saat ini  : {currentDate}</Text>
-                <Text style={styles.TextPoppins}>Komoditas  : {JenisTanaman}</Text>
-                <Text style={styles.TextPoppins}>Lokasi  : {Lokasi}</Text>
+            <View style={{marginHorizontal:20, marginTop:10, flexDirection:'row', alignItems:'center'}}>
+                <View>
+                    <Text style={styles.TextPoppins}>ID Device  : {IDDevice}</Text>
+                    <Text style={styles.TextPoppins}>Waktu Saat ini  : {currentDate}</Text>
+                    <Text style={styles.TextPoppins}>Komoditas  : {JenisTanaman}</Text>
+                    <Text style={styles.TextPoppins}>Lokasi  : {Lokasi}</Text>
+                </View>
+                <View style={{flex:1, marginLeft:30}}>
+                    <TouchableOpacity style={{flexDirection:'row', borderRadius:10, backgroundColor:'#D74608', paddingVertical:5, paddingHorizontal:10, alignItems:'center', justifyContent:'center'}} onPress={()=>HapusController()}>
+                        <Text style={styles.TextBtnON}>Hapus</Text>
+                        <EvilIcons name="trash" size={26} color="white" />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             {/* Kanal */}

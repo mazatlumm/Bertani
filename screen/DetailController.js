@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
+import {ProgressChart} from 'react-native-chart-kit'
 
 import iconLove from '../assets/images/iconLove.png'
 import iconHome from '../assets/images/iconHome.png'
@@ -17,6 +18,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0));
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))
+const screenWidth = Dimensions.get('window').width;
+
+let CountingRender = 0;
 
 const DetailController = ({navigation, route}) => {
 
@@ -29,20 +33,23 @@ const DetailController = ({navigation, route}) => {
     const [LastUpdate, setLastUpdate] = useState('');
     const [StatusDevice, setStatusDevice] = useState('');
     const [DataKanal1, setDataKanal1] = useState([]);
-
-    const [HumTanahKanal1, setHumTanahKanal1] = useState(0);
-    const [HumUdaraKanal1, setHumUdaraKanal1] = useState(0);
-    const [TempUdaraKanal1, setTempUdaraKanal1] = useState(0);
-    
-    const [HumTanahKanal2, setHumTanahKanal2] = useState(0);
-    const [HumUdaraKanal2, setHumUdaraKanal2] = useState(0);
-    const [TempUdaraKanal2, setTempUdaraKanal2] = useState(0);
+    const [DataKanal2, setDataKanal2] = useState([]);
+    const [DataKanal3, setDataKanal3] = useState([]);
+    const [DataKanal4, setDataKanal4] = useState([]);
+    const [DataChartKanal1, setDataChartKanal1] = useState([0.4, 0.6, 0.8]);
+    const [DataChartKanal2, setDataChartKanal2] = useState([0.4, 0.6, 0.8]);
+    const [DataChartKanal3, setDataChartKanal3] = useState([0.4, 0.6, 0.8]);
+    const [DataChartKanal4, setDataChartKanal4] = useState([0.4, 0.6, 0.8]);
 
     if(route.params != undefined){
         setTimeout(() => {
             // console.log(route.params.IDUser)
             // console.log(route.params.IDController)
-            GetControllerUpdate(route.params.IDUser, route.params.IDController)
+            if(CountingRender == 0){
+                GetControllerUpdate(route.params.IDUser, route.params.IDController)
+                CountingRender = 1;
+            }
+        
         }, 1000);
         
     }
@@ -69,6 +76,17 @@ const DetailController = ({navigation, route}) => {
         }
     }
     
+    const chartConfig = {
+        backgroundGradientFrom: "#1E2923",
+        backgroundGradientFromOpacity: 0,
+        backgroundGradientTo: "#08130D",
+        backgroundGradientToOpacity: 0.5,
+        color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        strokeWidth: 2, // optional, default 3
+        barPercentage: 0.5,
+        useShadowColorFromDataset: false // optional
+      };
+
     const GetKanalUpdate = async (id_device_induk) => {
         try {
             let response = await fetch(
@@ -88,17 +106,179 @@ const DetailController = ({navigation, route}) => {
                   KelembabanUdaraKanal1 = KelembabanUdaraKanal1 + parseFloat(json.dataKanal1[index].hum_udara);
                   SuhuUdaraKanal1 = SuhuUdaraKanal1 + parseFloat(json.dataKanal1[index].temp_udara);
                 }
-                setHumTanahKanal1(KelembabanTanahKanal1/PembagiRata2Kanal1);
-                setHumUdaraKanal1(KelembabanUdaraKanal1/PembagiRata2Kanal1);
-                setTempUdaraKanal1(SuhuUdaraKanal1/PembagiRata2Kanal1);
+                let HumTanah1 = (KelembabanTanahKanal1/PembagiRata2Kanal1)/100;
+                let HumUdara1 = (KelembabanUdaraKanal1/PembagiRata2Kanal1)/100;
+                let TempUdara1 = (SuhuUdaraKanal1/PembagiRata2Kanal1)/100;
+                setDataChartKanal1([HumTanah1,HumUdara1,TempUdara1]);
+              
+                setDataKanal2(json.dataKanal2);
+              let PembagiRata2Kanal2 = 0;
+              let KelembabanTanahKanal2 = 0;
+              let KelembabanUdaraKanal2 = 0;
+              let SuhuUdaraKanal2 = 0;
+              for (let index = 0; index < json.dataKanal2.length; index++) {
+                  PembagiRata2Kanal2++;
+                  KelembabanTanahKanal2 = KelembabanTanahKanal2 + parseFloat(json.dataKanal2[index].hum_tanah);
+                  KelembabanUdaraKanal2 = KelembabanUdaraKanal2 + parseFloat(json.dataKanal2[index].hum_udara);
+                  SuhuUdaraKanal2 = SuhuUdaraKanal2 + parseFloat(json.dataKanal2[index].temp_udara);
+                }
+                let HumTanah2 = (KelembabanTanahKanal2/PembagiRata2Kanal2)/100;
+                let HumUdara2 = (KelembabanUdaraKanal2/PembagiRata2Kanal2)/100;
+                let TempUdara2 = (SuhuUdaraKanal2/PembagiRata2Kanal2)/100;
+                setDataChartKanal2([HumTanah2,HumUdara2,TempUdara2]);
+                
+                setDataKanal3(json.dataKanal3);
+              let PembagiRata2Kanal3 = 0;
+              let KelembabanTanahKanal3 = 0;
+              let KelembabanUdaraKanal3 = 0;
+              let SuhuUdaraKanal3 = 0;
+              for (let index = 0; index < json.dataKanal3.length; index++) {
+                  PembagiRata2Kanal3++;
+                  KelembabanTanahKanal3 = KelembabanTanahKanal3 + parseFloat(json.dataKanal3[index].hum_tanah);
+                  KelembabanUdaraKanal3 = KelembabanUdaraKanal3 + parseFloat(json.dataKanal3[index].hum_udara);
+                  SuhuUdaraKanal3 = SuhuUdaraKanal3 + parseFloat(json.dataKanal3[index].temp_udara);
+                }
+                let HumTanah3 = (KelembabanTanahKanal3/PembagiRata2Kanal3)/100;
+                let HumUdara3 = (KelembabanUdaraKanal3/PembagiRata2Kanal3)/100;
+                let TempUdara3 = (SuhuUdaraKanal3/PembagiRata2Kanal3)/100;
+                setDataChartKanal3([HumTanah3,HumUdara3,TempUdara3]);
+                
+                setDataKanal4(json.dataKanal4);
+              let PembagiRata2Kanal4 = 0;
+              let KelembabanTanahKanal4 = 0;
+              let KelembabanUdaraKanal4 = 0;
+              let SuhuUdaraKanal4 = 0;
+              for (let index = 0; index < json.dataKanal4.length; index++) {
+                  PembagiRata2Kanal4++;
+                  KelembabanTanahKanal4 = KelembabanTanahKanal4 + parseFloat(json.dataKanal4[index].hum_tanah);
+                  KelembabanUdaraKanal4 = KelembabanUdaraKanal4 + parseFloat(json.dataKanal4[index].hum_udara);
+                  SuhuUdaraKanal4 = SuhuUdaraKanal4 + parseFloat(json.dataKanal4[index].temp_udara);
+                }
+                let HumTanah4 = (KelembabanTanahKanal4/PembagiRata2Kanal4)/100;
+                let HumUdara4 = (KelembabanUdaraKanal4/PembagiRata2Kanal4)/100;
+                let TempUdara4 = (SuhuUdaraKanal4/PembagiRata2Kanal4)/100;
+                setDataChartKanal4([HumTanah4,HumUdara4,TempUdara4]);
             }
         } catch (error) {
             console.error(error);
         }
     }
 
+    const MyProgressChartKanal1 = () => {
+        return (
+          <>
+            <Text style={styles.header}><Text style={styles.header}>Rata-rata sensor Kanal 1</Text></Text>
+            <ProgressChart
+                data={DataChartKanal1}
+                width={Dimensions.get('window').width - 16}
+                height={220}
+                chartConfig={{
+                backgroundColor: 'white',
+                backgroundGradientFrom: 'grey',
+                backgroundGradientTo: 'black',
+                decimalPlaces: 2,
+                color: (opacity = 10) => `rgba(46, 204, 133, ${opacity})`,
+                style: {
+                    borderRadius: 16,
+                },
+                }}
+                style={{
+                marginVertical: 8,
+                borderRadius: 16,
+                marginRight:25
+                }}
+            />
+        </>
+        );
+    };
+    
+    const MyProgressChartKanal2 = () => {
+        return (
+          <>
+            <Text style={styles.header}>Rata-rata sensor Kanal 2</Text>
+            <ProgressChart
+                data={DataChartKanal2}
+                width={Dimensions.get('window').width - 16}
+                height={220}
+                chartConfig={{
+                backgroundColor: 'white',
+                backgroundGradientFrom: 'grey',
+                backgroundGradientTo: 'black',
+                decimalPlaces: 2,
+                color: (opacity = 10) => `rgba(46, 204, 133, ${opacity})`,
+                style: {
+                    borderRadius: 16,
+                },
+                }}
+                style={{
+                marginVertical: 8,
+                borderRadius: 16,
+                marginRight:25
+                }}
+            />
+        </>
+        );
+    };
+    
+    const MyProgressChartKanal3 = () => {
+        return (
+          <>
+            <Text style={styles.header}>Rata-rata sensor Kanal 3</Text>
+            <ProgressChart
+                data={DataChartKanal3}
+                width={Dimensions.get('window').width - 16}
+                height={220}
+                chartConfig={{
+                backgroundColor: 'white',
+                backgroundGradientFrom: 'grey',
+                backgroundGradientTo: 'black',
+                decimalPlaces: 2,
+                color: (opacity = 10) => `rgba(46, 204, 133, ${opacity})`,
+                style: {
+                    borderRadius: 16,
+                },
+                }}
+                style={{
+                marginVertical: 8,
+                borderRadius: 16,
+                marginRight:25
+                }}
+            />
+        </>
+        );
+    };
+    
+    const MyProgressChartKanal4 = () => {
+        return (
+          <>
+            <Text style={styles.header}>Rata-rata sensor Kanal 4</Text>
+            <ProgressChart
+                data={DataChartKanal4}
+                width={Dimensions.get('window').width - 16}
+                height={220}
+                chartConfig={{
+                backgroundColor: 'white',
+                backgroundGradientFrom: 'grey',
+                backgroundGradientTo: 'black',
+                decimalPlaces: 2,
+                color: (opacity = 10) => `rgba(46, 204, 133, ${opacity})`,
+                style: {
+                    borderRadius: 16,
+                },
+                }}
+                style={{
+                marginVertical: 8,
+                borderRadius: 16,
+                marginRight:25
+                }}
+            />
+        </>
+        );
+    };
+
     useEffect(() => {
         UpdateCurrentTime();
+        CountingRender = 0;
     }, []);
 
     const UpdateCurrentTime = () => {
@@ -167,7 +347,10 @@ const DetailController = ({navigation, route}) => {
                 {/* Kanal 1 */}
                 <View style={{marginTop:10}}>
                     <Text style={styles.TextPoppinsBold}>KANAL 1</Text>
-                    
+
+                    {/* Chart Kanal 1 */}
+                    <MyProgressChartKanal1 />
+
                     {/* Action Button */}
                     <View style={{marginTop:10, flexDirection:'row', alignItems:'center'}}>
                         <Text style={styles.TextPoppins}>STATUS : NON-AKTIF</Text>
@@ -178,44 +361,10 @@ const DetailController = ({navigation, route}) => {
                 {/* Kanal 2 */}
                 <View style={{marginTop:20}}>
                     <Text style={styles.TextPoppinsBold}>KANAL 2</Text>
-                    <View style={styles.CardKanal}>
-                        <Text style={styles.TextPoppins}>SENS001</Text>
-                        <View style={{marginTop:5, flexDirection:'row', alignItems:'center'}}>
-                            <View style={{flexDirection:'row', alignItems:'center', flex:2}}>
-                                <FontAwesome5 name="temperature-low" size={24} color="#FCCC1F" />
-                                <View style={{marginLeft:10}}>
-                                    <Text style={styles.TextPoppinsBoldGreen}>30&deg;C</Text>
-                                    <Text style={styles.TextPoppins}>SUHU</Text>
-                                </View>
-                            </View>
-                            <View style={{flexDirection:'row', alignItems:'center', flex:2}}>
-                                <Ionicons name="water" size={24} color="#FCCC1F" />
-                                <View style={{marginLeft:10}}>
-                                    <Text style={styles.TextPoppinsBoldGreen}>65%</Text>
-                                    <Text style={styles.TextPoppins}>KELEMBABAN</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.CardKanal}>
-                        <Text style={styles.TextPoppins}>SENS002</Text>
-                        <View style={{marginTop:5, flexDirection:'row', alignItems:'center'}}>
-                            <View style={{flexDirection:'row', alignItems:'center', flex:2}}>
-                                <FontAwesome5 name="temperature-low" size={24} color="#FCCC1F" />
-                                <View style={{marginLeft:10}}>
-                                    <Text style={styles.TextPoppinsBoldGreen}>30&deg;C</Text>
-                                    <Text style={styles.TextPoppins}>SUHU</Text>
-                                </View>
-                            </View>
-                            <View style={{flexDirection:'row', alignItems:'center', flex:2}}>
-                                <Ionicons name="water" size={24} color="#FCCC1F" />
-                                <View style={{marginLeft:10}}>
-                                    <Text style={styles.TextPoppinsBoldGreen}>65%</Text>
-                                    <Text style={styles.TextPoppins}>KELEMBABAN</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
+                    
+                    {/* Chart Kanal 2 */}
+                    <MyProgressChartKanal2 />
+
                     {/* Action Button */}
                     <View style={{marginTop:10, flexDirection:'row', alignItems:'center'}}>
                         <Text style={styles.TextPoppins}>STATUS : AKTIF</Text>
@@ -226,44 +375,10 @@ const DetailController = ({navigation, route}) => {
                 {/* Kanal 3 */}
                 <View style={{marginTop:20}}>
                     <Text style={styles.TextPoppinsBold}>KANAL 3</Text>
-                    <View style={styles.CardKanal}>
-                        <Text style={styles.TextPoppins}>SENS001</Text>
-                        <View style={{marginTop:5, flexDirection:'row', alignItems:'center'}}>
-                            <View style={{flexDirection:'row', alignItems:'center', flex:2}}>
-                                <FontAwesome5 name="temperature-low" size={24} color="#FCCC1F" />
-                                <View style={{marginLeft:10}}>
-                                    <Text style={styles.TextPoppinsBoldGreen}>30&deg;C</Text>
-                                    <Text style={styles.TextPoppins}>SUHU</Text>
-                                </View>
-                            </View>
-                            <View style={{flexDirection:'row', alignItems:'center', flex:2}}>
-                                <Ionicons name="water" size={24} color="#FCCC1F" />
-                                <View style={{marginLeft:10}}>
-                                    <Text style={styles.TextPoppinsBoldGreen}>65%</Text>
-                                    <Text style={styles.TextPoppins}>KELEMBABAN</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.CardKanal}>
-                        <Text style={styles.TextPoppins}>SENS002</Text>
-                        <View style={{marginTop:5, flexDirection:'row', alignItems:'center'}}>
-                            <View style={{flexDirection:'row', alignItems:'center', flex:2}}>
-                                <FontAwesome5 name="temperature-low" size={24} color="#FCCC1F" />
-                                <View style={{marginLeft:10}}>
-                                    <Text style={styles.TextPoppinsBoldGreen}>30&deg;C</Text>
-                                    <Text style={styles.TextPoppins}>SUHU</Text>
-                                </View>
-                            </View>
-                            <View style={{flexDirection:'row', alignItems:'center', flex:2}}>
-                                <Ionicons name="water" size={24} color="#FCCC1F" />
-                                <View style={{marginLeft:10}}>
-                                    <Text style={styles.TextPoppinsBoldGreen}>65%</Text>
-                                    <Text style={styles.TextPoppins}>KELEMBABAN</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
+                    
+                    {/* Chart Kanal 3 */}
+                    <MyProgressChartKanal3 />
+
                     {/* Action Button */}
                     <View style={{marginTop:10, flexDirection:'row', alignItems:'center'}}>
                         <Text style={styles.TextPoppins}>STATUS : NON-AKTIF</Text>
@@ -274,44 +389,10 @@ const DetailController = ({navigation, route}) => {
                 {/* Kanal 4 */}
                 <View style={{marginTop:20, marginBottom:10}}>
                     <Text style={styles.TextPoppinsBold}>KANAL 4</Text>
-                    <View style={styles.CardKanal}>
-                        <Text style={styles.TextPoppins}>SENS001</Text>
-                        <View style={{marginTop:5, flexDirection:'row', alignItems:'center'}}>
-                            <View style={{flexDirection:'row', alignItems:'center', flex:2}}>
-                                <FontAwesome5 name="temperature-low" size={24} color="#FCCC1F" />
-                                <View style={{marginLeft:10}}>
-                                    <Text style={styles.TextPoppinsBoldGreen}>30&deg;C</Text>
-                                    <Text style={styles.TextPoppins}>SUHU</Text>
-                                </View>
-                            </View>
-                            <View style={{flexDirection:'row', alignItems:'center', flex:2}}>
-                                <Ionicons name="water" size={24} color="#FCCC1F" />
-                                <View style={{marginLeft:10}}>
-                                    <Text style={styles.TextPoppinsBoldGreen}>65%</Text>
-                                    <Text style={styles.TextPoppins}>KELEMBABAN</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.CardKanal}>
-                        <Text style={styles.TextPoppins}>SENS002</Text>
-                        <View style={{marginTop:5, flexDirection:'row', alignItems:'center'}}>
-                            <View style={{flexDirection:'row', alignItems:'center', flex:2}}>
-                                <FontAwesome5 name="temperature-low" size={24} color="#FCCC1F" />
-                                <View style={{marginLeft:10}}>
-                                    <Text style={styles.TextPoppinsBoldGreen}>30&deg;C</Text>
-                                    <Text style={styles.TextPoppins}>SUHU</Text>
-                                </View>
-                            </View>
-                            <View style={{flexDirection:'row', alignItems:'center', flex:2}}>
-                                <Ionicons name="water" size={24} color="#FCCC1F" />
-                                <View style={{marginLeft:10}}>
-                                    <Text style={styles.TextPoppinsBoldGreen}>65%</Text>
-                                    <Text style={styles.TextPoppins}>KELEMBABAN</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
+                    
+                    {/* Chart Kanal 4 */}
+                    <MyProgressChartKanal4 />
+
                     {/* Action Button */}
                     <View style={{marginTop:10, flexDirection:'row', alignItems:'center'}}>
                         <Text style={styles.TextPoppins}>STATUS : AKTIF</Text>

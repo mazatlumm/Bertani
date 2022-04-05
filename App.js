@@ -18,6 +18,7 @@ import PushNotification from './screen/PushNotification';
 import UbahProfile from './screen/UbahProfile';
 import DetectNitrogen from './screen/DetectNitrogen';
 import SplashScreen from './screen/SplashScreen';
+import DaftarController from './screen/DaftarController';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +31,7 @@ function App() {
         <Stack.Screen name="Dashboard" component={Dashboard} options={{headerShown:false}} />
         <Stack.Screen name="DetailSensor" component={DetailSensor} />
         <Stack.Screen name="CekTanah" component={CekTanah} options={{headerShown:false}} />
+        <Stack.Screen name="DaftarController" component={DaftarController} options={{headerShown:false}} />
         <Stack.Screen name="DetailController" component={DetailController} options={{headerShown:false}} />
         <Stack.Screen name="SettingController" component={SettingController} options={{headerShown:false}} />
         <Stack.Screen name="QRScanner" component={QRScanner} options={{headerShown:false}} />

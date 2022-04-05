@@ -78,6 +78,16 @@ const Dashboard = ({navigation}) => {
     }
   }
   
+  const DaftarControllerCek = () => {
+    if(IDController != 0){
+      navigation.navigate('DaftarController', {IDUser:IDUser, IDController:IDController})
+    }else{
+      Alert.alert('Controller Tidak Tersedia', 'Tambahkan Controller Terlebih Dahulu');
+    }
+  }
+
+
+  
   let [fontsLoaded] = useFonts({
     'Philosopher': require('../assets/fonts/Philosopher-Regular.ttf'),
     'Philosopher-Bold': require('../assets/fonts/Philosopher-Bold.ttf'),
@@ -119,8 +129,10 @@ const Dashboard = ({navigation}) => {
           </View>
 
           <View style={{width:'100%', marginTop:20, alignItems:'flex-start', paddingHorizontal:23}}>
-            <Text style={{fontFamily:'Poppins-Bold', fontSize:12, color:'#0D986A'}}>Automatic & Control Pengairan</Text>
-            <View style={{borderBottomWidth:2, borderBottomColor:'#0D986A', width:40, marginTop:5}}></View>
+            <TouchableOpacity onPress={()=> DaftarControllerCek()}>
+              <Text style={{fontFamily:'Poppins-Bold', fontSize:12, color:'#0D986A'}}>Automatic & Control Pengairan</Text>
+              <View style={{borderBottomWidth:2, borderBottomColor:'#0D986A', width:40, marginTop:5}}></View>
+            </TouchableOpacity>
           </View>
           
           <TouchableOpacity style={{width:'100%', paddingHorizontal:20, marginTop:10, alignItems:'center', justifyContent:'center', position:'relative'}} onPress={()=>DetailControllerCek()}>

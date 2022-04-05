@@ -40,7 +40,7 @@ export default TopBar
 
 const styles = StyleSheet.create({
     TopBarBox:{
-      marginTop:25, 
+      // marginTop:25, 
       width:'100%', 
       alignItems:'flex-start', 
       flexDirection:'row',

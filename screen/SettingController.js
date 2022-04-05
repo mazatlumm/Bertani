@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0));
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0));
@@ -50,8 +51,8 @@ const SettingController = ({navigation, route}) => {
     }
 
   return (
-    <View style={{ flex: 1, alignItems: 'center'}}>
-        <ScrollView style={{marginBottom:50, width:windowWidth}}>
+    <SafeAreaView style={{ flex: 1, alignItems: 'center', backgroundColor:'white'}}>
+        <ScrollView style={styles.ScrollViewBox}>
             <View style={styles.ColorTopBar}></View>
             {/* Top Bar */}
             <View style={{paddingHorizontal:20, width:'100%'}}>
@@ -66,7 +67,7 @@ const SettingController = ({navigation, route}) => {
             </View>
 
             {/* Form */}
-            <View style={{marginHorizontal:20, marginTop:20, marginBottom:10}}>
+            <View style={{marginHorizontal:20, marginTop:10, marginBottom:10}}>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>ID Device</Text>
                     <View style={styles.FormGroup}>
@@ -175,20 +176,33 @@ const SettingController = ({navigation, route}) => {
             <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
         </View>
-    </View>
+    </SafeAreaView>
   )
 }
 
 export default SettingController
 
 const styles = StyleSheet.create({
+    ScrollViewBox:{
+        ...Platform.select({
+            ios:{
+                marginBottom:0
+            },
+            android:{
+                marginBottom:50
+            }
+        }),
+        width:windowWidth, 
+        backgroundColor:'white',
+        height:windowHeight
+    },
     TopBarBox:{
         ...Platform.select({
             ios:{
-            marginTop:50,
+            marginTop:14,
             },
             android:{
-            marginTop:35
+            marginTop:14
             }
         }),
         width:'100%', 
@@ -213,13 +227,13 @@ const styles = StyleSheet.create({
         width:windowWidth,
         ...Platform.select({
             ios:{
-                height:90,
+                height:50,
             },
             android:{
-                height:70
+                height:50
             }
         }), 
-        backgroundColor:'#9CE5CB', 
+        // backgroundColor:'white', 
         top:0, 
         left:0, 
         zIndex:-2

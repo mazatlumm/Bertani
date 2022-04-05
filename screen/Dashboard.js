@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, ScrollView} from 'react-native'
+import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, ScrollView, Alert} from 'react-native'
 import React, {useEffect, useState} from 'react'
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
@@ -10,18 +10,73 @@ import iconLove from '../assets/images/iconLove.png'
 import iconBag from '../assets/images/iconBag.png'
 import iconUser from '../assets/images/iconUser.png'
 import TopBar from './TopBar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Icon
 import { AntDesign } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0))-45;
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))-45;
 
 const Dashboard = ({navigation}) => {
 
+  const [IDUser, setIDUser] = useState(0);
+  const [IDController, setIDController] = useState(0);
+  const [NamaPerangkat, setNamaPerangkat] = useState('Perangkat');
+  const [JenisTanaman, setJenisTanaman] = useState('');
+  const [HumMin, setHumMin] = useState(0);
+  const [HumMax, setHumMax] = useState(0);
+  const [Lokasi, setLokasi] = useState('Alamat Perangkat');
+
+
   useEffect(() => {
-   
+    console.log('Cek Data user di Dashboard');
+    LihatDataUser()
   }, [])
+
+  const LihatDataUser =  async() => {
+    try {
+    const jsonValue = await AsyncStorage.getItem('@DataUser')
+    const ParsingDataUser = JSON.parse(jsonValue);
+    console.log(jsonValue)
+    console.log(ParsingDataUser[0].id_user)
+    if(ParsingDataUser[0].id_user){
+        GetController(ParsingDataUser[0].id_user);
+    }
+    } catch(e) {
+    // error reading value
+    }
+}
+
+  const GetController = async (id_user) => {
+    try {
+        let response = await fetch(
+        'https://alicestech.com/kelasbertani/api/controller/last?id_user=' + id_user
+        );
+        let json = await response.json();
+        if(json.status == true){
+          console.log(json.result[0]);
+          setIDUser(id_user);
+          setIDController(json.result[0].id_controller);
+          setNamaPerangkat(json.result[0].nama_perangkat);
+          setJenisTanaman(json.result[0].tanaman);
+          setHumMin(json.result[0].hum_min);
+          setHumMax(json.result[0].hum_max);
+          setLokasi(json.result[0].lokasi);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+  }
+
+  const DetailControllerCek = () => {
+    if(IDController != 0){
+      navigation.navigate('DetailController', {IDUser:IDUser, IDController:IDController})
+    }else{
+      Alert.alert('Controller Tidak Tersedia', 'Tambahkan Controller Terlebih Dahulu');
+    }
+  }
   
   let [fontsLoaded] = useFonts({
     'Philosopher': require('../assets/fonts/Philosopher-Regular.ttf'),
@@ -35,9 +90,8 @@ const Dashboard = ({navigation}) => {
   }
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', height:windowHeight}}>
-      <ScrollView style={{marginBottom:50, width:'100%'}}>
-          
+    <SafeAreaView style={{ flex: 1, alignItems: 'center'}}>
+      <ScrollView style={styles.ScrollViewBox}>  
           {/* Top Bar */}
           <TopBar />
 
@@ -68,24 +122,24 @@ const Dashboard = ({navigation}) => {
             <Text style={{fontFamily:'Poppins-Bold', fontSize:12, color:'#0D986A'}}>Automatic & Control Pengairan</Text>
             <View style={{borderBottomWidth:2, borderBottomColor:'#0D986A', width:40, marginTop:5}}></View>
           </View>
-
-          <TouchableOpacity style={{width:'100%', paddingHorizontal:20, marginTop:10, alignItems:'center', justifyContent:'center', position:'relative'}} onPress={()=>navigation.navigate('DetailController')}>
+          
+          <TouchableOpacity style={{width:'100%', paddingHorizontal:20, marginTop:10, alignItems:'center', justifyContent:'center', position:'relative'}} onPress={()=>DetailControllerCek()}>
               <View style={styles.JajarGenjang}>
               </View>
-              <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', position:'absolute', left:50, top:25}}>6 Sensor Aktif</Text>
-              <Text style={{fontFamily:'Philosopher-Bold', fontSize:24, color:'black', position:'absolute', left:50, top:50}}>Lahan 1</Text>
-              <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black', position:'absolute', left:50, top:85}}>Komoditas Tembakau</Text>
+              <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', position:'absolute', left:50, top:25}}>Detail Data</Text>
+              <Text style={{fontFamily:'Philosopher-Bold', fontSize:24, color:'black', position:'absolute', left:50, top:50}}>{NamaPerangkat}</Text>
+              <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black', position:'absolute', left:50, top:85}}>Tanaman {JenisTanaman}</Text>
               <View style={{position:'absolute', right:0, bottom:40}}>
                 <Image source={tanaman} style={{width:200, height:200,resizeMode:'contain'}} />
               </View>
               <View style={{position:'absolute', left:50, bottom:50, flexDirection:'row', alignItems:'center'}}>
-                <Text style={{color:'black',fontFamily:'Poppins-Regular', fontSize:12}}>TEMP : </Text>
-                <Text style={{color:'black',fontFamily:'Poppins-Bold', paddingLeft:0, fontSize:14}}>20°C</Text>
-                <Text style={{color:'black',fontFamily:'Poppins-Regular', paddingLeft:10, fontSize:12}}>HUM : </Text>
-                <Text style={{color:'black',fontFamily:'Poppins-Bold', paddingLeft:0, fontSize:14}}>50%</Text>
+                <Text style={{color:'black',fontFamily:'Poppins-Regular', fontSize:12}}>Hum Min : </Text>
+                <Text style={{color:'black',fontFamily:'Poppins-Bold', paddingLeft:0, fontSize:14}}>{HumMin}%</Text>
+                <Text style={{color:'black',fontFamily:'Poppins-Regular', paddingLeft:10, fontSize:12}}>Hum Max : </Text>
+                <Text style={{color:'black',fontFamily:'Poppins-Bold', paddingLeft:0, fontSize:14}}>{HumMax}%</Text>
               </View>
               <View style={{position:'absolute', left:50, bottom:20, width:260}}>
-                <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black'}}>Lokasi : Ds. Grogol, Kec, Diwek, Kab. Jombang</Text>
+                <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black'}}>Lokasi : {Lokasi}</Text>
               </View>
           </TouchableOpacity>
 
@@ -124,15 +178,28 @@ const Dashboard = ({navigation}) => {
             <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
         </View>
-  </View>
+  </SafeAreaView>
   )
 }
 
 export default Dashboard
 
 const styles = StyleSheet.create({
+  ScrollViewBox:{
+    ...Platform.select({
+        ios:{
+            marginBottom:0
+        },
+        android:{
+            marginBottom:50
+        }
+    }),
+    width:'100%', 
+    backgroundColor:'white',
+    height:windowHeight,
+},
   TopBarBox:{
-    marginTop:20, 
+    // marginTop:20, 
     width:'100%', 
     alignItems:'flex-start', 
     flexDirection:'row',

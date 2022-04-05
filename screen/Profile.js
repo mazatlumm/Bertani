@@ -21,6 +21,7 @@ const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))-45;
 import { EvilIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Profile = ({navigation}) => {
 
@@ -58,7 +59,7 @@ const Profile = ({navigation}) => {
         HapusDataUser();
       }
   return (
-    <View style={{ flex: 1, alignItems: 'center'}}>
+    <SafeAreaView style={{ flex: 1, alignItems: 'center'}}>
         <ScrollView style={{marginBottom:50, width:windowWidth}}>
             <View style={styles.ColorTopBar}></View>
             {/* Top Bar */}
@@ -91,7 +92,7 @@ const Profile = ({navigation}) => {
                 </View>
             </View>
 
-            <View style={{marginHorizontal:20, marginTop:20}}>
+            <View style={{marginHorizontal:20, marginTop:20, marginBottom:5}}>
                 <Text style={styles.TextPoppinsBoldGreen}>Daftar Pengguna Aplikasi</Text>
 
                 <TouchableOpacity style={styles.CardListUser}>
@@ -129,7 +130,7 @@ const Profile = ({navigation}) => {
             <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
         </View>
-    </View>
+    </SafeAreaView>
   )
 }
 
@@ -139,10 +140,10 @@ const styles = StyleSheet.create({
     TopBarBox:{
         ...Platform.select({
             ios:{
-            marginTop:50,
+            marginTop:14,
             },
             android:{
-            marginTop:35
+            marginTop:14
             }
         }),
     width:'100%', 
@@ -167,10 +168,10 @@ const styles = StyleSheet.create({
         width:windowWidth,
         ...Platform.select({
             ios:{
-                height:90,
+                height:50,
             },
             android:{
-                height:70
+                height:50
             }
         }), 
         backgroundColor:'#9CE5CB', 

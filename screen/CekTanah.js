@@ -11,6 +11,7 @@ import Angin from '../assets/images/Angin.png'
 import iconHome from '../assets/images/iconHome.png'
 import iconBag from '../assets/images/iconBag.png'
 import iconUser from '../assets/images/iconUser.png'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0));
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))-45;
@@ -42,8 +43,8 @@ const CekTanah = ({navigation}) => {
         return <AppLoading />;
       }
   return (
-    <View style={{ flex: 1, alignItems: 'center'}}>
-        <ScrollView style={{marginBottom:50, width:windowWidth}}>
+    <SafeAreaView style={{ flex: 1, alignItems: 'center', backgroundColor:'#0D986A'}}>
+        <ScrollView style={{marginBottom:0, width:windowWidth, backgroundColor:'white'}}>
             {/* Top Bar */}
             <TopBar />
             <View style={styles.JajarGenjang}></View>
@@ -139,7 +140,7 @@ const CekTanah = ({navigation}) => {
             <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
         </View>
-    </View>
+    </SafeAreaView>
   )
 }
 

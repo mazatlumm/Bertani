@@ -15,7 +15,7 @@ export default function QRScanner({navigation}) {
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    navigation.navigate('SettingController', {IDCntrlPass:data});
+    navigation.navigate('TambahController', {IDDevice:data});
   };
 
   if (hasPermission === null) {

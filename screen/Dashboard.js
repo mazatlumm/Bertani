@@ -11,6 +11,7 @@ import iconBag from '../assets/images/iconBag.png'
 import iconUser from '../assets/images/iconUser.png'
 import TopBar from './TopBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 
 // Icon
 import { AntDesign } from '@expo/vector-icons';
@@ -29,11 +30,11 @@ const Dashboard = ({navigation}) => {
   const [HumMax, setHumMax] = useState(0);
   const [Lokasi, setLokasi] = useState('Alamat Perangkat');
 
-
+  const isFocused = useIsFocused();
   useEffect(() => {
     console.log('Cek Data user di Dashboard');
     LihatDataUser()
-  }, [])
+  }, [isFocused])
 
   const LihatDataUser =  async() => {
     try {
@@ -141,8 +142,8 @@ const Dashboard = ({navigation}) => {
               <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', position:'absolute', left:50, top:25}}>Detail Data</Text>
               <Text style={{fontFamily:'Philosopher-Bold', fontSize:24, color:'black', position:'absolute', left:50, top:50}}>{NamaPerangkat}</Text>
               <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black', position:'absolute', left:50, top:85}}>Tanaman {JenisTanaman}</Text>
-              <View style={{position:'absolute', right:0, bottom:40}}>
-                <Image source={tanaman} style={{width:200, height:200,resizeMode:'contain'}} />
+              <View style={{position:'absolute', right:0, bottom:50}}>
+                <Image source={tanaman} style={{width:190, height:190,resizeMode:'contain'}} />
               </View>
               <View style={{position:'absolute', left:50, bottom:50, flexDirection:'row', alignItems:'center'}}>
                 <Text style={{color:'black',fontFamily:'Poppins-Regular', fontSize:12}}>Hum Min : </Text>

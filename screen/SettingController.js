@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView, Image
 import React, {useEffect, useState} from 'react'
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
+import { useIsFocused } from '@react-navigation/native';
 
 import iconLove from '../assets/images/iconLove.png'
 import iconHome from '../assets/images/iconHome.png'
@@ -21,22 +22,117 @@ let CountRender = 0;
 
 const SettingController = ({navigation, route}) => {
 
-    const [currentDate, setCurrentDate] = useState('');
     const [IDController, setIDController] = useState('');
+    const [IDUser, setIDUser] = useState('');
+    const [IDDevice, setIDDevice] = useState('');
+    const [NamaPerangkat, setNamaPerangkat] = useState('');
+    const [JenisTanaman, setJenisTanaman] = useState('');
+    const [HumMin, setHumMin] = useState('');
+    const [HumMax, setHumMax] = useState('');
+    const [DataKanal1, setDataKanal1] = useState('');
+    const [DataKanal2, setDataKanal2] = useState('');
+    const [DataKanal3, setDataKanal3] = useState('');
+    const [DataKanal4, setDataKanal4] = useState('');
+    const [Lokasi, setLokasi] = useState('');
 
-    if(route.params != undefined && CountRender == 0){
-        setIDController(route.params.IDCntrlPass)
-        CountRender = 1;
+    const AmbilDataRoute = () => {
+        console.log(route.params);
+        if(route.params != undefined){
+            setIDController(route.params.IDController);
+            setIDDevice(route.params.IDDevice);
+            setIDUser(route.params.IDUser);
+            setNamaPerangkat(route.params.NamaPerangkat);
+            setJenisTanaman(route.params.JenisTanaman);
+            setHumMin(route.params.HumMin);
+            setHumMax(route.params.HumMax);
+            setDataKanal1(route.params.DataKanal1);
+            setDataKanal2(route.params.DataKanal2);
+            setDataKanal3(route.params.DataKanal3);
+            setDataKanal4(route.params.DataKanal4);
+            setLokasi(route.params.Lokasi);
+        }
+    }
+
+    const DetailControllerCek = () => {
+        CountRender = 0;
+        navigation.navigate('DetailController', {IDUser:IDUser, IDController:IDController, IDDevice:IDDevice})
     }
 
     const OpenScanner = () => {
-        navigation.navigate('QRScanner');
         CountRender = 0;
+        navigation.navigate('QRScannerSC',{
+            IDController:IDController,
+            IDDevice:IDDevice,
+            IDUser:IDUser,
+            NamaPerangkat:NamaPerangkat,
+            JenisTanaman:JenisTanaman,
+            HumMin:HumMin,
+            HumMax:HumMax,
+            DataKanal1:DataKanal1,
+            DataKanal2:DataKanal2,
+            DataKanal3:DataKanal3,
+            DataKanal4:DataKanal4,
+            Lokasi:Lokasi,
+            ScreenName:'DetailController',
+        });
     }
 
+    const UbahControllerAPI = () => {
+        console.log('Ubah Controller');
+
+        var dataToSend = { 
+        id_controller:IDController,
+        id_device: IDDevice,
+        id_user: IDUser,
+        nama_perangkat: NamaPerangkat,
+        tanaman: JenisTanaman,
+        hum_min: HumMin,
+        hum_max: HumMax,
+        lokasi: Lokasi,
+        kanal1: DataKanal1,
+        kanal2: DataKanal2,
+        kanal3: DataKanal3,
+        kanal4: DataKanal4,
+        }
+
+        var formBody = [];
+        for (var key in dataToSend) {
+        var encodedKey = encodeURIComponent(key);
+        var encodedValue = encodeURIComponent(dataToSend[key]);
+        formBody.push(encodedKey + '=' + encodedValue);
+        }
+        formBody = formBody.join('&');
+        //POST request
+        fetch('https://alicestech.com/kelasbertani/api/controller', {
+        method: 'PUT', //Request Type
+        body: formBody, //post body
+        headers: {
+            //Header Defination
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+        })
+        .then((response) => response.json())
+        //If response is in json then in success
+        .then((responseJson) => {
+            console.log(responseJson);
+            if(responseJson.status == true){
+                navigation.navigate('DetailController', {IDUser:IDUser, IDController:IDController, IDDevice:IDDevice})
+            }else{
+                Alert.alert('Gagal', 'Perubahan Tidak Dapat Disimpan');
+            }
+        })
+        //If response is not in json then in error
+        .catch((error) => {
+            console.error(error);
+        });
+        console.log('Udah Simpan?')
+    }
+
+    const isFocused = useIsFocused();
     useEffect(() => {
-        
-      }, []);
+        console.log('SettingController Mulai')
+        AmbilDataRoute()
+      }, [isFocused]);
 
     let [fontsLoaded] = useFonts({
         'Philosopher': require('../assets/fonts/Philosopher-Regular.ttf'),
@@ -60,7 +156,7 @@ const SettingController = ({navigation, route}) => {
                     <View style={{flex:3, justifyContent:'flex-start'}}>
                         <Text style={styles.TopBarText}>Setting Controller</Text>
                     </View>
-                    <TouchableOpacity style={{flex:0.5, alignItems:'flex-end'}} onPress={()=> navigation.goBack() }>
+                    <TouchableOpacity style={{flex:0.5, alignItems:'flex-end'}} onPress={()=> DetailControllerCek()}>
                     <Ionicons name="arrow-back-circle-outline" size={26} color="black" />
                     </TouchableOpacity>
                 </View>
@@ -74,8 +170,8 @@ const SettingController = ({navigation, route}) => {
                         <View style={styles.FormInputBoxGroup}>
                             <TextInput 
                             style={styles.TextInputForm} 
-                            onChangeText={IDController => setIDController(IDController)}
-                            defaultValue={IDController}
+                            onChangeText={IDDevice => setIDDevice(IDDevice)}
+                            defaultValue={IDDevice}
                             />
                         </View>
                         <TouchableOpacity style={styles.IconFormGroup} onPress={()=> OpenScanner()}>
@@ -86,13 +182,19 @@ const SettingController = ({navigation, route}) => {
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>Nama Perangkat</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} />
+                        <TextInput style={styles.TextInputForm} 
+                        onChangeText={NamaPerangkat => setNamaPerangkat(NamaPerangkat)}
+                        defaultValue={NamaPerangkat}
+                        />
                     </View>
                 </View>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>Tanaman</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} />
+                        <TextInput style={styles.TextInputForm} 
+                        onChangeText={JenisTanaman => setJenisTanaman(JenisTanaman)}
+                        defaultValue={JenisTanaman}
+                        />
                     </View>
                 </View>
                 <View style={styles.FormInput}>
@@ -102,6 +204,8 @@ const SettingController = ({navigation, route}) => {
                             <TextInput 
                             style={styles.TextInputForm}
                             keyboardType={'number-pad'}
+                            onChangeText={HumMin => setHumMin(HumMin)}
+                            defaultValue={HumMin}
                             />
                         </View>
                         <TouchableOpacity style={styles.IconFormGroup}>
@@ -116,6 +220,8 @@ const SettingController = ({navigation, route}) => {
                             <TextInput 
                             style={styles.TextInputForm}
                             keyboardType={'number-pad'}
+                            onChangeText={HumMax => setHumMax(HumMax)}
+                            defaultValue={HumMax}
                             />
                         </View>
                         <TouchableOpacity style={styles.IconFormGroup}>
@@ -126,35 +232,50 @@ const SettingController = ({navigation, route}) => {
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>ID Device Sensor Kanal 1</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'} />
+                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'} 
+                        onChangeText={DataKanal1 => setDataKanal1(DataKanal1)}
+                        defaultValue={DataKanal1}
+                        />
                     </View>
                 </View>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>ID Device Sensor Kanal 2</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'} />
+                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'} 
+                        onChangeText={DataKanal2 => setDataKanal2(DataKanal2)}
+                        defaultValue={DataKanal2}
+                        />
                     </View>
                 </View>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>ID Device Sensor Kanal 3</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'} />
+                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'} 
+                        onChangeText={DataKanal3 => setDataKanal3(DataKanal3)}
+                        defaultValue={DataKanal3}
+                        />
                     </View>
                 </View>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>ID Device Sensor Kanal 4</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'} />
+                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'} 
+                        onChangeText={DataKanal4 => setDataKanal4(DataKanal4)}
+                        defaultValue={DataKanal4}
+                        />
                     </View>
                 </View>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>Lokasi Controller</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} />
+                        <TextInput style={styles.TextInputForm} 
+                        onChangeText={Lokasi => setLokasi(Lokasi)}
+                        defaultValue={Lokasi}
+                        />
                     </View>
                 </View>
 
-                <TouchableOpacity style={styles.BtnBox}>
+                <TouchableOpacity style={styles.BtnBox} onPress={()=> UbahControllerAPI()}>
                     <Text style={styles.BtnTitle}>Simpan Data</Text>
                     <MaterialIcons name="save-alt" style={{marginLeft:10}} size={18} color="white" />
                 </TouchableOpacity>

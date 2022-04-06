@@ -73,8 +73,8 @@ const DaftarController = ({navigation, route}) => {
               <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', position:'absolute', left:50, top:25}}>Detail Data</Text>
               <Text style={{fontFamily:'Philosopher-Bold', fontSize:24, color:'black', position:'absolute', left:50, top:50}}>{nama_perangkat}</Text>
               <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black', position:'absolute', left:50, top:85}}>Tanaman {NamaTanaman}</Text>
-              <View style={{position:'absolute', right:0, bottom:40}}>
-                <Image source={tanaman} style={{width:200, height:200,resizeMode:'contain'}} />
+              <View style={{position:'absolute', right:0, bottom:50}}>
+                <Image source={tanaman} style={{width:190, height:190,resizeMode:'contain'}} />
               </View>
               <View style={{position:'absolute', left:50, bottom:50, flexDirection:'row', alignItems:'center'}}>
                 <Text style={{color:'black',fontFamily:'Poppins-Regular', fontSize:12}}>Hum Min : </Text>
@@ -117,7 +117,7 @@ const DaftarController = ({navigation, route}) => {
             </View>
         </View>
         <View style={styles.ScrollViewBox}>
-            <FlatList style={{marginHorizontal:10}} data={ArrayListController} renderItem={renderItem} keyExtractor={item => item.id_controller} />
+            <FlatList style={{marginHorizontal:10}} data={ArrayListController} renderItem={renderItem} keyExtractor={item => item.id_controller} scrollEnabled={true} />
         </View>
         
         {/* Bottom Navigation */}
@@ -145,15 +145,16 @@ const styles = StyleSheet.create({
     ScrollViewBox:{
         ...Platform.select({
             ios:{
-                marginBottom:5
+                marginBottom:50,
+                height:windowHeight-140,
             },
             android:{
-                marginBottom:50
+                marginBottom:50,
+                height:windowHeight-130,
             }
         }),
         width:windowWidth, 
         backgroundColor:'white',
-        height:windowHeight,
     },
     TopBarBox:{
     ...Platform.select({

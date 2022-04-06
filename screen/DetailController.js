@@ -1,9 +1,10 @@
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView, Image, Platform, FlatList, Alert } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView, Image, Platform, FlatList, Alert, Modal, Pressable } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import {ProgressChart} from 'react-native-chart-kit'
+import { useIsFocused } from '@react-navigation/native';
 
 import iconLove from '../assets/images/iconLove.png'
 import iconHome from '../assets/images/iconHome.png'
@@ -12,13 +13,17 @@ import iconUser from '../assets/images/iconUser.png'
 
 // Icon
 import { FontAwesome5 } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import SettingController from './TambahController';
 
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0));
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))
 const screenWidth = Dimensions.get('window').width;
+var ArrDataKanal1 = '';
+var ArrDataKanal2 = '';
+var ArrDataKanal3 = '';
+var ArrDataKanal4 = '';
 
 let CountingRender = 0;
 
@@ -43,21 +48,26 @@ const DetailController = ({navigation, route}) => {
     const [DataChartKanal2, setDataChartKanal2] = useState([0.4, 0.6, 0.8]);
     const [DataChartKanal3, setDataChartKanal3] = useState([0.4, 0.6, 0.8]);
     const [DataChartKanal4, setDataChartKanal4] = useState([0.4, 0.6, 0.8]);
+    const [StatusKanal1, setStatusKanal1] = useState(0);
+    const [StatusKanal2, setStatusKanal2] = useState(0);
+    const [StatusKanal3, setStatusKanal3] = useState(0);
+    const [StatusKanal4, setStatusKanal4] = useState(0);
+    const [modalVisibleKanal, setmodalVisibleKanal] = useState(false);
+    const [modalVisibleKanal2, setmodalVisibleKanal2] = useState(false);
+    const [modalVisibleKanal3, setmodalVisibleKanal3] = useState(false);
+    const [modalVisibleKanal4, setmodalVisibleKanal4] = useState(false);
+    const [DataModal, setDataModal] = useState([]);
 
-    if(route.params != undefined){
-        setTimeout(() => {
-            // console.log(route.params.IDUser)
-            // console.log(route.params.IDController)
-            if(CountingRender == 0){
-                setIDDevice(route.params.IDDevice);
-                setIDUser(route.params.IDUser);
-                setIDController(route.params.IDController);
-                GetControllerUpdate(route.params.IDUser, route.params.IDController)
-                CountingRender = 1;
-            }
-        
-        }, 1000);
-        
+
+
+    const AmbilDataRoute = () => {
+        if(route.params != undefined){
+            setIDDevice(route.params.IDDevice);
+            setIDUser(route.params.IDUser);
+            setIDController(route.params.IDController);
+            GetControllerUpdate(route.params.IDUser, route.params.IDController)
+            CountingRender = 1;
+        }
     }
 
     const GetControllerUpdate = async (id_user, id_controller) => {
@@ -67,11 +77,17 @@ const DetailController = ({navigation, route}) => {
             );
             let json = await response.json();
             if(json.status == true){
+              setIDController(json.result[0].id_controller);
+              setIDDevice(json.result[0].id_device);
               setNamaPerangkat(json.result[0].nama_perangkat);
               setJenisTanaman(json.result[0].tanaman);
               setHumMin(json.result[0].hum_min);
               setHumMax(json.result[0].hum_max);
               setLokasi(json.result[0].lokasi);
+              setStatusKanal1(json.result[0].kanal1);
+              setStatusKanal2(json.result[0].kanal2);
+              setStatusKanal3(json.result[0].kanal3);
+              setStatusKanal4(json.result[0].kanal4);
               setLastUpdate(json.selisih_waktu);
               setStatusDevice(json.status_device);
               UpdateCurrentTime();
@@ -106,69 +122,99 @@ const DetailController = ({navigation, route}) => {
               let KelembabanTanahKanal1 = 0;
               let KelembabanUdaraKanal1 = 0;
               let SuhuUdaraKanal1 = 0;
-              for (let index = 0; index < json.dataKanal1.length; index++) {
-                  PembagiRata2Kanal1++;
-                  KelembabanTanahKanal1 = KelembabanTanahKanal1 + parseFloat(json.dataKanal1[index].hum_tanah);
-                  KelembabanUdaraKanal1 = KelembabanUdaraKanal1 + parseFloat(json.dataKanal1[index].hum_udara);
-                  SuhuUdaraKanal1 = SuhuUdaraKanal1 + parseFloat(json.dataKanal1[index].temp_udara);
-                }
-                let HumTanah1 = (KelembabanTanahKanal1/PembagiRata2Kanal1)/100;
-                let HumUdara1 = (KelembabanUdaraKanal1/PembagiRata2Kanal1)/100;
-                let TempUdara1 = (SuhuUdaraKanal1/PembagiRata2Kanal1)/100;
-                setDataChartKanal1([HumTanah1,HumUdara1,TempUdara1]);
+              ArrDataKanal1 = '';
+              if(json.dataKanal1.length != 0){
+                  for (let index = 0; index < json.dataKanal1.length; index++) {
+                        ArrDataKanal1 += json.dataKanal1[index].id_device + ',';
+                        PembagiRata2Kanal1++;
+                        KelembabanTanahKanal1 = KelembabanTanahKanal1 + parseFloat(json.dataKanal1[index].hum_tanah);
+                        KelembabanUdaraKanal1 = KelembabanUdaraKanal1 + parseFloat(json.dataKanal1[index].hum_udara);
+                        SuhuUdaraKanal1 = SuhuUdaraKanal1 + parseFloat(json.dataKanal1[index].temp_udara);
+                    }
+                    // console.log('Data Kanal 1 : ' + ArrDataKanal1);
+                    let HumTanah1 = (KelembabanTanahKanal1/PembagiRata2Kanal1)/100;
+                    let HumUdara1 = (KelembabanUdaraKanal1/PembagiRata2Kanal1)/100;
+                    let TempUdara1 = (SuhuUdaraKanal1/PembagiRata2Kanal1)/100;
+                    setDataChartKanal1([HumTanah1,HumUdara1]);
+              }else{
+                  setDataChartKanal1([0,0]);
+              }
               
                 setDataKanal2(json.dataKanal2);
               let PembagiRata2Kanal2 = 0;
               let KelembabanTanahKanal2 = 0;
               let KelembabanUdaraKanal2 = 0;
               let SuhuUdaraKanal2 = 0;
+              ArrDataKanal2 = '';
+              if(json.dataKanal2.length != 0){
               for (let index = 0; index < json.dataKanal2.length; index++) {
-                  PembagiRata2Kanal2++;
-                  KelembabanTanahKanal2 = KelembabanTanahKanal2 + parseFloat(json.dataKanal2[index].hum_tanah);
-                  KelembabanUdaraKanal2 = KelembabanUdaraKanal2 + parseFloat(json.dataKanal2[index].hum_udara);
-                  SuhuUdaraKanal2 = SuhuUdaraKanal2 + parseFloat(json.dataKanal2[index].temp_udara);
+                    ArrDataKanal2 += json.dataKanal2[index].id_device + ',';
+                    PembagiRata2Kanal2++;
+                    KelembabanTanahKanal2 = KelembabanTanahKanal2 + parseFloat(json.dataKanal2[index].hum_tanah);
+                    KelembabanUdaraKanal2 = KelembabanUdaraKanal2 + parseFloat(json.dataKanal2[index].hum_udara);
+                    SuhuUdaraKanal2 = SuhuUdaraKanal2 + parseFloat(json.dataKanal2[index].temp_udara);
                 }
+                // console.log('Data Kanal 2 : ' + ArrDataKanal2);
                 let HumTanah2 = (KelembabanTanahKanal2/PembagiRata2Kanal2)/100;
                 let HumUdara2 = (KelembabanUdaraKanal2/PembagiRata2Kanal2)/100;
                 let TempUdara2 = (SuhuUdaraKanal2/PembagiRata2Kanal2)/100;
-                setDataChartKanal2([HumTanah2,HumUdara2,TempUdara2]);
+                setDataChartKanal2([HumTanah2,HumUdara2]);
+            }else{
+                setDataChartKanal2([0,0]);
+            }
                 
-                setDataKanal3(json.dataKanal3);
+            setDataKanal3(json.dataKanal3);
               let PembagiRata2Kanal3 = 0;
               let KelembabanTanahKanal3 = 0;
               let KelembabanUdaraKanal3 = 0;
               let SuhuUdaraKanal3 = 0;
+              ArrDataKanal3 = '';
+              if(json.dataKanal3.length != 0){
               for (let index = 0; index < json.dataKanal3.length; index++) {
-                  PembagiRata2Kanal3++;
-                  KelembabanTanahKanal3 = KelembabanTanahKanal3 + parseFloat(json.dataKanal3[index].hum_tanah);
-                  KelembabanUdaraKanal3 = KelembabanUdaraKanal3 + parseFloat(json.dataKanal3[index].hum_udara);
-                  SuhuUdaraKanal3 = SuhuUdaraKanal3 + parseFloat(json.dataKanal3[index].temp_udara);
+                    ArrDataKanal3 += json.dataKanal3[index].id_device + ',';
+                    PembagiRata2Kanal3++;
+                    KelembabanTanahKanal3 = KelembabanTanahKanal3 + parseFloat(json.dataKanal3[index].hum_tanah);
+                    KelembabanUdaraKanal3 = KelembabanUdaraKanal3 + parseFloat(json.dataKanal3[index].hum_udara);
+                    SuhuUdaraKanal3 = SuhuUdaraKanal3 + parseFloat(json.dataKanal3[index].temp_udara);
                 }
+                // console.log('Data Kanal 3 : ' + ArrDataKanal3);
                 let HumTanah3 = (KelembabanTanahKanal3/PembagiRata2Kanal3)/100;
                 let HumUdara3 = (KelembabanUdaraKanal3/PembagiRata2Kanal3)/100;
                 let TempUdara3 = (SuhuUdaraKanal3/PembagiRata2Kanal3)/100;
-                setDataChartKanal3([HumTanah3,HumUdara3,TempUdara3]);
+                setDataChartKanal3([HumTanah3,HumUdara3]);
+            }else{
+                setDataChartKanal3([0,0]);
+            }
                 
                 setDataKanal4(json.dataKanal4);
               let PembagiRata2Kanal4 = 0;
               let KelembabanTanahKanal4 = 0;
               let KelembabanUdaraKanal4 = 0;
               let SuhuUdaraKanal4 = 0;
+              ArrDataKanal4 = '';
+              if(json.dataKanal4.length != 0){
               for (let index = 0; index < json.dataKanal4.length; index++) {
-                  PembagiRata2Kanal4++;
-                  KelembabanTanahKanal4 = KelembabanTanahKanal4 + parseFloat(json.dataKanal4[index].hum_tanah);
-                  KelembabanUdaraKanal4 = KelembabanUdaraKanal4 + parseFloat(json.dataKanal4[index].hum_udara);
-                  SuhuUdaraKanal4 = SuhuUdaraKanal4 + parseFloat(json.dataKanal4[index].temp_udara);
+                    ArrDataKanal4 += json.dataKanal4[index].id_device + ',';
+                    PembagiRata2Kanal4++;
+                    KelembabanTanahKanal4 = KelembabanTanahKanal4 + parseFloat(json.dataKanal4[index].hum_tanah);
+                    KelembabanUdaraKanal4 = KelembabanUdaraKanal4 + parseFloat(json.dataKanal4[index].hum_udara);
+                    SuhuUdaraKanal4 = SuhuUdaraKanal4 + parseFloat(json.dataKanal4[index].temp_udara);
                 }
+                // console.log('Data Kanal 4 : ' + ArrDataKanal4);
                 let HumTanah4 = (KelembabanTanahKanal4/PembagiRata2Kanal4)/100;
                 let HumUdara4 = (KelembabanUdaraKanal4/PembagiRata2Kanal4)/100;
                 let TempUdara4 = (SuhuUdaraKanal4/PembagiRata2Kanal4)/100;
-                setDataChartKanal4([HumTanah4,HumUdara4,TempUdara4]);
+                setDataChartKanal4([HumTanah4,HumUdara4]);
+            }else{
+                setDataChartKanal4([0,0]);
+            }
             }
         } catch (error) {
             console.error(error);
         }
     }
+    console.log('Data Kanal 1');
+    console.log(DataKanal1);
 
     const MyProgressChartKanal1 = () => {
         return (
@@ -300,7 +346,7 @@ const DetailController = ({navigation, route}) => {
         fetch('https://alicestech.com/kelasbertani/api/controller/hapus?id_device=' + IDDevice)
         .then((response) => response.json())
         .then((json) => {
-            console.log(json);
+            // console.log(json);
             if(json.status == true){
                 navigation.navigate('DaftarController', {IDUser:IDUser, IDController:IDController})
             }
@@ -308,10 +354,160 @@ const DetailController = ({navigation, route}) => {
         .catch((error) => console.error(error))
     }
 
+    const SettingController = () => {
+        navigation.navigate('SettingController', {
+            IDController:IDController,
+            IDDevice:IDDevice,
+            IDUser:IDUser,
+            NamaPerangkat:NamaPerangkat,
+            JenisTanaman:JenisTanaman,
+            HumMin:HumMin,
+            HumMax:HumMax,
+            DataKanal1:ArrDataKanal1,
+            DataKanal2:ArrDataKanal2,
+            DataKanal3:ArrDataKanal3,
+            DataKanal4:ArrDataKanal4,
+            Lokasi:Lokasi,
+            ScreenName:'DetailController',
+        })
+    }
+
+    const isFocused = useIsFocused();
     useEffect(() => {
+        AmbilDataRoute();
         UpdateCurrentTime();
         CountingRender = 0;
-    }, []);
+    }, [isFocused]); 
+
+    const SwitchKanal = (kanal, switchValue) => {
+        var myHeaders = new Headers();
+
+        var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+        };
+
+        fetch("https://alicestech.com/kelasbertani/api/controller/control_button?id_device="+ IDDevice +"&kanal="+ kanal +"&switch=" + switchValue, requestOptions)
+        .then(response => response.json())
+        .then(result => {
+            if(result.status == true){
+                GetControllerUpdate(IDUser, IDController);
+            }
+        })
+        .catch(error => console.log('error', error));
+    }
+
+    const Item = ({ id_device, hum_tanah, hum_udara, temp_udara, jenis, created }) => (
+        <View style={styles.CardKanal}>
+            <Text style={styles.TextPoppins}>ID : {id_device} </Text>
+            <Text style={styles.TextPoppins}>Last Update : {created}</Text>
+            <View style={{flexDirection:'row', marginTop:5}}>
+                <View style={{flex:1, alignItems:'center'}}>
+                    <Text style={{fontFamily:'Poppins-Bold', fontSize:18, color:'green'}}>{hum_tanah}%</Text>
+                    <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black'}}>Soil Hum</Text>
+                </View>
+                <View style={{flex:1, alignItems:'center'}}>
+                    <Text style={{fontFamily:'Poppins-Bold', fontSize:18, color:'green'}}>{hum_udara}%</Text>
+                    <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black'}}>Air Hum</Text>
+                </View>
+                <View style={{flex:1, alignItems:'center'}}>
+                    <Text style={{fontFamily:'Poppins-Bold', fontSize:18, color:'green'}}>{temp_udara}&deg;C</Text>
+                    <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black'}}>Air Temp</Text>
+                </View>
+            </View>
+        </View>
+    );
+
+    const renderItem = ({ item }) => <Item id_device={item.id_device} hum_tanah={item.hum_tanah} hum_udara={item.hum_udara} temp_udara={item.temp_udara} created={item.created} jenis={item.jenis} />;
+
+    const ShowModalDetail = (kanal) => {
+        if(kanal == 'kanal1'){
+            setDataModal(DataKanal1);
+        }
+        if(kanal == 'kanal2'){
+            setDataModal(DataKanal2);
+        }
+        if(kanal == 'kanal3'){
+            setDataModal(DataKanal3);
+        }
+        if(kanal == 'kanal4'){
+            setDataModal(DataKanal4);
+        }
+        setmodalVisibleKanal(true);
+    }
+
+    const StatusKanal1Btn = () => {
+        if(StatusKanal1 == 0){
+            return (
+                <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+                    <Text style={styles.TextPoppins}>STATUS : NON-AKTIF</Text>
+                    <TouchableOpacity style={styles.BtnON} onPress={()=>SwitchKanal('kanal1',1)}><Text style={styles.TextBtnON}>Hidupkan!</Text></TouchableOpacity>
+                </View>
+            );
+        }else{
+            return (
+                <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+                    <Text style={styles.TextPoppins}>STATUS : AKTIF</Text>
+                    <TouchableOpacity style={styles.BtnOFF} onPress={()=>SwitchKanal('kanal1',0)}><Text style={styles.TextBtnOFF}>Matikan!</Text></TouchableOpacity>
+                </View>
+            );
+        }
+    }
+
+    const StatusKanal2Btn = () => {
+        if(StatusKanal2 == 0){
+            return (
+                <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+                    <Text style={styles.TextPoppins}>STATUS : NON-AKTIF</Text>
+                    <TouchableOpacity style={styles.BtnON} onPress={()=>SwitchKanal('kanal2',1)}><Text style={styles.TextBtnON}>Hidupkan!</Text></TouchableOpacity>
+                </View>
+            );
+        }else{
+            return (
+                <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+                    <Text style={styles.TextPoppins}>STATUS : AKTIF</Text>
+                    <TouchableOpacity style={styles.BtnOFF} onPress={()=>SwitchKanal('kanal2',0)}><Text style={styles.TextBtnOFF}>Matikan!</Text></TouchableOpacity>
+                </View>
+            );
+        }
+    }
+
+    const StatusKanal3Btn = () => {
+        if(StatusKanal3 == 0){
+            return (
+                <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+                    <Text style={styles.TextPoppins}>STATUS : NON-AKTIF</Text>
+                    <TouchableOpacity style={styles.BtnON} onPress={()=>SwitchKanal('kanal3',1)}><Text style={styles.TextBtnON}>Hidupkan!</Text></TouchableOpacity>
+                </View>
+            );
+        }else{
+            return (
+                <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+                    <Text style={styles.TextPoppins}>STATUS : AKTIF</Text>
+                    <TouchableOpacity style={styles.BtnOFF} onPress={()=>SwitchKanal('kanal3',0)}><Text style={styles.TextBtnOFF}>Matikan!</Text></TouchableOpacity>
+                </View>
+            );
+        }
+    }
+
+    const StatusKanal4Btn = () => {
+        if(StatusKanal4 == 0){
+            return (
+                <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+                    <Text style={styles.TextPoppins}>STATUS : NON-AKTIF</Text>
+                    <TouchableOpacity style={styles.BtnON} onPress={()=>SwitchKanal('kanal4',1)}><Text style={styles.TextBtnON}>Hidupkan!</Text></TouchableOpacity>
+                </View>
+            );
+        }else{
+            return (
+                <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+                    <Text style={styles.TextPoppins}>STATUS : AKTIF</Text>
+                    <TouchableOpacity style={styles.BtnOFF} onPress={()=>SwitchKanal('kanal4',0)}><Text style={styles.TextBtnOFF}>Matikan!</Text></TouchableOpacity>
+                </View>
+            );
+        }
+    }
 
     const UpdateCurrentTime = () => {
         var date = new Date().getDate(); //Current Date
@@ -339,6 +535,25 @@ const DetailController = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={{ flex: 1, alignItems: 'center', backgroundColor:'white'}}>
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisibleKanal}
+            onRequestClose={() => {
+            setmodalVisibleKanal(!modalVisibleKanal);
+            }}>
+            <SafeAreaView style={{flex:1, justifyContent:'center', alignItems:'center', backgroundColor:'rgba(243, 243, 243, 0.8)'}}>
+                <View style={{backgroundColor:'white', borderRadius:10, width:'90%', height:'50%', alignItems:'center'}}>
+                    <Text style={{fontFamily:'Poppins-Bold', fontSize:14, marginTop:20, marginBottom:15}}>Detail Sensor Terpasang</Text>
+                    <TouchableOpacity style={{position:'absolute', top:10, right:5}} onPress={()=> setmodalVisibleKanal(false)}>
+                        <EvilIcons name="close-o" size={30} color="black" />
+                    </TouchableOpacity>
+
+                    <FlatList style={{width:'100%', paddingLeft:15}} data={DataModal} renderItem={renderItem} keyExtractor={item => item.id_hum_sensor} />
+
+                </View>
+            </SafeAreaView>
+        </Modal>
         <ScrollView style={styles.ScrollViewBox}>
             <View style={styles.ColorTopBar}></View>
             {/* Top Bar */}
@@ -347,7 +562,7 @@ const DetailController = ({navigation, route}) => {
                     <View style={{flex:3, justifyContent:'flex-start'}}>
                         <Text style={styles.TopBarText}>Detail Controller</Text>
                     </View>
-                    <TouchableOpacity style={{flex:0.5, alignItems:'flex-end'}} onPress={()=> navigation.navigate('SettingController')}>
+                    <TouchableOpacity style={{flex:0.5, alignItems:'flex-end'}} onPress={()=> SettingController()}>
                         <EvilIcons name="gear" size={26} color="black" />
                     </TouchableOpacity>
                 </View>
@@ -376,8 +591,13 @@ const DetailController = ({navigation, route}) => {
                     <Text style={styles.TextPoppins}>Lokasi  : {Lokasi}</Text>
                 </View>
                 <View style={{flex:1, marginLeft:30}}>
-                    <TouchableOpacity style={{flexDirection:'row', borderRadius:10, backgroundColor:'#D74608', paddingVertical:5, paddingHorizontal:10, alignItems:'center', justifyContent:'center'}} onPress={()=>HapusController()}>
-                        <Text style={styles.TextBtnON}>Hapus</Text>
+                    <TouchableOpacity style={{flexDirection:'row', borderRadius:10, backgroundColor:'green', paddingVertical:5, paddingHorizontal:10, alignItems:'center', justifyContent:'center'}} onPress={()=>navigation.goBack()}>
+                        
+                        <EvilIcons name="arrow-left" size={26} color="white" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={{borderRadius:10, backgroundColor:'#D74608', paddingVertical:5, paddingHorizontal:10, alignItems:'center', justifyContent:'center', marginTop:10}} onPress={()=>HapusController()}>
+                        
                         <EvilIcons name="trash" size={26} color="white" />
                     </TouchableOpacity>
                 </View>
@@ -388,56 +608,56 @@ const DetailController = ({navigation, route}) => {
                 {/* Kanal 1 */}
                 <View style={{marginTop:10}}>
                     <Text style={styles.TextPoppinsBold}>KANAL 1</Text>
-
-                    {/* Chart Kanal 1 */}
-                    <MyProgressChartKanal1 />
+                    <TouchableOpacity onPress={()=> ShowModalDetail('kanal1')}>
+                        {/* Chart Kanal 1 */}
+                        <MyProgressChartKanal1 />
+                    </TouchableOpacity>
 
                     {/* Action Button */}
                     <View style={{marginTop:10, flexDirection:'row', alignItems:'center'}}>
-                        <Text style={styles.TextPoppins}>STATUS : NON-AKTIF</Text>
-                        <TouchableOpacity style={styles.BtnON}><Text style={styles.TextBtnON}>Hidupkan!</Text></TouchableOpacity>
+                        {StatusKanal1Btn()}
                     </View>
                 </View>
 
                 {/* Kanal 2 */}
                 <View style={{marginTop:20}}>
                     <Text style={styles.TextPoppinsBold}>KANAL 2</Text>
-                    
-                    {/* Chart Kanal 2 */}
-                    <MyProgressChartKanal2 />
+                    <TouchableOpacity onPress={()=> ShowModalDetail('kanal2')}>
+                        {/* Chart Kanal 2 */}
+                        <MyProgressChartKanal2 />
+                    </TouchableOpacity>
 
                     {/* Action Button */}
                     <View style={{marginTop:10, flexDirection:'row', alignItems:'center'}}>
-                        <Text style={styles.TextPoppins}>STATUS : AKTIF</Text>
-                        <TouchableOpacity style={styles.BtnOFF}><Text style={styles.TextBtnOFF}>Matikan!</Text></TouchableOpacity>
+                        {StatusKanal2Btn()}
                     </View>
                 </View>
 
                 {/* Kanal 3 */}
                 <View style={{marginTop:20}}>
                     <Text style={styles.TextPoppinsBold}>KANAL 3</Text>
-                    
-                    {/* Chart Kanal 3 */}
-                    <MyProgressChartKanal3 />
+                    <TouchableOpacity onPress={()=> ShowModalDetail('kanal3')}>
+                        {/* Chart Kanal 3 */}
+                        <MyProgressChartKanal3 />
+                    </TouchableOpacity>
 
                     {/* Action Button */}
                     <View style={{marginTop:10, flexDirection:'row', alignItems:'center'}}>
-                        <Text style={styles.TextPoppins}>STATUS : NON-AKTIF</Text>
-                        <TouchableOpacity style={styles.BtnON}><Text style={styles.TextBtnON}>Matikan!</Text></TouchableOpacity>
+                        {StatusKanal3Btn()}
                     </View>
                 </View>
 
                 {/* Kanal 4 */}
                 <View style={{marginTop:20, marginBottom:10}}>
                     <Text style={styles.TextPoppinsBold}>KANAL 4</Text>
-                    
-                    {/* Chart Kanal 4 */}
-                    <MyProgressChartKanal4 />
+                    <TouchableOpacity onPress={()=> ShowModalDetail('kanal4')}>
+                        {/* Chart Kanal 4 */}
+                        <MyProgressChartKanal4 />
+                    </TouchableOpacity>
 
                     {/* Action Button */}
                     <View style={{marginTop:10, flexDirection:'row', alignItems:'center'}}>
-                        <Text style={styles.TextPoppins}>STATUS : AKTIF</Text>
-                        <TouchableOpacity style={styles.BtnOFF}><Text style={styles.TextBtnOFF}>Matikan!</Text></TouchableOpacity>
+                        {StatusKanal4Btn()}
                     </View>
                 </View>
             </View>
@@ -549,7 +769,9 @@ const styles = StyleSheet.create({
         color:'#0D986A'
     },
     CardKanal:{
-        marginTop:10,
+        marginTop:5,
+        marginHorizontal:10,
+        marginBottom:10,
         paddingHorizontal:20,
         paddingVertical:10,
         borderRadius:10,
@@ -563,6 +785,8 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
 
         elevation: 5,
+        width:'90%',
+        alignItems:'center'
     },
     BtnOFF:{
         backgroundColor:'#D74608',

@@ -19,6 +19,7 @@ import UbahProfile from './screen/UbahProfile';
 import DetectNitrogen from './screen/DetectNitrogen';
 import SplashScreen from './screen/SplashScreen';
 import DaftarController from './screen/DaftarController';
+import QRScannerSC from './screen/QRScannerSC';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +36,7 @@ function App() {
         <Stack.Screen name="DetailController" component={DetailController} options={{headerShown:false}} />
         <Stack.Screen name="SettingController" component={SettingController} options={{headerShown:false}} />
         <Stack.Screen name="QRScanner" component={QRScanner} options={{headerShown:false}} />
+        <Stack.Screen name="QRScannerSC" component={QRScannerSC} options={{headerShown:false}} />
         <Stack.Screen name="TambahController" component={TambahController} options={{headerShown:false}} />
         <Stack.Screen name="Profile" component={Profile} options={{headerShown:false}} />
         <Stack.Screen name="TambahPengguna" component={TambahPengguna} options={{headerShown:false}} />

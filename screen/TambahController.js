@@ -1,7 +1,9 @@
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView, Image, Platform, TextInput } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView, Image, Platform, TextInput, Alert } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
+import { useIsFocused } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import iconLove from '../assets/images/iconLove.png'
 import iconHome from '../assets/images/iconHome.png'
@@ -20,11 +22,21 @@ let CountRender = 0;
 
 const SettingController = ({navigation, route}) => {
 
-    const [currentDate, setCurrentDate] = useState('');
-    const [IDController, setIDController] = useState('');
+    const [IDUser, setIDUser] = useState('');
+    const [IDDevice, setIDDevice] = useState('');
+    const [NamaPerangkat, setNamaPerangkat] = useState('');
+    const [Tanaman, setTanaman] = useState('');
+    const [HumMin, setHumMin] = useState('');
+    const [HumMax, setHumMax] = useState('');
+    const [DeviceKanal1, setDeviceKanal1] = useState('');
+    const [DeviceKanal2, setDeviceKanal2] = useState('');
+    const [DeviceKanal3, setDeviceKanal3] = useState('');
+    const [DeviceKanal4, setDeviceKanal4] = useState('');
+    const [Lokasi, setLokasi] = useState('');
 
     if(route.params != undefined && CountRender == 0){
-        setIDController(route.params.IDCntrlPass)
+        setIDDevice(route.params.IDDevice);
+        console.log(route.params.IDDevice);
         CountRender = 1;
     }
 
@@ -33,9 +45,74 @@ const SettingController = ({navigation, route}) => {
         CountRender = 0;
     }
 
+    const LihatDataUser =  async() => {
+        try {
+        const jsonValue = await AsyncStorage.getItem('@DataUser')
+        const ParsingDataUser = JSON.parse(jsonValue);
+        console.log(jsonValue)
+        console.log(ParsingDataUser[0].id_user)
+        if(ParsingDataUser[0].id_user){
+            setIDUser(ParsingDataUser[0].id_user);
+        }
+        } catch(e) {
+        // error reading value
+        }
+    }
+
+    const TambahControllerAPI = () => {
+        console.log('Tambah Controller');
+
+        var dataToSend = { 
+        id_device: IDDevice,
+        id_user: IDUser,
+        nama_perangkat: NamaPerangkat,
+        tanaman: Tanaman,
+        hum_min: HumMin,
+        hum_max: HumMax,
+        lokasi: Lokasi,
+        kanal1: DeviceKanal1,
+        kanal2: DeviceKanal2,
+        kanal3: DeviceKanal3,
+        kanal4: DeviceKanal4,
+        }
+
+        var formBody = [];
+        for (var key in dataToSend) {
+        var encodedKey = encodeURIComponent(key);
+        var encodedValue = encodeURIComponent(dataToSend[key]);
+        formBody.push(encodedKey + '=' + encodedValue);
+        }
+        formBody = formBody.join('&');
+        //POST request
+        fetch('https://alicestech.com/kelasbertani/api/controller', {
+        method: 'POST', //Request Type
+        body: formBody, //post body
+        headers: {
+            //Header Defination
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+        })
+        .then((response) => response.json())
+        //If response is in json then in success
+        .then((responseJson) => {
+            console.log(responseJson);
+            if(responseJson.status == true){
+                navigation.navigate('DaftarController', {IDUser:IDUser})
+            }else{
+                Alert.alert('Gagal', 'Perangkat Sudah Terdaftar');
+            }
+        })
+        //If response is not in json then in error
+        .catch((error) => {
+            console.error(error);
+        });
+        console.log('Udah Simpan?')
+    }
+
+    const isFocused = useIsFocused();
     useEffect(() => {
-        
-      }, []);
+        LihatDataUser();
+      }, [isFocused]);
 
     let [fontsLoaded] = useFonts({
         'Philosopher': require('../assets/fonts/Philosopher-Regular.ttf'),
@@ -73,8 +150,8 @@ const SettingController = ({navigation, route}) => {
                         <View style={styles.FormInputBoxGroup}>
                             <TextInput 
                             style={styles.TextInputForm} 
-                            onChangeText={IDController => setIDController(IDController)}
-                            defaultValue={IDController}
+                            onChangeText={IDDevice => setIDDevice(IDDevice)}
+                            defaultValue={IDDevice}
                             />
                         </View>
                         <TouchableOpacity style={styles.IconFormGroup} onPress={()=> OpenScanner()}>
@@ -85,13 +162,19 @@ const SettingController = ({navigation, route}) => {
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>Nama Perangkat</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} />
+                        <TextInput style={styles.TextInputForm} 
+                        onChangeText={NamaPerangkat => setNamaPerangkat(NamaPerangkat)}
+                        defaultValue={NamaPerangkat}
+                        />
                     </View>
                 </View>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>Tanaman</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} />
+                        <TextInput style={styles.TextInputForm} 
+                        onChangeText={Tanaman => setTanaman(Tanaman)}
+                        defaultValue={Tanaman}
+                        />
                     </View>
                 </View>
                 <View style={styles.FormInput}>
@@ -101,6 +184,8 @@ const SettingController = ({navigation, route}) => {
                             <TextInput 
                             style={styles.TextInputForm}
                             keyboardType={'number-pad'}
+                            onChangeText={HumMin => setHumMin(HumMin)}
+                            defaultValue={HumMin}
                             />
                         </View>
                         <TouchableOpacity style={styles.IconFormGroup}>
@@ -115,6 +200,8 @@ const SettingController = ({navigation, route}) => {
                             <TextInput 
                             style={styles.TextInputForm}
                             keyboardType={'number-pad'}
+                            onChangeText={HumMax => setHumMax(HumMax)}
+                            defaultValue={HumMax}
                             />
                         </View>
                         <TouchableOpacity style={styles.IconFormGroup}>
@@ -125,35 +212,50 @@ const SettingController = ({navigation, route}) => {
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>ID Device Sensor Kanal 1</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'} />
+                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'} 
+                        onChangeText={DeviceKanal1 => setDeviceKanal1(DeviceKanal1)}
+                        defaultValue={DeviceKanal1}
+                        />
                     </View>
                 </View>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>ID Device Sensor Kanal 2</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'} />
+                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'} 
+                        onChangeText={DeviceKanal2 => setDeviceKanal2(DeviceKanal2)}
+                        defaultValue={DeviceKanal2}
+                        />
                     </View>
                 </View>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>ID Device Sensor Kanal 3</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'} />
+                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'} 
+                        onChangeText={DeviceKanal3 => setDeviceKanal3(DeviceKanal3)}
+                        defaultValue={DeviceKanal3}
+                        />
                     </View>
                 </View>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>ID Device Sensor Kanal 4</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'} />
+                        <TextInput style={styles.TextInputForm} placeholder={'ID_Device_1,ID_Device_2'}
+                        onChangeText={DeviceKanal4 => setDeviceKanal4(DeviceKanal4)}
+                        defaultValue={DeviceKanal4}
+                        />
                     </View>
                 </View>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>Lokasi Controller</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} />
+                        <TextInput style={styles.TextInputForm} 
+                        onChangeText={Lokasi => setLokasi(Lokasi)}
+                        defaultValue={Lokasi}
+                        />
                     </View>
                 </View>
 
-                <TouchableOpacity style={styles.BtnBox}>
+                <TouchableOpacity style={styles.BtnBox} onPress={()=> TambahControllerAPI()}>
                     <Text style={styles.BtnTitle}>Simpan Data</Text>
                     <MaterialIcons name="save-alt" style={{marginLeft:10}} size={18} color="white" />
                 </TouchableOpacity>

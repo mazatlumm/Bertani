@@ -3,6 +3,8 @@ import React, {useEffect, useState} from 'react'
 import TopBar from './TopBar';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 
 import iconLove from '../assets/images/iconLove.png'
 import iconHome from '../assets/images/iconHome.png'
@@ -14,14 +16,26 @@ const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))-45;
 
 // Icon
 import { Ionicons } from '@expo/vector-icons';
+import { SimpleLineIcons } from '@expo/vector-icons';
 
 const TambahPengguna = ({navigation}) => {
 
+    const [IDUser, setIDUser] = useState('');
     const [NamaPengguna, setNamaPengguna] = useState('');
     const [Username, setUsername] = useState('');
     const [Password, setPassword] = useState('');
     const [PasswordKonf, setPasswordKonf] = useState('');
     const [Pekerjaan, setPekerjaan] = useState('');
+
+    const LihatDataUser =  async() => {
+        try {
+        const jsonValue = await AsyncStorage.getItem('@DataUser')
+        const ParsingDataUser = JSON.parse(jsonValue);
+        setIDUser(ParsingDataUser[0].id_user); 
+        } catch(e) {
+        // error reading value
+        }
+    }
 
 
     const SimpanDataUser = () => {
@@ -79,10 +93,10 @@ const TambahPengguna = ({navigation}) => {
         }
     }
    
-
+    const isFocused = useIsFocused();
     useEffect(() => {
-
-      }, []);
+        LihatDataUser();
+      }, [isFocused]);
 
     let [fontsLoaded] = useFonts({
         'Philosopher': require('../assets/fonts/Philosopher-Regular.ttf'),
@@ -175,8 +189,8 @@ const TambahPengguna = ({navigation}) => {
           <TouchableOpacity style={{flex:1, alignItems:'center'}}>
             <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('PushNotification')}>
-            <Image source={iconBag} style={{height:24, width:24, resizeMode:'contain'}} />
+          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})}>
+            <SimpleLineIcons name="game-controller" size={24} color="black" />
           </TouchableOpacity>
           <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
             <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />

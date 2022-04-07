@@ -16,15 +16,27 @@ const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))-45;
 
 // Icon
 import { Ionicons } from '@expo/vector-icons';
+import { SimpleLineIcons } from '@expo/vector-icons';
 
 const UbahUserData = ({navigation, route}) => {
 
+    const [IDUserLogin, setIDUserLogin] = useState('');
     const [IDUser, setIDUser] = useState('');
     const [NamaPengguna, setNamaPengguna] = useState('');
     const [Username, setUsername] = useState('');
     const [Password, setPassword] = useState('');
     const [PasswordKonf, setPasswordKonf] = useState('');
     const [Pekerjaan, setPekerjaan] = useState('');
+
+    const LihatDataUserLogin =  async() => {
+        try {
+        const jsonValue = await AsyncStorage.getItem('@DataUser')
+        const ParsingDataUser = JSON.parse(jsonValue);
+        setIDUserLogin(ParsingDataUser[0].id_user); 
+        } catch(e) {
+        // error reading value
+        }
+    }
 
     const AmbilDataRoute = () => {
         if(route.params != undefined){
@@ -177,6 +189,7 @@ const UbahUserData = ({navigation, route}) => {
     const isFocused = useIsFocused();
     useEffect(() => {
         AmbilDataRoute();
+        LihatDataUserLogin();
       }, [isFocused]);
 
     let [fontsLoaded] = useFonts({
@@ -278,8 +291,8 @@ const UbahUserData = ({navigation, route}) => {
           <TouchableOpacity style={{flex:1, alignItems:'center'}}>
             <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('PushNotification')}>
-            <Image source={iconBag} style={{height:24, width:24, resizeMode:'contain'}} />
+          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUserLogin})}>
+            <SimpleLineIcons name="game-controller" size={24} color="black" />
           </TouchableOpacity>
           <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
             <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />

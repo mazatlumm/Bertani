@@ -12,10 +12,9 @@ import iconBag from '../assets/images/iconBag.png'
 import iconUser from '../assets/images/iconUser.png'
 
 // Icon
-import { FontAwesome5 } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import SettingController from './TambahController';
+import { SimpleLineIcons } from '@expo/vector-icons';
 
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0));
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))
@@ -671,8 +670,8 @@ const DetailController = ({navigation, route}) => {
           <TouchableOpacity style={{flex:1, alignItems:'center'}}>
             <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('PushNotification')}>
-            <Image source={iconBag} style={{height:24, width:24, resizeMode:'contain'}} />
+          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})}>
+          <SimpleLineIcons name="game-controller" size={24} color="black" />
           </TouchableOpacity>
           <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
             <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />

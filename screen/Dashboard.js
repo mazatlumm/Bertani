@@ -16,6 +16,7 @@ import { useIsFocused } from '@react-navigation/native';
 // Icon
 import { AntDesign } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { SimpleLineIcons } from '@expo/vector-icons'; 
 
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0))-45;
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))-45;
@@ -184,8 +185,8 @@ const Dashboard = ({navigation}) => {
           <TouchableOpacity style={{flex:1, alignItems:'center'}}>
             <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('PushNotification')}>
-            <Image source={iconBag} style={{height:24, width:24, resizeMode:'contain'}} />
+          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})}>
+            <SimpleLineIcons name="game-controller" size={24} color="black" />
           </TouchableOpacity>
           <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
             <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />

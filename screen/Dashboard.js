@@ -178,7 +178,7 @@ const Dashboard = ({navigation}) => {
 
         {/* Bottom Navigation */}
         <View style={{position:'absolute', bottom:0, left:0, flexDirection:'row', backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20 , paddingTop:15, paddingBottom:10, justifyContent:'center', alignItems:'center', width:'100%'}}>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}}>
+          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
             <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
           <TouchableOpacity style={{flex:1, alignItems:'center'}}>

@@ -3,6 +3,8 @@ import React, {useEffect, useState} from 'react'
 import TopBar from './TopBar';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 
 import iconLove from '../assets/images/iconLove.png'
 import iconHome from '../assets/images/iconHome.png'
@@ -17,16 +19,104 @@ import { Ionicons } from '@expo/vector-icons';
 
 const UbahProfile = ({navigation}) => {
 
-    const [NamaPenggunaBaru, setNamaPenggunaBaru] = useState('');
+    const [IDUser, setIDUser] = useState('');
+    const [NamaPengguna, setNamaPengguna] = useState('');
+    const [Username, setUsername] = useState('');
+    const [Password, setPassword] = useState('');
+    const [PasswordKonf, setPasswordKonf] = useState('');
+    const [Pekerjaan, setPekerjaan] = useState('');
 
-    const createTwoButtonAlert = () =>
-    Alert.alert('Berhasil', 'Pengguna Baru Telah Ditambahkan', [
-      { text: 'OK', onPress: () => console.log('OK Pressed') },
-    ]);
+    const SimpanDataUSerAsyn = async (value) => {
+        try {
+          const jsonValue = JSON.stringify(value)
+          await AsyncStorage.setItem('@DataUser', jsonValue)
+          console.log('Simpan Data User')
+        } catch (e) {
+          // saving error
+        }
+      }
 
+    const SimpanDataUser = () => {
+        console.log('Ubah User Data');
+
+        var dataToSend = { 
+        id_user:IDUser,
+        username: Username,
+        nama: NamaPengguna,
+        pekerjaan: Pekerjaan,
+        password: Password,
+        }
+
+        var formBody = [];
+        for (var key in dataToSend) {
+        var encodedKey = encodeURIComponent(key);
+        var encodedValue = encodeURIComponent(dataToSend[key]);
+        formBody.push(encodedKey + '=' + encodedValue);
+        }
+        formBody = formBody.join('&');
+        //POST request
+        fetch('https://alicestech.com/kelasbertani/api/user/edit', {
+        method: 'POST', //Request Type
+        body: formBody, //post body
+        headers: {
+            //Header Defination
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+        })
+        .then((response) => response.json())
+        //If response is in json then in success
+        .then((responseJson) => {
+            console.log(responseJson);
+            if(responseJson.status == true){
+                Alert.alert('Berhasil', 'Data Anda Berhasil Disimpan')
+                SimpanDataUSerAsyn(responseJson.result)
+            }else{
+                Alert.alert('Gagal', 'Data Tidak Dapat Disimpan');
+            }
+        })
+        //If response is not in json then in error
+        .catch((error) => {
+            console.error(error);
+        });
+    }
+
+    const LihatDataUser =  async() => {
+        try {
+        const jsonValue = await AsyncStorage.getItem('@DataUser')
+        const ParsingDataUser = JSON.parse(jsonValue);
+        console.log(jsonValue)
+        setIDUser(ParsingDataUser[0].id_user);
+        setNamaPengguna(ParsingDataUser[0].nama);
+        setUsername(ParsingDataUser[0].username);
+        setPekerjaan(ParsingDataUser[0].pekerjaan);
+        } catch(e) {
+        // error reading value
+        }
+    }
+
+    const CekPassword = (cek) => {
+        setPasswordKonf(cek);
+        if(Password != cek){
+            console.log('Password Tidak Sesuai');
+        }else{
+            console.log('Password Sesuai');
+        }
+    }
+
+    const WarningPassword = () => {
+        if(Password != PasswordKonf){
+            return (
+                <View>
+                    <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'red', marginBottom:5}}>Password Tidak Sesuai</Text>
+                </View>
+            )
+        }
+    }
+
+    const isFocused = useIsFocused();
     useEffect(() => {
-
-      }, []);
+        LihatDataUser();
+      }, [isFocused]);
 
     let [fontsLoaded] = useFonts({
         'Philosopher': require('../assets/fonts/Philosopher-Regular.ttf'),
@@ -60,38 +150,51 @@ const UbahProfile = ({navigation}) => {
                     <View style={styles.FormInputBox}>
                         <TextInput 
                         style={styles.TextInputForm} 
-                        onChangeText={NamaPenggunaBaru => setNamaPenggunaBaru(NamaPenggunaBaru)}
-                        defaultValue={NamaPenggunaBaru}
+                        onChangeText={NamaPengguna => setNamaPengguna(NamaPengguna)}
+                        defaultValue={NamaPengguna}
                         />
                     </View>
                 </View>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>Username</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} />
+                        <TextInput style={styles.TextInputForm} 
+                        onChangeText={Username => setUsername(Username)}
+                        defaultValue={Username}
+                        />
                     </View>
                 </View>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>Password</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} secureTextEntry={true} />
+                        <TextInput style={styles.TextInputForm} secureTextEntry={true} 
+                        onChangeText={Password => setPassword(Password)}
+                        defaultValue={Password}
+                        />
                     </View>
                 </View>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>Konfirmasi Password</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} secureTextEntry={true} />
+                        <TextInput style={styles.TextInputForm} secureTextEntry={true} 
+                        onChangeText={PasswordKonf => CekPassword(PasswordKonf)}
+                        defaultValue={PasswordKonf}
+                        />
                     </View>
+                    {WarningPassword()}
                 </View>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>Tugas/Jabatan/Status</Text>
                     <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} />
+                        <TextInput style={styles.TextInputForm} 
+                        onChangeText={Pekerjaan => setPekerjaan(Pekerjaan)}
+                        defaultValue={Pekerjaan}
+                        />
                     </View>
                 </View>
                 
 
-                <TouchableOpacity style={styles.BtnBox} onPress={()=>createTwoButtonAlert()}>
+                <TouchableOpacity style={styles.BtnBox} onPress={()=>SimpanDataUser()}>
                     <Text style={styles.BtnTitle}>Simpan Data</Text>
                 </TouchableOpacity>
             </View>

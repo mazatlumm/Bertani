@@ -111,6 +111,7 @@ const CekTanah = ({navigation, route}) => {
         SimpanDataTanah(ArrayFavourite);
         setmodalVisibleFavourite(false);
         Alert.alert('Berhasil', 'Data pengukuran kualitas tanah berhasil disimpan, Anda dapat menguploadnya ketika sudah online')
+        setLoveColor('grey');
     }
 
     const SimpanDataTanah = async (value) => {

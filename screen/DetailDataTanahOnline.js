@@ -26,10 +26,11 @@ import { FontAwesome } from '@expo/vector-icons';
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0));
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))-45;
 
-const CekTanah = ({navigation, route}) => {
+const DetailDataTanahOnline = ({navigation, route}) => {
 
     const [currentDate, setCurrentDate] = useState('');
     const [TimeClock, setTimeClock] = useState('');
+    const [IDCekTanah, setIDCekTanah] = useState('');
     const [IDUser, setIDUser] = useState('');
     const [IDDevice, setIDDevice] = useState('ID DEVICE');
     const [StatusDevice, setStatusDevice] = useState('Tidak Terhubung');
@@ -51,223 +52,86 @@ const CekTanah = ({navigation, route}) => {
     const [NamaKomoditas, setNamaKomoditas] = useState('');
     const [KeteranganLainnya, setKeteranganLainnya] = useState('');
 
-    const CekLocation = () => {
-        (async () => {
-            if (Platform.OS === 'android' && !Constants.isDevice) {
-              setErrorMsg(
-                'Oops, this will not work on Snack in an Android emulator. Try it on your device!'
-              );
-              return;
-            }
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-              setErrorMsg('Permission to access location was denied');
-              return;
-            }
-      
-            let location = await Location.getCurrentPositionAsync({});
-            setLocation(location);
-          })();
-    }
-
-    const CekAsynFavourite =  async() => {
-        try {
-        const jsonValue = await AsyncStorage.getItem('@TanahFavourite')
-        const ParsingDataTanah = JSON.parse(jsonValue);
-        // console.log(jsonValue)
-        // console.log(ParsingDataTanah)
-        if(ParsingDataTanah == null){
-            setArrayFavourite([]);
-        }else{
-            setArrayFavourite(ParsingDataTanah);
-        }
-        } catch(e) {
-        // error reading value
-        }
-    }
-
-    const ReadyPushFavourite = [{
-        id_user : IDUser,
-        id_device : IDDevice,
-        komoditas : NamaKomoditas,
-        keterangan : KeteranganLainnya,
-        nitrogen : Nitrogen,
-        phospor : Phospor,
-        kalium : Kalium,
-        suhu : Suhu,
-        kelembaban : Kelembaban,
-        ph : PH,
-        mikroorganisme : Mikroorganisme,
-        get_time : currentDate,
-        latitude : Latitude,
-        longitude : Longitude,
-    }];
-
-    const PrepareSaveFavourite = () => {
-        setmodalVisibleFavourite(true);
-    }
-
-    const CekDataFavourite = () => {
-        if(StatusDevice == 'Terhubung'){
-            CekTime();
-            SaveFavourite();
-            console.log(ArrayFavourite);
-            SimpanDataTanah(ArrayFavourite);
-            setmodalVisibleFavourite(false);
-            Alert.alert('Berhasil', 'Data pengukuran kualitas tanah berhasil disimpan, Anda dapat menguploadnya ketika sudah online')
-            setLoveColor('grey');
-        }else{
-            Alert.alert('Gagal', 'Anda belum menghubungkan perangkat IoT ke aplikasi!');
-        }
-    }
-
-    const SimpanDataTanah = async (value) => {
-        try {
-            const jsonValue = JSON.stringify(value)
-            await AsyncStorage.setItem('@TanahFavourite', jsonValue)
-            console.log('Simpan Data Tanah Berhasil')
-        } catch (e) {
-            // saving error
-        }
-    }
-
-    const SaveFavourite = () => {
-        ArrayFavourite.push(ReadyPushFavourite);
-        setLoveColor('red');
-    }
-
-
-    const LihatDataUser =  async() => {
-        try {
-        const jsonValue = await AsyncStorage.getItem('@DataUser')
-        const ParsingDataUser = JSON.parse(jsonValue);
-        setIDUser(ParsingDataUser[0].id_user); 
-        } catch(e) {
-        // error reading value
-        }
-    }
-
     const AmbilDataRoute = () => {
+        console.log(route.params);
         if(route.params != undefined){
-            let id_device = route.params.IDDevice;
-            setIDDevice(id_device);
-            AmbilDataDevice(id_device);
+            setIDCekTanah(route.params.id_cek_tanah);
+            setIDDevice(route.params.id_device);
+            setIDUser(route.params.id_user);
+            setNamaKomoditas(route.params.komoditas);
+            setKeteranganLainnya(route.params.keterangan);
+            setNitrogen(route.params.nitrogen);
+            setPhospor(route.params.phospor);
+            setKalium(route.params.kalium);
+            setSuhu(route.params.suhu);
+            setKelembaban(route.params.kelembaban);
+            setPH(route.params.ph);
+            setMikroorganisme(route.params.mikroorganisme);
+            setCurrentDate(route.params.get_time);
         }
     }
-
-    const AmbilDataDevice = (id_device) => {
-        // Mencari Lokasi
-        CekLocation();
-        let text = 'Waiting..';
-        if (errorMsg) {
-            text = errorMsg;
-        } else if (location) {
-            text = JSON.stringify(location);
-            const ParseDataLocation = JSON.parse(text);
-            setLatitude(ParseDataLocation.coords.latitude);
-            setLongitude(ParseDataLocation.coords.longitude);
-            // console.log(ParseDataLocation.coords.latitude)
-            // console.log(ParseDataLocation.coords.longitude)
-        }
-
-        setLoveColor('grey')
-        
-        // console.log('Ambil Data Dari Device')
-        var myHeaders = new Headers();
-
-        var requestOptions = {
-        method: 'GET',
-        headers: myHeaders,
-        redirect: 'follow'
-        };
-
-        // fetch("https://alicestech.com/kelasbertani/api/cek_tanah/tes_alat?id_device="+id_device, requestOptions)
-        fetch("https://alicestech.com/kelasbertani/api/cek_tanah/tes_alat?id_device=SENSOR001", requestOptions)
-        .then(response => response.json())
-        .then(result => {
-            // console.log(result);
-            if(result.status == true){
-                setStatusDevice('Terhubung');
-                setColorConnected('#0D986A');
-                setNitrogen(result.result[0].nitrogen);
-                setPhospor(result.result[0].phospor);
-                setKalium(result.result[0].kalium);
-                setSuhu(result.result[0].suhu);
-                setKelembaban(result.result[0].kelembaban);
-                setPH(result.result[0].ph);
-                setMikroorganisme(result.result[0].mikroorganisme);
-                CekTime();
-                console.log('success');
-            }
-            if(result.status == false){
-                setStatusDevice('Tidak Terhubung');
-                setColorConnected('red');
-                console.log('failed');
-                // Alert.alert('Tidak Terhubung', 'Silahkan Scan Kembali Perangkat Anda')
-            }
-        })
-        .catch(error => console.log('error', error));
-    }
-
-    const CekTime = () => {
-        var date = new Date().getDate(); //Current Date
-        var month = new Date().getMonth() + 1; //Current Month
-        var year = new Date().getFullYear(); //Current Year
-        var hours = new Date().getHours(); //Current Hours
-        var min = new Date().getMinutes(); //Current Minutes
-        var sec = new Date().getSeconds(); //Current Seconds
-        setCurrentDate(
-          year + '-' + month + '-' + date 
-          + ' ' + hours + ':' + min + ':' + sec
-        );
-        setTimeClock(hours + ':' + min + ':' + sec);
-    }
-
-    const MovePage = (ScreenName) => {
-        if(StatusDevice == 'Terhubung'){
-            Alert.alert(
-                "Apakah Anda Ingin Memutus Perangkat?",
-                "Tekan lanjutkan jika Anda ingin meninggalkan halaman ini",
-                [
-                  {
-                    text: "Batal",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel"
-                  },
-                  { text: "Lanjutkan", onPress: () => {
-                        setIDDevice('ID DEVICE');
-                        setStatusDevice('Tidak Terhubung');
-                        setColorConnected('red');
-                        if(ScreenName == 'DaftarController'){
-                            setTimeout(() => {
-                                navigation.navigate(ScreenName, {IDUser:IDUser});
-                            }, 1000);
-                        }else{
-                            setTimeout(() => {
-                                navigation.navigate(ScreenName);
-                            }, 1000);
-                        }
-                  }}
-                ]
-            );
-        }else{
-            if(ScreenName == 'DaftarController'){
-                navigation.navigate(ScreenName, {IDUser:IDUser});
-            }else{
-                navigation.navigate(ScreenName);
-            }
-        }
-    }
-
 
     const isFocused = useIsFocused();
     useEffect(() => {
-        LihatDataUser();
         AmbilDataRoute();
-        CekTime();
-        CekLocation();
-        CekAsynFavourite();
       }, [isFocused]);
+
+    const HapusData = (id_cek_tanah) => {
+        Alert.alert('Apakah Anda Yakin?', 'Data ini akan dihapus secara permanen!', [
+            {
+              text: "Batalkan",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel"
+            },
+            { text: "Lanjutkan", onPress: () => HapusDataTanah(id_cek_tanah)}
+          ]);
+    }
+
+    const SimpanPerubahan = () => {
+        var dataToSend = { id_cek_tanah: IDCekTanah, komoditas: NamaKomoditas, keterangan : KeteranganLainnya};
+        var formBody = [];
+        for (var key in dataToSend) {
+        var encodedKey = encodeURIComponent(key);
+        var encodedValue = encodeURIComponent(dataToSend[key]);
+        formBody.push(encodedKey + '=' + encodedValue);
+        }
+        formBody = formBody.join('&');
+        //POST request
+        fetch('https://alicestech.com/kelasbertani/api/cek_tanah/edit', {
+        method: 'POST', 
+        body: formBody, 
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            if(responseJson.status == true){
+                Alert.alert('Berhasil', 'Perubahan data telah disimpan')
+                setmodalVisibleFavourite(false)
+            }else{
+                Alert.alert('Gagal', 'Coba kembali beberapa saat')
+            }
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    }
+
+    const HapusDataTanah = async (id_cek_tanah) => {
+        try {
+            let response = await fetch(
+            'https://alicestech.com/kelasbertani/api/cek_tanah/hapus?id_cek_tanah=' + id_cek_tanah);
+            let json = await response.json();
+            if(json.status == true){
+              setTimeout(() => {
+                navigation.navigate('FavouriteOnlineData');
+              }, 1000);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     let [fontsLoaded] = useFonts({
         'Philosopher': require('../assets/fonts/Philosopher-Regular.ttf'),
@@ -290,7 +154,7 @@ const CekTanah = ({navigation, route}) => {
             }}>
             <SafeAreaView style={{flex:1, justifyContent:'center', alignItems:'center', backgroundColor:'rgba(243, 243, 243, 0.8)'}}>
                 <View style={{backgroundColor:'white', borderRadius:10, width:'90%', alignItems:'center'}}>
-                    <Text style={{fontFamily:'Poppins-Bold', fontSize:14, marginTop:20, marginBottom:15}}>Buat Keterangan</Text>
+                    <Text style={{fontFamily:'Poppins-Bold', fontSize:14, marginTop:20, marginBottom:15}}>Ubah Keterangan</Text>
                     <TouchableOpacity style={{position:'absolute', top:10, right:5}} onPress={()=> setmodalVisibleFavourite(false)}>
                         <EvilIcons name="close-o" size={30} color="black" />
                     </TouchableOpacity>
@@ -313,8 +177,8 @@ const CekTanah = ({navigation, route}) => {
                             defaultValue={KeteranganLainnya}
                             />
                         </View>
-                        <TouchableOpacity style={{height:40, justifyContent:'center', alignItems:'center', backgroundColor:'#0D986A', borderRadius:20}} onPress={()=>CekDataFavourite()}>
-                            <Text style={{fontFamily:'Poppins-Bold', fontSize:12, color:'white'}}>Simpan Hasil Pengukuran</Text>
+                        <TouchableOpacity style={{height:40, justifyContent:'center', alignItems:'center', backgroundColor:'#0D986A', borderRadius:20}} onPress={()=>SimpanPerubahan()}>
+                            <Text style={{fontFamily:'Poppins-Bold', fontSize:12, color:'white'}}>Simpan Perubahan</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -328,21 +192,21 @@ const CekTanah = ({navigation, route}) => {
             <View style={{paddingHorizontal:20, position:'relative', height:300}}>
                 <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>Nama Perangkat</Text>
                 <Text style={{fontFamily:'Philosopher-Bold', fontSize:24, marginTop:5}}>{IDDevice}</Text>
-                <TouchableOpacity style={{backgroundColor:'white', paddingVertical:5, paddingHorizontal:10, borderRadius:10, position:'absolute', top:10, right:20 }} onPress={()=> navigation.navigate('QRScanCekTanah')}>
-                    <Text style={{fontFamily:'Poppins-Regular', color:'#0D986A', fontSize:12}}>Hubungkan</Text>
-                </TouchableOpacity>
-                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, marginTop:40}}>STATUS</Text>
-                <Text style={{fontFamily:'Poppins-Bold', fontSize:14, marginTop:0}}>{StatusDevice}</Text>
-                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, marginTop:10}}>LAST UPDATE</Text>
-                <Text style={{fontFamily:'Poppins-Bold', fontSize:14, marginTop:0}}>{TimeClock} WIB</Text>
+                
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, marginTop:10}}>Nama Tanaman</Text>
+                <Text style={{fontFamily:'Poppins-Bold', fontSize:14, marginTop:0}}>{NamaKomoditas}</Text>
+                
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, marginTop:10}}>Pengambilan Data</Text>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, marginTop:0}}>{currentDate} WIB</Text>
+
                 <Image source={plantGrow} style={{width:200, height:200, position:'absolute', bottom:40, right:20}} />
 
                 <View style={styles.ActionButtonGL}>
-                    <TouchableOpacity style={{width:56, height:56, backgroundColor:ColorConnected, justifyContent:'center', alignItems:'center', borderRadius:20}} onPress={()=>AmbilDataDevice(IDDevice)}>
-                        <Image source={IconSmile} style={{width:28, height:16, resizeMode:'contain'}} />
+                    <TouchableOpacity style={{width:56, height:56, backgroundColor:ColorConnected, justifyContent:'center', alignItems:'center', borderRadius:20}} onPress={()=>HapusData(IDCekTanah)}>
+                        <EvilIcons name="trash" size={30} color={'white'} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={{width:56, height:56, backgroundColor:'white', justifyContent:'center', alignItems:'center', borderRadius:20, marginLeft:10}} onPress={()=>PrepareSaveFavourite()}>
-                        <AntDesign name="heart" size={24} color={LoveColor} />
+                    <TouchableOpacity style={{width:56, height:56, backgroundColor:'green', justifyContent:'center', alignItems:'center', borderRadius:20, marginLeft:10}} onPress={()=>setmodalVisibleFavourite(true)}>
+                        <AntDesign name="edit" size={24} color={'white'} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -391,8 +255,8 @@ const CekTanah = ({navigation, route}) => {
                 
                 <View style={{marginTop:10, flexDirection:'row', marginBottom:20}}>
                     <View style={{flex:3.5}}>
-                        <Text style={styles.DataSensorText}>Waktu Pengambilan Data</Text>
-                        <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>{currentDate}</Text>
+                        <Text style={styles.DataSensorText}>Keterangan Tambahan</Text>
+                        <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>{KeteranganLainnya}</Text>
                     </View>
                 </View>
         </View>
@@ -400,16 +264,16 @@ const CekTanah = ({navigation, route}) => {
         
         {/* Bottom Navigation */}
         <View style={{position:'absolute', bottom:0, left:0, flexDirection:'row', backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20 , paddingTop:15, paddingBottom:10, justifyContent:'center', alignItems:'center', width:'100%'}}>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>MovePage('Dashboard')}>
+          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
             <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
           <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('FavouriteLocalData')}>
             <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>MovePage('DaftarController')}>
+          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController')}>
             <SimpleLineIcons name="game-controller" size={24} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>MovePage('Profile')}>
+          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
             <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
         </View>
@@ -417,7 +281,7 @@ const CekTanah = ({navigation, route}) => {
   )
 }
 
-export default CekTanah
+export default DetailDataTanahOnline
 
 const styles = StyleSheet.create({
     JajarGenjang:{
@@ -445,7 +309,7 @@ const styles = StyleSheet.create({
             marginTop:70
         },
         android:{
-            marginTop:20
+            marginTop:50
         }
         }),
     },

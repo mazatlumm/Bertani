@@ -22,6 +22,9 @@ import DaftarController from './screen/DaftarController';
 import QRScannerSC from './screen/QRScannerSC';
 import UbahUserData from './screen/UbahUserData';
 import QRScanCekTanah from './screen/QRScanCekTanah';
+import FavouriteLocalData from './screen/FavouriteLocalData';
+import FavouriteOnlineData from './screen/FavouriteOnlineData';
+import DetailDataTanahOnline from './screen/DetailDataTanahOnline';
 
 const Stack = createNativeStackNavigator();
 
@@ -47,6 +50,9 @@ function App() {
         <Stack.Screen name="DetectNitrogen" component={DetectNitrogen} options={{headerShown:false}} />
         <Stack.Screen name="UbahUserData" component={UbahUserData} options={{headerShown:false}} />
         <Stack.Screen name="QRScanCekTanah" component={QRScanCekTanah} options={{headerShown:false}} />
+        <Stack.Screen name="FavouriteLocalData" component={FavouriteLocalData} options={{headerShown:false}} />
+        <Stack.Screen name="FavouriteOnlineData" component={FavouriteOnlineData} options={{headerShown:false}} />
+        <Stack.Screen name="DetailDataTanahOnline" component={DetailDataTanahOnline} options={{headerShown:false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

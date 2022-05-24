@@ -80,7 +80,7 @@ const Login = ({navigation}) => {
       formBody.push(encodedKey + '=' + encodedValue);
     }
     formBody = formBody.join('&');
-    //POST request
+    //POST request API Login
     fetch('https://alicestech.com/kelasbertani/api/user/login', {
       method: 'POST', //Request Type
       body: formBody, //post body

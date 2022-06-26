@@ -1,3 +1,5 @@
+//Belum Selesai Ganti Parsing Data Dari alat / server
+
 import { StyleSheet, Text, View, ScrollView, Dimensions, TouchableOpacity, Image, Platform, Alert, Modal, TextInput } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import TopBar from './TopBar';
@@ -26,8 +28,17 @@ import { FontAwesome } from '@expo/vector-icons';
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0));
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))-45;
 
-const CekTanah = ({navigation, route}) => {
+let KalibrasiNitrogen = 0;
+let KalibrasiKalium = 0;
+let KalibrasiPhosporus = 0;
+let KalibrasiSuhu = 0;
+let KalibrasiKelembaban = 0;
+let KalibrasiPH = 0;
+let KalibrasiKonduktifitas = 0;
+let KalibrasiSalinitas = 0;
+let KalibrasiTDS = 0;
 
+const CekTanah = ({navigation, route}) => {
     const [currentDate, setCurrentDate] = useState('');
     const [TimeClock, setTimeClock] = useState('');
     const [IDUser, setIDUser] = useState('');
@@ -40,6 +51,8 @@ const CekTanah = ({navigation, route}) => {
     const [Kelembaban, setKelembaban] = useState('');
     const [PH, setPH] = useState('');
     const [Mikroorganisme, setMikroorganisme] = useState('');
+    const [Salinitas, setSalinitas] = useState('');
+    const [TDS, setTDS] = useState('');
     const [ColorConnected, setColorConnected] = useState('red');
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
@@ -98,6 +111,8 @@ const CekTanah = ({navigation, route}) => {
         kelembaban : Kelembaban,
         ph : PH,
         mikroorganisme : Mikroorganisme,
+        salinitas : Salinitas,
+        tds : TDS,
         get_time : currentDate,
         latitude : Latitude,
         longitude : Longitude,
@@ -181,21 +196,90 @@ const CekTanah = ({navigation, route}) => {
         redirect: 'follow'
         };
 
-        // fetch("https://alicestech.com/kelasbertani/api/cek_tanah/tes_alat?id_device="+id_device, requestOptions)
-        fetch("https://alicestech.com/kelasbertani/api/cek_tanah/tes_alat?id_device=SENSOR001", requestOptions)
+        // fetch("https://alicestech.com/kelasbertani/api/cek_tanah/tes_alat?id_device="+IDDevice, requestOptions)
+        fetch("http://192.168.2.1/getData", requestOptions)
         .then(response => response.json())
         .then(result => {
             // console.log(result);
             if(result.status == true){
                 setStatusDevice('Terhubung');
                 setColorConnected('#0D986A');
-                setNitrogen(result.result[0].nitrogen);
-                setPhospor(result.result[0].phospor);
-                setKalium(result.result[0].kalium);
-                setSuhu(result.result[0].suhu);
-                setKelembaban(result.result[0].kelembaban);
-                setPH(result.result[0].ph);
-                setMikroorganisme(result.result[0].mikroorganisme);
+                // for online Data
+                // setIDDevice(result.result[0].id_device);
+                // let NilaiNitrogen = parseInt(result.result[0].nitrogen) + parseInt(KalibrasiNitrogen);
+                // let NilaiPhospor = parseInt(result.result[0].phospor) + parseInt(KalibrasiPhosporus);
+                // let NilaiKalium = parseInt(result.result[0].kalium) + parseInt(KalibrasiKalium);
+                // let NilaiSuhu = parseInt(result.result[0].suhu) + parseInt(KalibrasiSuhu);
+                // let NilaiKelembaban = parseInt(result.result[0].kelembaban) + parseInt(KalibrasiKelembaban);
+                // let NilaiPH = parseInt(result.result[0].ph) + parseInt(KalibrasiPH);
+                // let NilaiKonduktifitas = parseInt(result.result[0].mikroorganisme) + parseInt(KalibrasiKonduktifitas);
+                // let NilaiSalinitas = parseInt(result.result[0].salinitas) + parseInt(KalibrasiSalinitas);
+                // let NilaiTDS = parseInt(result.result[0].tds) + parseInt(KalibrasiTDS);
+
+                setIDDevice(result.result.id_device);
+                let NilaiNitrogen = parseInt(result.result.nitrogen) + parseInt(KalibrasiNitrogen);
+                let NilaiPhospor = parseInt(result.result.phospor) + parseInt(KalibrasiPhosporus);
+                let NilaiKalium = parseInt(result.result.kalium) + parseInt(KalibrasiKalium);
+                let NilaiSuhu = parseInt(result.result.suhu) + parseInt(KalibrasiSuhu);
+                let NilaiKelembaban = parseInt(result.result.kelembaban) + parseInt(KalibrasiKelembaban);
+                let NilaiPH = parseInt(result.result.ph) + parseInt(KalibrasiPH);
+                let NilaiKonduktifitas = parseInt(result.result.mikroorganisme) + parseInt(KalibrasiKonduktifitas);
+                let NilaiSalinitas = parseInt(result.result.salinitas) + parseInt(KalibrasiSalinitas);
+                let NilaiTDS = parseInt(result.result.tds) + parseInt(KalibrasiTDS);
+
+                if(NilaiNitrogen < 0){
+                    setNitrogen(0);
+                }else{
+                    setNitrogen(NilaiNitrogen);
+                }
+
+                if(NilaiPhospor < 0){
+                    setPhospor(0);
+                }else{
+                    setPhospor(NilaiPhospor);
+                }
+
+                if(NilaiKalium < 0){
+                    setKalium(0);
+                }else{
+                    setKalium(NilaiKalium);
+                }
+
+                if(NilaiSuhu < 0){
+                    setSuhu(0);
+                }else{
+                    setSuhu(NilaiSuhu);
+                }
+
+                if(NilaiKelembaban < 0){
+                    setKelembaban(0);
+                }else{
+                    setKelembaban(NilaiKelembaban);
+                }
+
+                if(NilaiPH < 0){
+                    setPH(0);
+                }else{
+                    setPH(NilaiPH);
+                }
+
+                if(NilaiKonduktifitas < 0){
+                    setMikroorganisme(0);
+                }else{
+                    setMikroorganisme(NilaiKonduktifitas);
+                }
+
+                if(NilaiSalinitas < 0){
+                    setSalinitas(0);
+                }else{
+                    setSalinitas(NilaiSalinitas);
+                }
+
+                if(NilaiTDS < 0){
+                    setTDS(0);
+                }else{
+                    setTDS(NilaiTDS);
+                }
                 CekTime();
                 console.log('success');
             }
@@ -259,9 +343,33 @@ const CekTanah = ({navigation, route}) => {
         }
     }
 
+    const CekKalibrasiTersimpan =  async() => {
+        try {
+            const jsonValue = await AsyncStorage.getItem('@Kalibrasi' + IDDevice)
+            const KalibrasiSensor = JSON.parse(jsonValue);
+            // console.log(jsonValue)
+            // console.log(KalibrasiSensor)
+            if(KalibrasiSensor == null){
+            }else{
+                KalibrasiNitrogen = KalibrasiSensor[0].nitrogen
+                KalibrasiPhosporus = KalibrasiSensor[0].phosporus
+                KalibrasiKalium = KalibrasiSensor[0].kalium
+                KalibrasiSuhu = KalibrasiSensor[0].suhu
+                KalibrasiKelembaban = KalibrasiSensor[0].kelembaban
+                KalibrasiPH = KalibrasiSensor[0].ph
+                KalibrasiKonduktifitas = KalibrasiSensor[0].konduktifitas
+                KalibrasiSalinitas = KalibrasiSensor[0].salinitas
+                KalibrasiTDS = KalibrasiSensor[0].tds
+            }
+        } catch(e) {
+        // error reading value
+        }
+    }
+
 
     const isFocused = useIsFocused();
     useEffect(() => {
+        CekKalibrasiTersimpan();
         LihatDataUser();
         AmbilDataRoute();
         CekTime();
@@ -328,8 +436,8 @@ const CekTanah = ({navigation, route}) => {
             <View style={{paddingHorizontal:20, position:'relative', height:300}}>
                 <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>Nama Perangkat</Text>
                 <Text style={{fontFamily:'Philosopher-Bold', fontSize:24, marginTop:5}}>{IDDevice}</Text>
-                <TouchableOpacity style={{backgroundColor:'white', paddingVertical:5, paddingHorizontal:10, borderRadius:10, position:'absolute', top:10, right:20 }} onPress={()=> navigation.navigate('QRScanCekTanah')}>
-                    <Text style={{fontFamily:'Poppins-Regular', color:'#0D986A', fontSize:12}}>Hubungkan</Text>
+                <TouchableOpacity style={{backgroundColor:'white', paddingVertical:5, paddingHorizontal:10, borderRadius:10, position:'absolute', top:10, right:20 }} onPress={()=> navigation.navigate('KalibrasiKualitasTanah', {id_device:IDDevice})}>
+                    <Text style={{fontFamily:'Poppins-Regular', color:'#0D986A', fontSize:12}}>Kalibrasi</Text>
                 </TouchableOpacity>
                 <Text style={{fontFamily:'Poppins-Regular', fontSize:12, marginTop:40}}>STATUS</Text>
                 <Text style={{fontFamily:'Poppins-Bold', fontSize:14, marginTop:0}}>{StatusDevice}</Text>
@@ -351,15 +459,15 @@ const CekTanah = ({navigation, route}) => {
                 <Text style={styles.DataSensorText}>Data Sensor</Text>
                 <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
                     <View style={{marginTop:10, flex:2, alignItems:'center'}}>
-                        <Text style={styles.NilaiSensor}>{Nitrogen} ml</Text>
+                        <Text style={styles.NilaiSensor}>{Nitrogen} mg/L</Text>
                         <Text style={{fontFamily:'Poppins-Regular', color:'black', fontSize:12}}>Nitrogen</Text>
                     </View>
                     <View style={{marginTop:10, flex:2, alignItems:'center'}}>
-                        <Text style={styles.NilaiSensor}>{Phospor}%</Text>
+                        <Text style={styles.NilaiSensor}>{Phospor} mg/L</Text>
                         <Text style={{fontFamily:'Poppins-Regular', color:'black', fontSize:12}}>Phosphorus</Text>
                     </View>
                     <View style={{marginTop:10, flex:2, alignItems:'center'}}>
-                        <Text style={styles.NilaiSensor}>{Kalium} mg</Text>
+                        <Text style={styles.NilaiSensor}>{Kalium} mg/L</Text>
                         <Text style={{fontFamily:'Poppins-Regular', color:'black', fontSize:12}}>Kalium</Text>
                     </View>
                 </View>
@@ -385,7 +493,25 @@ const CekTanah = ({navigation, route}) => {
                         <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>(Kandungan Mikro Organisme)</Text>
                     </View>
                     <View style={{flex:1, alignItems:'flex-end', justifyContent:'center'}}>
-                        <Text style={{fontFamily:'Poppins-Bold', fontSize:24, color:'#0D986A'}}>{Mikroorganisme}%</Text>
+                        <Text style={{fontFamily:'Poppins-Bold', fontSize:18, color:'#0D986A'}}>{Mikroorganisme} us/cm</Text>
+                    </View>
+                </View>
+                <View style={styles.BoxHasilBawah}>
+                    <View style={{flex:3.5}}>
+                        <Text style={styles.DataSensorText}>Tingkat Salinitas Tanah</Text>
+                        <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>(Kadar Garam)</Text>
+                    </View>
+                    <View style={{flex:1, alignItems:'flex-end', justifyContent:'center'}}>
+                        <Text style={{fontFamily:'Poppins-Bold', fontSize:18, color:'#0D986A'}}>{Salinitas} %</Text>
+                    </View>
+                </View>
+                <View style={styles.BoxHasilBawah}>
+                    <View style={{flex:3.5}}>
+                        <Text style={styles.DataSensorText}>TDS</Text>
+                        <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>(Total Dissolved Solid)</Text>
+                    </View>
+                    <View style={{flex:1, alignItems:'flex-end', justifyContent:'center'}}>
+                        <Text style={{fontFamily:'Poppins-Bold', fontSize:18, color:'#0D986A'}}>{TDS} %</Text>
                     </View>
                 </View>
                 

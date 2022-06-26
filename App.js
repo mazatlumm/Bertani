@@ -16,7 +16,7 @@ import Profile from './screen/Profile';
 import TambahPengguna from './screen/TambahPengguna';
 import PushNotification from './screen/PushNotification';
 import UbahProfile from './screen/UbahProfile';
-import DetectNitrogen from './screen/DetectNitrogen';
+import AIDetectPlant from './screen/AIDetectPlant';
 import SplashScreen from './screen/SplashScreen';
 import DaftarController from './screen/DaftarController';
 import QRScannerSC from './screen/QRScannerSC';
@@ -25,6 +25,13 @@ import QRScanCekTanah from './screen/QRScanCekTanah';
 import FavouriteLocalData from './screen/FavouriteLocalData';
 import FavouriteOnlineData from './screen/FavouriteOnlineData';
 import DetailDataTanahOnline from './screen/DetailDataTanahOnline';
+import KalibrasiKualitasTanah from './screen/KalibrasiKualitasTanah';
+import PenyakitTanaman from './screen/PenyakitTanaman';
+import DeteksiNitrogen from './screen/DeteksiNitrogen';
+import CaptureDaun from './screen/CaptureDaun';
+import WebviewSimco from './screen/WebviewSimco';
+import WebviewSawentar from './screen/WebviewSawentar';
+import WebviewPenyuluhan from './screen/WebviewPenyuluhan';
 
 const Stack = createNativeStackNavigator();
 
@@ -47,12 +54,19 @@ function App() {
         <Stack.Screen name="TambahPengguna" component={TambahPengguna} options={{headerShown:false}} />
         <Stack.Screen name="PushNotification" component={PushNotification} options={{headerShown:false}} />
         <Stack.Screen name="UbahProfile" component={UbahProfile} options={{headerShown:false}} />
-        <Stack.Screen name="DetectNitrogen" component={DetectNitrogen} options={{headerShown:false}} />
+        <Stack.Screen name="AIDetectPlant" component={AIDetectPlant} options={{headerShown:false}} />
         <Stack.Screen name="UbahUserData" component={UbahUserData} options={{headerShown:false}} />
         <Stack.Screen name="QRScanCekTanah" component={QRScanCekTanah} options={{headerShown:false}} />
         <Stack.Screen name="FavouriteLocalData" component={FavouriteLocalData} options={{headerShown:false}} />
         <Stack.Screen name="FavouriteOnlineData" component={FavouriteOnlineData} options={{headerShown:false}} />
         <Stack.Screen name="DetailDataTanahOnline" component={DetailDataTanahOnline} options={{headerShown:false}} />
+        <Stack.Screen name="KalibrasiKualitasTanah" component={KalibrasiKualitasTanah} options={{headerShown:false}} />
+        <Stack.Screen name="PenyakitTanaman" component={PenyakitTanaman} options={{headerShown:false}} />
+        <Stack.Screen name="DeteksiNitrogen" component={DeteksiNitrogen} options={{headerShown:false}} />
+        <Stack.Screen name="CaptureDaun" component={CaptureDaun} options={{headerShown:false}} />
+        <Stack.Screen name="WebviewSimco" component={WebviewSimco} options={{headerShown:false}} />
+        <Stack.Screen name="WebviewSawentar" component={WebviewSawentar} options={{headerShown:false}} />
+        <Stack.Screen name="WebviewPenyuluhan" component={WebviewPenyuluhan} options={{headerShown:false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

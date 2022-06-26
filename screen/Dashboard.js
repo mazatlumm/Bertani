@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, ScrollView, Alert} from 'react-native'
+import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, ScrollView, Alert, StatusBar} from 'react-native'
 import React, {useEffect, useState} from 'react'
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
@@ -9,9 +9,16 @@ import iconHome from '../assets/images/iconHome.png'
 import iconLove from '../assets/images/iconLove.png'
 import iconBag from '../assets/images/iconBag.png'
 import iconUser from '../assets/images/iconUser.png'
+import Simco from '../assets/images/simco.png'
+import Sawentar from '../assets/images/sawentar.png'
+import Penyuluhan from '../assets/images/penyuluhan.png'
 import TopBar from './TopBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+
+//statusbar
+const STYLES = ['default', 'dark-content', 'light-content'];
+const TRANSITIONS = ['fade', 'slide', 'none'];
 
 // Icon
 import { AntDesign } from '@expo/vector-icons';
@@ -30,6 +37,10 @@ const Dashboard = ({navigation}) => {
   const [HumMin, setHumMin] = useState(0);
   const [HumMax, setHumMax] = useState(0);
   const [Lokasi, setLokasi] = useState('Alamat Perangkat');
+  //statusbar
+  const [hidden, setHidden] = useState(false);
+  const [statusBarStyle, setStatusBarStyle] = useState(STYLES[0]);
+  const [statusBarTransition, setStatusBarTransition] = useState(TRANSITIONS[0]);
 
   const isFocused = useIsFocused();
   useEffect(() => {
@@ -103,6 +114,12 @@ const Dashboard = ({navigation}) => {
 
   return (
     <SafeAreaView style={{ flex: 1, alignItems: 'center'}}>
+      <StatusBar
+        animated={true}
+        backgroundColor="green"
+        barStyle={statusBarStyle}
+        showHideTransition={statusBarTransition}
+        hidden={hidden} />
       <ScrollView style={styles.ScrollViewBox}>  
           {/* Top Bar */}
           <TopBar />
@@ -122,7 +139,7 @@ const Dashboard = ({navigation}) => {
           
           {/* Scan Tanaman */}
           <View style={{flexDirection:'row', width:'100%', paddingHorizontal:20, marginTop:20}}>
-            <TouchableOpacity style={styles.BoxScanTanaman} onPress={()=>navigation.navigate('DetectNitrogen')}>
+            <TouchableOpacity style={styles.BoxScanTanaman} onPress={()=>navigation.navigate('AIDetectPlant')}>
               <Text style={styles.TextScan}>Scan Tanaman</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.BoxSetKanal} onPress={()=>navigation.navigate('TambahController')}>
@@ -141,7 +158,7 @@ const Dashboard = ({navigation}) => {
               <View style={styles.JajarGenjang}>
               </View>
               <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', position:'absolute', left:50, top:25}}>Detail Data</Text>
-              <Text style={{fontFamily:'Philosopher-Bold', fontSize:24, color:'black', position:'absolute', left:50, top:50}}>{NamaPerangkat}</Text>
+              <Text style={{fontFamily:'Philosopher-Bold', fontSize:18, color:'black', position:'absolute', left:50, top:50}}>{NamaPerangkat}</Text>
               <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black', position:'absolute', left:50, top:85}}>Tanaman {JenisTanaman}</Text>
               <View style={{position:'absolute', right:0, bottom:50}}>
                 <Image source={tanaman} style={{width:190, height:190,resizeMode:'contain'}} />
@@ -174,6 +191,53 @@ const Dashboard = ({navigation}) => {
             <TouchableOpacity style={{backgroundColor:'#0D986A', borderRadius:10, paddingHorizontal:20, paddingVertical:5, position:'absolute', bottom:30, right:80}} onPress={()=>navigation.navigate('CekTanah')}>
               <Text style={{fontFamily:'Poppins-Bold', fontSize:12, color:'white'}}>Mulai</Text>
             </TouchableOpacity>
+          </TouchableOpacity>
+
+          {/* Simco */}
+          <TouchableOpacity style={{width:'100%', paddingHorizontal:20, marginTop:10, alignItems:'center', justifyContent:'center', position:'relative'}} onPress={()=>navigation.navigate('WebviewSimco')}>
+              <View style={styles.JajarGenjangSimco}>
+              </View>
+              <View style={{position:'absolute', left:50, top:25, width:'50%'}}>
+                <Text style={{fontFamily:'Philosopher-Bold', fontSize:18, color:'#0c5039'}}>SIMCO</Text>
+                <Text style={{fontFamily:'Philosopher', fontSize:12, color:'#0c5039'}}>Sistem Informasi Monitoring dan Control Pertanian. </Text>
+              </View>
+              <View style={{position:'absolute', left:50, top:25, width:'80%', position:'absolute', left:50, top:115,}}>
+                <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black'}}>"Anda dapat memantau data kelembagaan, sarana & prasarana, potensi wilayah, ketenagaan penyuluh, data dukung layanan, dan masih banyak yang lainnya"  </Text>
+
+              </View>
+              <View style={{position:'absolute', right:50, bottom:90}}>
+                <Image source={Simco} style={{width:90, height:120,resizeMode:'contain'}} />
+              </View>
+          </TouchableOpacity>
+          
+          {/* Sawentar */}
+          <TouchableOpacity style={{width:'100%', paddingHorizontal:20, marginTop:10, alignItems:'center', justifyContent:'center', position:'relative'}} onPress={()=>navigation.navigate('WebviewSawentar')}>
+              <View style={styles.JajarGenjangSawentar}>
+              </View>
+              <View style={{position:'absolute', left:50, top:0, width:'50%'}}>
+              <Image source={Sawentar} style={{width:200, height:120,resizeMode:'contain'}} />
+              </View>
+              <View style={{width:'80%', position:'absolute', left:50, top:110,}}>
+                <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black'}}>"Cek pemetaan tanaman dengan mudah dan dapatkan rekomendasi tanaman yang sesuai berdasarkan letak geografis"</Text>
+
+              </View>
+          </TouchableOpacity>
+          
+          {/* Penyuluhan */}
+          <TouchableOpacity style={{width:'100%', paddingHorizontal:20, marginTop:10, alignItems:'center', justifyContent:'center', position:'relative'}} onPress={()=>navigation.navigate('WebviewPenyuluhan')}>
+              <View style={styles.JajarGenjangPenyuluhan}>
+              </View>
+              <View style={{position:'absolute', left:50, top:25, width:'50%'}}>
+                <Text style={{fontFamily:'Philosopher-Bold', fontSize:18, color:'#0c5039'}}>Petani Kita</Text>
+                <Text style={{fontFamily:'Philosopher', fontSize:12, color:'#0c5039'}}>Sistem input data pertanian oleh penyuluh lapangan</Text>
+              </View>
+              <View style={{position:'absolute', left:50, top:25, width:'80%', position:'absolute', left:50, top:115,}}>
+                <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black'}}>"Penyuluh dapat memasukkan seluruh data yang berkaitan dengan pertanian, sehingga semua data dapat dikelola dengan cepat dan mudah"  </Text>
+
+              </View>
+              <View style={{position:'absolute', right:50, bottom:90}}>
+                <Image source={Penyuluhan} style={{width:90, height:120,resizeMode:'contain'}} />
+              </View>
           </TouchableOpacity>
         </ScrollView>
 
@@ -279,6 +343,60 @@ const styles = StyleSheet.create({
     borderRightColor: '#9CE5CB',
     borderBottomColor: '#9CE5CB',
     borderLeftColor: '#9CE5CB',
+    borderTopRightRadius:80,
+    borderBottomRightRadius:50,
+    borderTopLeftRadius:50,
+    borderBottomLeftRadius:50,
+  },
+  JajarGenjangSimco:{
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderTopWidth: 25,
+    borderRightWidth: 0,
+    borderBottomWidth: 170,
+    borderLeftWidth: windowWidth,
+    borderTopColor: 'transparent',
+    borderRightColor: '#B2E28D',
+    borderBottomColor: '#B2E28D',
+    borderLeftColor: '#B2E28D',
+    borderTopRightRadius:80,
+    borderBottomRightRadius:50,
+    borderTopLeftRadius:50,
+    borderBottomLeftRadius:50,
+  },
+  JajarGenjangSawentar:{
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderTopWidth: 25,
+    borderRightWidth: 0,
+    borderBottomWidth: 170,
+    borderLeftWidth: windowWidth,
+    borderTopColor: 'transparent',
+    borderRightColor: '#9CE5CB',
+    borderBottomColor: '#9CE5CB',
+    borderLeftColor: '#9CE5CB',
+    borderTopRightRadius:80,
+    borderBottomRightRadius:50,
+    borderTopLeftRadius:50,
+    borderBottomLeftRadius:50,
+  },
+  JajarGenjangPenyuluhan:{
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderTopWidth: 25,
+    borderRightWidth: 0,
+    borderBottomWidth: 170,
+    borderLeftWidth: windowWidth,
+    borderTopColor: 'transparent',
+    borderRightColor: '#8CEC8A',
+    borderBottomColor: '#8CEC8A',
+    borderLeftColor: '#8CEC8A',
     borderTopRightRadius:80,
     borderBottomRightRadius:50,
     borderTopLeftRadius:50,

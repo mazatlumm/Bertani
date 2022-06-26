@@ -56,7 +56,7 @@ const FavouriteOnlineData = ({navigation, route}) => {
         }
       }
 
-    const CekDetailTanahOnline = (komoditas, keterangan, nitrogen, phospor, kalium, suhu, kelembaban, ph, mikroorganisme, get_time, id_device, id_cek_tanah) => {
+    const CekDetailTanahOnline = (komoditas, keterangan, nitrogen, phospor, kalium, suhu, kelembaban, ph, mikroorganisme, get_time, id_device, id_cek_tanah, salinitas, tds) => {
         navigation.navigate('DetailDataTanahOnline', {
             komoditas : komoditas,
             keterangan : keterangan,
@@ -67,14 +67,16 @@ const FavouriteOnlineData = ({navigation, route}) => {
             kelembaban : kelembaban,
             ph : ph, 
             mikroorganisme : mikroorganisme, 
+            salinitas : salinitas, 
+            tds : tds, 
             get_time : get_time,
             id_device : id_device,
             id_cek_tanah : id_cek_tanah,
         })
     }
 
-    const Item = ({ komoditas, keterangan, nitrogen, phospor, kalium, suhu, kelembaban, ph, mikroorganisme, get_time, id_device, id_cek_tanah }) => (
-        <TouchableOpacity style={styles.Card} onPress={()=>CekDetailTanahOnline(komoditas, keterangan, nitrogen, phospor, kalium, suhu, kelembaban, ph, mikroorganisme, get_time, id_device, id_cek_tanah)}>
+    const Item = ({ komoditas, keterangan, nitrogen, phospor, kalium, suhu, kelembaban, ph, mikroorganisme, get_time, id_device, id_cek_tanah, salinitas, tds }) => (
+        <TouchableOpacity style={styles.Card} onPress={()=>CekDetailTanahOnline(komoditas, keterangan, nitrogen, phospor, kalium, suhu, kelembaban, ph, mikroorganisme, get_time, id_device, id_cek_tanah, salinitas, tds)}>
             <View style={{marginBottom:5, borderBottomWidth:0.3, paddingBottom:5}}>
                 <Text style={styles.TextPoppinsBold}>{komoditas}</Text>
                 <Text style={styles.TextPoppins}>{keterangan}</Text>
@@ -95,7 +97,7 @@ const FavouriteOnlineData = ({navigation, route}) => {
             </View>
         </TouchableOpacity>
     );
-    const renderItem = ({ item }) => <Item komoditas={item.komoditas} keterangan={item.keterangan} nitrogen={item.nitrogen} kalium={item.kalium} phospor={item.phospor} suhu={item.suhu} kelembaban={item.kelembaban} ph={item.ph} mikroorganisme={item.mikroorganisme} get_time={item.get_time} id_device={item.id_device} id_cek_tanah={item.id_cek_tanah}/>;
+    const renderItem = ({ item }) => <Item komoditas={item.komoditas} keterangan={item.keterangan} nitrogen={item.nitrogen} kalium={item.kalium} phospor={item.phospor} suhu={item.suhu} kelembaban={item.kelembaban} ph={item.ph} mikroorganisme={item.mikroorganisme} get_time={item.get_time} id_device={item.id_device} id_cek_tanah={item.id_cek_tanah} salinitas={item.salinitas} tds={item.tds}/>;
 
   return (
     <SafeAreaView style={{ flex: 1, alignItems: 'center', backgroundColor:'white'}}>

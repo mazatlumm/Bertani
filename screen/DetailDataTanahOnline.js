@@ -41,6 +41,8 @@ const DetailDataTanahOnline = ({navigation, route}) => {
     const [Kelembaban, setKelembaban] = useState('');
     const [PH, setPH] = useState('');
     const [Mikroorganisme, setMikroorganisme] = useState('');
+    const [Salinitas, setSalinitas] = useState('');
+    const [TDS, setTDS] = useState('');
     const [ColorConnected, setColorConnected] = useState('red');
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
@@ -67,6 +69,8 @@ const DetailDataTanahOnline = ({navigation, route}) => {
             setKelembaban(route.params.kelembaban);
             setPH(route.params.ph);
             setMikroorganisme(route.params.mikroorganisme);
+            setSalinitas(route.params.salinitas);
+            setTDS(route.params.tds);
             setCurrentDate(route.params.get_time);
         }
     }
@@ -250,6 +254,24 @@ const DetailDataTanahOnline = ({navigation, route}) => {
                     </View>
                     <View style={{flex:1, alignItems:'flex-end', justifyContent:'center'}}>
                         <Text style={{fontFamily:'Poppins-Bold', fontSize:24, color:'#0D986A'}}>{Mikroorganisme}%</Text>
+                    </View>
+                </View>
+                <View style={styles.BoxHasilBawah}>
+                    <View style={{flex:3.5}}>
+                        <Text style={styles.DataSensorText}>Tingkat Salinitas Tanah</Text>
+                        <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>(Kadar Garam)</Text>
+                    </View>
+                    <View style={{flex:1, alignItems:'flex-end', justifyContent:'center'}}>
+                        <Text style={{fontFamily:'Poppins-Bold', fontSize:18, color:'#0D986A'}}>{Salinitas} %</Text>
+                    </View>
+                </View>
+                <View style={styles.BoxHasilBawah}>
+                    <View style={{flex:3.5}}>
+                        <Text style={styles.DataSensorText}>TDS</Text>
+                        <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>(Total Dissolved Solid)</Text>
+                    </View>
+                    <View style={{flex:1, alignItems:'flex-end', justifyContent:'center'}}>
+                        <Text style={{fontFamily:'Poppins-Bold', fontSize:18, color:'#0D986A'}}>{TDS} %</Text>
                     </View>
                 </View>
                 

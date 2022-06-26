@@ -72,7 +72,7 @@ const DaftarController = ({navigation, route}) => {
               <View style={styles.JajarGenjang}>
               </View>
               <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', position:'absolute', left:50, top:25}}>Detail Data</Text>
-              <Text style={{fontFamily:'Philosopher-Bold', fontSize:24, color:'black', position:'absolute', left:50, top:50}}>{nama_perangkat}</Text>
+              <Text style={{fontFamily:'Philosopher-Bold', fontSize:18, color:'black', position:'absolute', left:50, top:50}}>{nama_perangkat}</Text>
               <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black', position:'absolute', left:50, top:85}}>Tanaman {NamaTanaman}</Text>
               <View style={{position:'absolute', right:0, bottom:50}}>
                 <Image source={tanaman} style={{width:190, height:190,resizeMode:'contain'}} />
@@ -123,19 +123,18 @@ const DaftarController = ({navigation, route}) => {
         
         {/* Bottom Navigation */}
         <View style={{position:'absolute', bottom:0, left:0, flexDirection:'row', backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20 , paddingTop:15, paddingBottom:10, justifyContent:'center', alignItems:'center', width:'100%'}}>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
-            <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
-          </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}}>
-            <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
-          </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}}>
-            {/* <Image source={iconBag} style={{height:24, width:24, resizeMode:'contain'}} /> */}
-            <SimpleLineIcons name="game-controller" size={24} color="black" />          
-          </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
-            <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
-          </TouchableOpacity>
+            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
+                <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
+            </TouchableOpacity>
+            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('FavouriteLocalData')}>
+                <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
+            </TouchableOpacity>
+            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})}>
+                <SimpleLineIcons name="game-controller" size={24} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
+                <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
+            </TouchableOpacity>
         </View>
     </SafeAreaView>
   )

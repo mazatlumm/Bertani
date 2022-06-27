@@ -331,7 +331,7 @@ const Profile = ({navigation}) => {
           <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
             <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}}>
+          <TouchableOpacity onPress={()=>navigation.navigate('FavouriteLocalData')} style={{flex:1, alignItems:'center'}}>
             <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
           <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})}>

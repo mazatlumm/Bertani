@@ -12,6 +12,17 @@ import iconUser from '../assets/images/iconUser.png'
 import Simco from '../assets/images/simco.png'
 import Sawentar from '../assets/images/sawentar.png'
 import Penyuluhan from '../assets/images/penyuluhan.png'
+import LocationIcon from '../assets/images/location.png'
+import TesTanahIcon from '../assets/images/growing-plant.png'
+import PenyiramanIcon from '../assets/images/penyiraman.png'
+import NitrogenIcon from '../assets/images/nitrogenicon.png'
+import HamaPenyakitIcon from '../assets/images/caterpillar.png'
+import UsahaTaniIcon from '../assets/images/usahatani.png'
+import CuacaIcon from '../assets/images/cloudy.png'
+import PermodalanIcon from '../assets/images/permodalan.png'
+import MarketplaceIcon from '../assets/images/marketplace.png'
+import DiskusiIcon from '../assets/images/chatbubble.png'
+import TanyaPakaricon from '../assets/images/tanyapakar.png'
 import TopBar from './TopBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
@@ -122,10 +133,10 @@ const Dashboard = ({navigation}) => {
         hidden={hidden} />
       <ScrollView style={styles.ScrollViewBox}>  
           {/* Top Bar */}
-          <TopBar />
+          {/* <TopBar /> */}
 
           {/* Greating Text Box Hijau */}
-          <View style={{width:'100%', paddingHorizontal:20}}>
+          <View style={{width:'100%', paddingHorizontal:10, marginTop:10}}>
             <View style={styles.BoxGreating}>
               <Image source={Farmer} style={styles.FarmerImg} />
               <View style={{width:175, marginLeft:15, marginTop:45}}>
@@ -136,11 +147,111 @@ const Dashboard = ({navigation}) => {
               </View>
             </View>
           </View>
+
+          {/* Menu */}
+          <View style={styles.MenuListBox}>
+
+            <View style={styles.MenuBox}>
+              {/* Icon Menu */}
+              <TouchableOpacity onPress={()=>navigation.navigate('WebviewSimco')} style={{alignItems:'center', justifyContent:'flex-start', flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#fec043', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={Penyuluhan} style={{width:50, height:50}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Petani Kita</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity onPress={()=> navigation.navigate('WebviewSawentar')} style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#d34539', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={LocationIcon} style={{width:50, height:50}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Pemetaan Wilayah</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={()=> navigation.navigate('CekTanah')} style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#06934f', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={TesTanahIcon} style={{width:50, height:50}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Tes Tanah</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={()=> DaftarControllerCek()} style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#2883e1', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={PenyiramanIcon} style={{width:50, height:50}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Penyiraman Otomatis</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.MenuBox}>
+              {/* Icon Menu */}
+              <TouchableOpacity onPress={()=> navigation.navigate('CaptureDaun')} style={{alignItems:'center', justifyContent:'flex-start', flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#2883e1', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={NitrogenIcon} style={{width:60, height:60}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Cek Kadar Nitrogen</Text>
+              </TouchableOpacity>
+              
+              
+              <TouchableOpacity onPress={()=> navigation.navigate('PenyakitTanaman')} style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#06934f', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={HamaPenyakitIcon} style={{width:50, height:50}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Deteksi Hama & Penyakit</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#2883e1', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={CuacaIcon} style={{width:50, height:50}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Cuaca</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#d34539', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={UsahaTaniIcon} style={{width:50, height:50}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Pencatatan Usaha Tani</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.MenuBox}>
+              {/* Icon Menu */}
+              <TouchableOpacity style={{alignItems:'center', justifyContent:'flex-start', flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#d34539', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={PermodalanIcon} style={{width:50, height:50}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Permodalan</Text>
+              </TouchableOpacity>
+              
+              
+              <TouchableOpacity style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#2883e1', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={MarketplaceIcon} style={{width:50, height:50}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Pemasaran</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#fec043', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={DiskusiIcon} style={{width:50, height:50}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Grup Diskusi</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#06934f', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={TanyaPakaricon} style={{width:50, height:50}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Tanya Pakar</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
           
-          {/* Scan Tanaman */}
+          {/* Daftar Controller */}
           <View style={{flexDirection:'row', width:'100%', paddingHorizontal:20, marginTop:20}}>
-            <TouchableOpacity style={styles.BoxScanTanaman} onPress={()=>navigation.navigate('AIDetectPlant')}>
-              <Text style={styles.TextScan}>Scan Tanaman</Text>
+            <TouchableOpacity style={styles.BoxDaftarController} onPress={()=>DaftarControllerCek()}>
+              <Text style={styles.TextScan}>Daftar Controller</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.BoxSetKanal} onPress={()=>navigation.navigate('TambahController')}>
               <AntDesign name="pluscircleo" size={20} color="black" />
@@ -174,70 +285,23 @@ const Dashboard = ({navigation}) => {
               </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={{width:'100%', marginTop:20, paddingHorizontal:20, position:'relative', marginBottom:10}} onPress={()=>navigation.navigate('CekTanah')}>
+          <TouchableOpacity style={{width:'100%', marginTop:20, paddingHorizontal:20, position:'relative', marginBottom:10}}>
             <View style={{height:160, backgroundColor:'#8CEC8A', opacity:0.3, borderRadius:20}}>
             </View>
             <View style={{width:240, position:'absolute', left:40, top:20}}>
-              <Text style={{fontFamily:'Philosopher-Bold', fontSize:18, color:'black', position:'absolute'}}>Cek Kesuburan Tanah Lahan Pertanian</Text>
+              <Text style={{fontFamily:'Philosopher-Bold', fontSize:18, color:'black', position:'absolute'}}>Cari Produk Hasil Pertanian Nusantara</Text>
             </View>
             <View style={{width:160, position:'absolute', left:40, top:80}}>
-              <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'#0D986A', position:'absolute'}}>Hidupkan perangkat IoT dan tancapkan sensor ke tanah</Text>
+              <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'#0D986A', position:'absolute'}}>Penuhi kebutuhan usaha anda dengan produk unggulan pertanian Indonesia</Text>
             </View>
             <View style={{width:50,height:50, borderRadius:25, position:'absolute', backgroundColor:'#0D986A', right:40, top:20}}></View>
             <View style={{width:15,height:15, borderRadius:15/2, position:'absolute', backgroundColor:'#0D986A', left:30, top:5}}></View>
             <View style={{width:10,height:10, borderRadius:10/2, position:'absolute', backgroundColor:'#0D986A', left:23, top:30}}></View>
             <View style={{width:30,height:30, borderRadius:30/2, position:'absolute', backgroundColor:'#0D986A', right:23, top:70}}></View>
             <View style={{width:20,height:20, borderRadius:20/2, position:'absolute', backgroundColor:'#0D986A', left:170, bottom:10}}></View>
-            <TouchableOpacity style={{backgroundColor:'#0D986A', borderRadius:10, paddingHorizontal:20, paddingVertical:5, position:'absolute', bottom:30, right:80}} onPress={()=>navigation.navigate('CekTanah')}>
-              <Text style={{fontFamily:'Poppins-Bold', fontSize:12, color:'white'}}>Mulai</Text>
+            <TouchableOpacity style={{backgroundColor:'#0D986A', borderRadius:10, paddingHorizontal:20, paddingVertical:5, position:'absolute', bottom:30, right:60}} onPress={()=>navigation.navigate('CekTanah')}>
+              <Text style={{fontFamily:'Poppins-Bold', fontSize:12, color:'white'}}>Cek Sekarang</Text>
             </TouchableOpacity>
-          </TouchableOpacity>
-
-          {/* Simco */}
-          <TouchableOpacity style={{width:'100%', paddingHorizontal:20, marginTop:10, alignItems:'center', justifyContent:'center', position:'relative'}} onPress={()=>navigation.navigate('WebviewSimco')}>
-              <View style={styles.JajarGenjangSimco}>
-              </View>
-              <View style={{position:'absolute', left:50, top:25, width:'50%'}}>
-                <Text style={{fontFamily:'Philosopher-Bold', fontSize:18, color:'#0c5039'}}>SIMCO</Text>
-                <Text style={{fontFamily:'Philosopher', fontSize:12, color:'#0c5039'}}>Sistem Informasi Monitoring dan Control Pertanian. </Text>
-              </View>
-              <View style={{position:'absolute', left:50, top:25, width:'80%', position:'absolute', left:50, top:115,}}>
-                <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black'}}>"Anda dapat memantau data kelembagaan, sarana & prasarana, potensi wilayah, ketenagaan penyuluh, data dukung layanan, dan masih banyak yang lainnya"  </Text>
-
-              </View>
-              <View style={{position:'absolute', right:50, bottom:90}}>
-                <Image source={Simco} style={{width:90, height:120,resizeMode:'contain'}} />
-              </View>
-          </TouchableOpacity>
-          
-          {/* Sawentar */}
-          <TouchableOpacity style={{width:'100%', paddingHorizontal:20, marginTop:10, alignItems:'center', justifyContent:'center', position:'relative'}} onPress={()=>navigation.navigate('WebviewSawentar')}>
-              <View style={styles.JajarGenjangSawentar}>
-              </View>
-              <View style={{position:'absolute', left:50, top:0, width:'50%'}}>
-              <Image source={Sawentar} style={{width:200, height:120,resizeMode:'contain'}} />
-              </View>
-              <View style={{width:'80%', position:'absolute', left:50, top:110,}}>
-                <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black'}}>"Cek pemetaan tanaman dengan mudah dan dapatkan rekomendasi tanaman yang sesuai berdasarkan letak geografis"</Text>
-
-              </View>
-          </TouchableOpacity>
-          
-          {/* Penyuluhan */}
-          <TouchableOpacity style={{width:'100%', paddingHorizontal:20, marginTop:10, alignItems:'center', justifyContent:'center', position:'relative'}} onPress={()=>navigation.navigate('WebviewPenyuluhan')}>
-              <View style={styles.JajarGenjangPenyuluhan}>
-              </View>
-              <View style={{position:'absolute', left:50, top:25, width:'50%'}}>
-                <Text style={{fontFamily:'Philosopher-Bold', fontSize:18, color:'#0c5039'}}>Petani Kita</Text>
-                <Text style={{fontFamily:'Philosopher', fontSize:12, color:'#0c5039'}}>Sistem input data pertanian oleh penyuluh lapangan</Text>
-              </View>
-              <View style={{position:'absolute', left:50, top:25, width:'80%', position:'absolute', left:50, top:115,}}>
-                <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black'}}>"Penyuluh dapat memasukkan seluruh data yang berkaitan dengan pertanian, sehingga semua data dapat dikelola dengan cepat dan mudah"  </Text>
-
-              </View>
-              <View style={{position:'absolute', right:50, bottom:90}}>
-                <Image source={Penyuluhan} style={{width:90, height:120,resizeMode:'contain'}} />
-              </View>
           </TouchableOpacity>
         </ScrollView>
 
@@ -308,7 +372,7 @@ const styles = StyleSheet.create({
     fontSize:12,
     color:'black'
   },
-  BoxScanTanaman:{
+  BoxDaftarController:{
     borderWidth:1,
     borderRadius:10,
     height:40,
@@ -401,5 +465,26 @@ const styles = StyleSheet.create({
     borderBottomRightRadius:50,
     borderTopLeftRadius:50,
     borderBottomLeftRadius:50,
+  },
+  MenuBox:{
+    flexDirection:'row',
+    marginHorizontal:5,
+    marginBottom:5
+  },
+  MenuListBox:{
+    paddingVertical:15,
+    marginTop:10,
+    marginHorizontal:10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
+    backgroundColor:'white',
+    borderRadius:10,
   }
 })

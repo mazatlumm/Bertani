@@ -26,7 +26,7 @@ const TopBar = () => {
                 <Image source={TopBarIcon2} style={{width:35, resizeMode:'contain'}} />
             </View>
             <View style={{flex:2, justifyContent:'flex-start'}}>
-                <Text style={styles.TopBarText}>Kelas Bertani</Text>
+                <Text style={styles.TopBarText}>Bertani</Text>
             </View>
             <TouchableOpacity style={{flex:0.5, alignItems:'flex-end'}}>
                 <Image source={MenuIcon} style={{width:35, resizeMode:'contain'}} />

@@ -26,6 +26,9 @@ const UbahProfile = ({navigation}) => {
     const [Password, setPassword] = useState('');
     const [PasswordKonf, setPasswordKonf] = useState('');
     const [Pekerjaan, setPekerjaan] = useState('');
+    const [Email, setEmail] = useState('');
+    const [NoTelp, setNoTelp] = useState('');
+    const [AlamatRumah, setAlamatRumah] = useState('');
 
     const SimpanDataUSerAsyn = async (value) => {
         try {
@@ -45,6 +48,9 @@ const UbahProfile = ({navigation}) => {
         username: Username,
         nama: NamaPengguna,
         pekerjaan: Pekerjaan,
+        email: Email,
+        no_telp: NoTelp,
+        alamat: AlamatRumah,
         password: Password,
         }
 
@@ -90,6 +96,9 @@ const UbahProfile = ({navigation}) => {
         setNamaPengguna(ParsingDataUser[0].nama);
         setUsername(ParsingDataUser[0].username);
         setPekerjaan(ParsingDataUser[0].pekerjaan);
+        setNoTelp(ParsingDataUser[0].no_telp);
+        setAlamatRumah(ParsingDataUser[0].alamat);
+        setEmail(ParsingDataUser[0].email);
         } catch(e) {
         // error reading value
         }
@@ -166,6 +175,43 @@ const UbahProfile = ({navigation}) => {
                     </View>
                 </View>
                 <View style={styles.FormInput}>
+                    <Text style={styles.TextPoppins}>Email</Text>
+                    <View style={styles.FormInputBox}>
+                        <TextInput style={styles.TextInputForm} 
+                        onChangeText={Email => setEmail(Email)}
+                        defaultValue={Email}
+                        />
+                    </View>
+                </View>
+                <View style={styles.FormInput}>
+                    <Text style={styles.TextPoppins}>Pekerjaan</Text>
+                    <View style={styles.FormInputBox}>
+                        <TextInput style={styles.TextInputForm} 
+                        onChangeText={Pekerjaan => setPekerjaan(Pekerjaan)}
+                        defaultValue={Pekerjaan}
+                        />
+                    </View>
+                </View>
+                <View style={styles.FormInput}>
+                    <Text style={styles.TextPoppins}>No Telepon/WA</Text>
+                    <View style={styles.FormInputBox}>
+                        <TextInput style={styles.TextInputForm} 
+                        onChangeText={NoTelp => setNoTelp(NoTelp)}
+                        defaultValue={NoTelp}
+                        keyboardType={'phone-pad'}
+                        />
+                    </View>
+                </View>
+                <View style={styles.FormInput}>
+                    <Text style={styles.TextPoppins}>Alamat Rumah</Text>
+                    <View style={styles.FormInputBox}>
+                        <TextInput style={styles.TextInputForm} 
+                        onChangeText={AlamatRumah => setAlamatRumah(AlamatRumah)}
+                        defaultValue={AlamatRumah}
+                        />
+                    </View>
+                </View>
+                <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>Password</Text>
                     <View style={styles.FormInputBox}>
                         <TextInput style={styles.TextInputForm} secureTextEntry={true} 
@@ -184,15 +230,6 @@ const UbahProfile = ({navigation}) => {
                     </View>
                     {WarningPassword()}
                 </View>
-                <View style={styles.FormInput}>
-                    <Text style={styles.TextPoppins}>Tugas/Jabatan/Status</Text>
-                    <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} 
-                        onChangeText={Pekerjaan => setPekerjaan(Pekerjaan)}
-                        defaultValue={Pekerjaan}
-                        />
-                    </View>
-                </View>
                 
 
                 <TouchableOpacity style={styles.BtnBox} onPress={()=>SimpanDataUser()}>
@@ -207,7 +244,7 @@ const UbahProfile = ({navigation}) => {
           <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
             <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}}>
+          <TouchableOpacity onPress={()=>navigation.navigate('FavouriteLocalData')} style={{flex:1, alignItems:'center'}}>
             <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
           <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})}>
@@ -230,7 +267,7 @@ const styles = StyleSheet.create({
             marginTop:50,
             },
             android:{
-            marginTop:35
+            marginTop:10
             }
         }),
     width:'100%', 
@@ -258,7 +295,7 @@ const styles = StyleSheet.create({
                 height:90,
             },
             android:{
-                height:70
+                height:50
             }
         }), 
         backgroundColor:'#9CE5CB', 

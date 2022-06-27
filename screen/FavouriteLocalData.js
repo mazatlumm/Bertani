@@ -19,13 +19,27 @@ const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))
 
 const FavouriteLocalData = ({navigation, route}) => {
 
+    const [IDUser, setIDUser] = useState('');
     const [DataFlatList, setDataFlatList] = useState([]);
     const [modalVisibleFavourite, setmodalVisibleFavourite] = useState(false);
     
     const isFocused = useIsFocused();
     useEffect(() => {
+        LihatDataUser();
         CekAsynFavourite();
     }, [isFocused])
+
+    const LihatDataUser =  async() => {
+        try {
+        const jsonValue = await AsyncStorage.getItem('@DataUser')
+        const ParsingDataUser = JSON.parse(jsonValue);
+        // console.log(jsonValue)
+        setIDUser(ParsingDataUser[0].id_user);
+
+        } catch(e) {
+        // error reading value
+        }
+    }
     
     const CekAsynFavourite =  async() => {
         try {
@@ -189,7 +203,7 @@ const FavouriteLocalData = ({navigation, route}) => {
           <TouchableOpacity style={{flex:1, alignItems:'center'}}>
             <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
           </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}}>
+          <TouchableOpacity onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})} style={{flex:1, alignItems:'center'}}>
             {/* <Image source={iconBag} style={{height:24, width:24, resizeMode:'contain'}} /> */}
             <SimpleLineIcons name="game-controller" size={24} color="black" />          
           </TouchableOpacity>

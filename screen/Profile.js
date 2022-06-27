@@ -5,6 +5,8 @@ import TopBar from './TopBar';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import { useIsFocused } from '@react-navigation/native';
+import * as ImagePicker from 'expo-image-picker';
+import axios from 'axios';
 
 import plantGrow from '../assets/images/plantGrow.png'
 import IconSmile from '../assets/images/IconSmile.png'
@@ -34,6 +36,10 @@ const Profile = ({navigation}) => {
     const [Password, setPassword] = useState('');
     const [PasswordKonf, setPasswordKonf] = useState('');
     const [DataListUser, setDataListUser] = useState('');
+    const [Email, setEmail] = useState('');
+    const [NoTelp, setNoTelp] = useState('');
+    const [AlamatRumah, setAlamatRumah] = useState('');
+    const [ProfileImage, setProfileImage] = useState('');
 
     const LihatDataUser =  async() => {
         try {
@@ -45,11 +51,87 @@ const Profile = ({navigation}) => {
         setUsername(ParsingDataUser[0].username);
         setPekerjaan(ParsingDataUser[0].pekerjaan);
         setRole(ParsingDataUser[0].role);
+        setProfileImage(ParsingDataUser[0].photo);
+        CekDataUserUpdate(ParsingDataUser[0].id_user);
 
         } catch(e) {
         // error reading value
         }
     }
+
+    const CekDataUserUpdate =  async(id_user) => {
+        var myHeaders = new Headers();
+
+        var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+        };
+
+        console.log('fetch user dengan id: ' + id_user)
+
+        fetch("https://alicestech.com/kelasbertani/api/user/detail?id_user="+id_user, requestOptions)
+        .then(response => response.json())
+        .then(result => {
+            if(result.status == true){
+                console.log(result.result);
+                setNamaPengguna(result.result[0].nama);
+                setUsername(result.result[0].username);
+                setPekerjaan(result.result[0].pekerjaan);
+                setEmail(result.result[0].email);
+                setAlamatRumah(result.result[0].alamat);
+                setNoTelp(result.result[0].no_telp);
+                setProfileImage(result.result[0].photo);
+            }else{
+                console.log('Gagal Mendapatkan Data User')
+            }
+        })
+        .catch(error => console.log('error', error));
+    }
+
+    const pickImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [4, 4],
+          quality: 1,
+        });
+    
+        console.log(result);
+    
+        if (!result.cancelled) {
+
+            var myHeaders = new Headers();
+            
+            let localUri = result.uri;
+            let filename = localUri.split('/').pop();
+          
+            // Infer the type of the image
+            let match = /\.(\w+)$/.exec(filename);
+            let type = match ? `image/${match[1]}` : `image`;
+
+            var formdata = new FormData();
+            formdata.append("id_user", IDUser);
+            formdata.append("image", { uri: localUri, name: filename, type: type});
+            
+            var requestOptions = {
+              method: 'POST',
+              headers: myHeaders,
+              body: formdata,
+              redirect: 'follow'
+            };
+        
+            await fetch("https://alicestech.com/kelasbertani/api/user/photo_profile", requestOptions)
+              .then(response => response.json())
+              .then(result => {
+                  console.log(result);
+                  setProfileImage(result.photo)
+              })
+              .catch(error => console.log('error', error));
+          
+        }
+    };
 
     const CekPassword = (cek) => {
         setPasswordKonf(cek);
@@ -67,7 +149,7 @@ const Profile = ({navigation}) => {
                     <Text style={styles.TextPoppinsBold}>{NamaPengguna}</Text>
                     <Text style={styles.TextPoppins}>{Pekerjaan}</Text>
                     <TouchableOpacity style={styles.BoxBtn} onPress={()=>navigation.navigate('UbahProfile')}>
-                        <Text style={styles.TextBtn}>Ubah Akses</Text>
+                        <Text style={styles.TextBtn}>Ubah Data User</Text>
                         <AntDesign name="key" size={14} color="white" style={{marginLeft:5}} />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.BoxBtnLogout} onPress={()=>LogoutGo()}>
@@ -267,6 +349,7 @@ const Profile = ({navigation}) => {
     const isFocused = useIsFocused();
     useEffect(() => {
         LihatDataUser();
+        CekDataUserUpdate();
         GetDataUser();
       }, [isFocused]);
 
@@ -316,9 +399,12 @@ const Profile = ({navigation}) => {
             </View>
 
             <View style={{flexDirection:'row', alignItems:'center', justifyContent:'flex-start', paddingHorizontal:10, marginTop:25}}>
-                <View style={{backgroundColor:'#E2E2E2', width:100, height:100, borderRadius:50, alignItems:'center', justifyContent:'center'}}>
+                <TouchableOpacity onPress={()=> pickImage()} style={{backgroundColor:'#E2E2E2', width:100, height:100, borderRadius:50, alignItems:'center', justifyContent:'center'}}>
+                {ProfileImage == '' ? 
                     <Image source={UserImage} style={{width:70, resizeMode:'contain'}} />
-                </View>
+                    : <Image source={{uri: 'https://alicestech.com/kelasbertani/upload/profile/'+ProfileImage}} style={{width:70, height:70, resizeMode:'contain'}} />
+                }
+                </TouchableOpacity>
                 {ActionUserAkses()}
             </View>
             {ContentProfile()}

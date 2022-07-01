@@ -5,6 +5,7 @@ module.exports = getDefaultConfig(__dirname);
 
 module.exports = (() => {
     const defaultConfig = getDefaultConfig(__dirname);
+    defaultConfig.resolver.assetExts.push("cjs");
     const { assetExts } = defaultConfig.resolver;
     return {
         resolver: {

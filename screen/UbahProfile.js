@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View, ScrollView, Dimensions, TouchableOpacity, Image, Platform,TextInput, Alert } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Dimensions, TouchableOpacity, Image, Platform,TextInput, Alert, Modal } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import TopBar from './TopBar';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import DatePicker from 'react-native-date-picker'
 
 import iconLove from '../assets/images/iconLove.png'
 import iconHome from '../assets/images/iconHome.png'
@@ -29,6 +30,11 @@ const UbahProfile = ({navigation}) => {
     const [Email, setEmail] = useState('');
     const [NoTelp, setNoTelp] = useState('');
     const [AlamatRumah, setAlamatRumah] = useState('');
+    const [Gender, setGender] = useState('Pilih Jenis Kelamin');
+    const [TanggalLahir, setTanggalLahir] = useState('Tanggal Lahir')
+    const [modalVisibleJenisKelamin, setModalVisibleJenisKelamin] = useState(false);
+    const [date, setDate] = useState(new Date())
+    const [open, setOpen] = useState(false)
 
     const SimpanDataUSerAsyn = async (value) => {
         try {
@@ -44,14 +50,16 @@ const UbahProfile = ({navigation}) => {
         console.log('Ubah User Data');
 
         var dataToSend = { 
-        id_user:IDUser,
-        username: Username,
-        nama: NamaPengguna,
-        pekerjaan: Pekerjaan,
-        email: Email,
-        no_telp: NoTelp,
-        alamat: AlamatRumah,
-        password: Password,
+            id_user:IDUser,
+            username: Username,
+            nama: NamaPengguna,
+            pekerjaan: Pekerjaan,
+            email: Email,
+            no_telp: NoTelp,
+            alamat: AlamatRumah,
+            password: Password,
+            gender: Gender,
+            birthday: TanggalLahir,
         }
 
         var formBody = [];
@@ -99,9 +107,16 @@ const UbahProfile = ({navigation}) => {
         setNoTelp(ParsingDataUser[0].no_telp);
         setAlamatRumah(ParsingDataUser[0].alamat);
         setEmail(ParsingDataUser[0].email);
+        setGender(ParsingDataUser[0].gender);
+        setTanggalLahir(ParsingDataUser[0].birthday);
         } catch(e) {
         // error reading value
         }
+    }
+
+    const PilihKelamin = (jenis) => {
+        setModalVisibleJenisKelamin(!modalVisibleJenisKelamin);
+        setGender(jenis);
     }
 
     const CekPassword = (cek) => {
@@ -140,6 +155,47 @@ const UbahProfile = ({navigation}) => {
       }
   return (
     <View style={{ flex: 1, alignItems: 'center'}}>
+        <DatePicker
+            modal
+            open={open}
+            date={date}
+            onConfirm={(date) => {
+                setOpen(false)
+                setDate(date)
+                var formattedDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+
+                setTanggalLahir(formattedDate)
+            }}
+            onCancel={() => {
+                setOpen(false)
+            }}
+            mode={"date"}
+            title={"Pilih Tanggal Lahir"}
+            confirmText={"Selesai"}
+            cancelText={"Batal"}
+            locale="id"
+        />
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisibleJenisKelamin}
+            onRequestClose={() => {
+                Alert.alert("Modal has been closed.");
+                setModalVisibleJenisKelamin(!modalVisibleJenisKelamin);
+            }}
+            >
+            <View style={{backgroundColor:'rgba(0, 0, 0, 0.3)', flex:1, alignItems:'center', justifyContent:'center', paddingHorizontal:20}}>
+                <View style={{backgroundColor:'white', paddingHorizontal:10, paddingVertical:20, borderRadius:10, width:'100%', paddingHorizontal:20}}>
+                    <Text style={styles.TextInputForm}>Pilih Jenis Kelamin</Text>
+                    <TouchableOpacity onPress={()=>PilihKelamin('Laki-Laki')} style={{borderWidth:1, borderRadius:10, paddingHorizontal:10, paddingVertical:5, alignItems:'center', marginTop:10}}>
+                    <Text style={styles.TextInputForm}>Laki-Laki</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>PilihKelamin('Perempuan')} style={{borderWidth:1, borderRadius:10, paddingHorizontal:10, paddingVertical:5, alignItems:'center', marginTop:10}}>
+                    <Text style={styles.TextInputForm}>Perempuan</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
         <ScrollView style={{marginBottom:50, width:windowWidth}}>
             <View style={styles.ColorTopBar}></View>
             {/* Top Bar */}
@@ -155,86 +211,98 @@ const UbahProfile = ({navigation}) => {
             </View>
             
             <View style={{marginHorizontal:20, marginTop:20, marginBottom:10}}>
-                <View style={styles.FormInput}>
-                    <Text style={styles.TextPoppins}>Nama Lengkap</Text>
-                    <View style={styles.FormInputBox}>
-                        <TextInput 
-                        style={styles.TextInputForm} 
-                        onChangeText={NamaPengguna => setNamaPengguna(NamaPengguna)}
-                        defaultValue={NamaPengguna}
-                        />
-                    </View>
+            <View style={styles.FormInput}>
+                <View style={styles.FormInputBox}>
+                    <TextInput 
+                    style={styles.TextInputForm} 
+                    onChangeText={NamaPengguna => setNamaPengguna(NamaPengguna)}
+                    defaultValue={NamaPengguna}
+                    placeholder='Nama Lengkap'
+                    />
                 </View>
-                <View style={styles.FormInput}>
-                    <Text style={styles.TextPoppins}>Username</Text>
-                    <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} 
-                        onChangeText={Username => setUsername(Username)}
-                        defaultValue={Username}
-                        />
+            </View>
+            <View style={styles.FormInputList}>
+                <TouchableOpacity style={styles.FormInputBoxList} onPress={() => setModalVisibleJenisKelamin(!modalVisibleJenisKelamin)}>
+                    <View>
+                    <Text style={styles.TextInputFormList}>{Gender}</Text>
                     </View>
-                </View>
-                <View style={styles.FormInput}>
-                    <Text style={styles.TextPoppins}>Email</Text>
-                    <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} 
-                        onChangeText={Email => setEmail(Email)}
-                        defaultValue={Email}
-                        />
-                    </View>
-                </View>
-                <View style={styles.FormInput}>
-                    <Text style={styles.TextPoppins}>Pekerjaan</Text>
-                    <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} 
-                        onChangeText={Pekerjaan => setPekerjaan(Pekerjaan)}
-                        defaultValue={Pekerjaan}
-                        />
-                    </View>
-                </View>
-                <View style={styles.FormInput}>
-                    <Text style={styles.TextPoppins}>No Telepon/WA</Text>
-                    <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} 
-                        onChangeText={NoTelp => setNoTelp(NoTelp)}
-                        defaultValue={NoTelp}
-                        keyboardType={'phone-pad'}
-                        />
-                    </View>
-                </View>
-                <View style={styles.FormInput}>
-                    <Text style={styles.TextPoppins}>Alamat Rumah</Text>
-                    <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} 
-                        onChangeText={AlamatRumah => setAlamatRumah(AlamatRumah)}
-                        defaultValue={AlamatRumah}
-                        />
-                    </View>
-                </View>
-                <View style={styles.FormInput}>
-                    <Text style={styles.TextPoppins}>Password</Text>
-                    <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} secureTextEntry={true} 
-                        onChangeText={Password => setPassword(Password)}
-                        defaultValue={Password}
-                        />
-                    </View>
-                </View>
-                <View style={styles.FormInput}>
-                    <Text style={styles.TextPoppins}>Konfirmasi Password</Text>
-                    <View style={styles.FormInputBox}>
-                        <TextInput style={styles.TextInputForm} secureTextEntry={true} 
-                        onChangeText={PasswordKonf => CekPassword(PasswordKonf)}
-                        defaultValue={PasswordKonf}
-                        />
-                    </View>
-                    {WarningPassword()}
-                </View>
-                
-
-                <TouchableOpacity style={styles.BtnBox} onPress={()=>SimpanDataUser()}>
-                    <Text style={styles.BtnTitle}>Simpan Data</Text>
                 </TouchableOpacity>
+            </View>
+            <View style={styles.FormInputList}>
+                <TouchableOpacity style={styles.FormInputBoxList} onPress={() => setOpen(true)}>
+                    <View>
+                    <Text style={styles.TextInputFormList}>{TanggalLahir}</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.FormInput}>
+                <View style={styles.FormInputBox}>
+                    <TextInput style={styles.TextInputForm} 
+                    onChangeText={Username => setUsername(Username)}
+                    defaultValue={Username}
+                    placeholder='Username'
+                    />
+                </View>
+            </View>
+            <View style={styles.FormInput}>
+                <View style={styles.FormInputBox}>
+                    <TextInput style={styles.TextInputForm} 
+                    onChangeText={Email => setEmail(Email)}
+                    defaultValue={Email}
+                    placeholder='Email Aktif'
+                    />
+                </View>
+            </View>
+            <View style={styles.FormInput}>
+                <View style={styles.FormInputBox}>
+                    <TextInput style={styles.TextInputForm} 
+                    onChangeText={Pekerjaan => setPekerjaan(Pekerjaan)}
+                    defaultValue={Pekerjaan}
+                    placeholder='Pekerjaan'
+                    />
+                </View>
+            </View>
+            <View style={styles.FormInput}>
+                <View style={styles.FormInputBox}>
+                    <TextInput style={styles.TextInputForm} 
+                    onChangeText={NoTelp => setNoTelp(NoTelp)}
+                    defaultValue={NoTelp}
+                    keyboardType={'phone-pad'}
+                    placeholder='Nomor Handphone/WA'
+                    />
+                </View>
+            </View>
+            <View style={styles.FormInput}>
+                <View style={styles.FormInputBox}>
+                    <TextInput style={styles.TextInputForm} 
+                    onChangeText={AlamatRumah => setAlamatRumah(AlamatRumah)}
+                    defaultValue={AlamatRumah}
+                    placeholder='Alamat Rumah'
+                    />
+                </View>
+            </View>
+            <View style={styles.FormInput}>
+                <View style={styles.FormInputBox}>
+                    <TextInput style={styles.TextInputForm} secureTextEntry={true} 
+                    onChangeText={Password => setPassword(Password)}
+                    defaultValue={Password}
+                    placeholder='Password'
+                    />
+                </View>
+            </View>
+            <View style={styles.FormInput}>
+                <View style={styles.FormInputBox}>
+                    <TextInput style={styles.TextInputForm} secureTextEntry={true} 
+                    onChangeText={PasswordKonf => CekPassword(PasswordKonf)}
+                    defaultValue={PasswordKonf}
+                    placeholder='Ketik Ulang Password'
+                    />
+                </View>
+                {WarningPassword()}
+            </View>
+            <TouchableOpacity style={styles.BtnBox} onPress={()=>SimpanDataUser()}>
+                <Text style={styles.BtnTitle}>Simpan Data</Text>
+            </TouchableOpacity>
             </View>
            
         </ScrollView>
@@ -376,6 +444,24 @@ const styles = StyleSheet.create({
     FormInput:{
         marginTop:10,
     },
+    TextInputFormList:{
+        fontFamily:'Poppins-Regular',
+        color:'black',
+        fontSize:12
+    },
+    FormInputBoxList:{
+        borderWidth:1,
+        borderRadius:10,
+        paddingHorizontal:0,
+        paddingVertical:0,
+        zIndex:10,
+        paddingVertical:10,
+        paddingHorizontal:10
+    },
+    FormInputList:{
+        marginTop:10,
+        zIndex:10
+      },
     FormInputBox:{
         borderWidth:1,
         borderRadius:10,

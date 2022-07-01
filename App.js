@@ -32,6 +32,12 @@ import CaptureDaun from './screen/CaptureDaun';
 import WebviewSimco from './screen/WebviewSimco';
 import WebviewSawentar from './screen/WebviewSawentar';
 import WebviewPenyuluhan from './screen/WebviewPenyuluhan';
+import RegisterScreen from './screen/RegisterScreen';
+import ResetPassword from './screen/ResetPassword';
+import Cuaca from './screen/Cuaca';
+import RoomDiskusi from './screen/RoomDiskusi';
+import ListTopikDiskusi from './screen/ListTopikDiskusi';
+import ListTopikFavorit from './screen/ListTopikFavorit';
 
 const Stack = createNativeStackNavigator();
 
@@ -67,6 +73,12 @@ function App() {
         <Stack.Screen name="WebviewSimco" component={WebviewSimco} options={{headerShown:false}} />
         <Stack.Screen name="WebviewSawentar" component={WebviewSawentar} options={{headerShown:false}} />
         <Stack.Screen name="WebviewPenyuluhan" component={WebviewPenyuluhan} options={{headerShown:false}} />
+        <Stack.Screen name="RegisterScreen" component={RegisterScreen} options={{headerShown:false}} />
+        <Stack.Screen name="ResetPassword" component={ResetPassword} options={{headerShown:false}} />
+        <Stack.Screen name="Cuaca" component={Cuaca} options={{headerShown:false}} />
+        <Stack.Screen name="RoomDiskusi" component={RoomDiskusi} options={{headerShown:false}}/>
+        <Stack.Screen name="ListTopikDiskusi" component={ListTopikDiskusi} options={{headerShown:false}}/>
+        <Stack.Screen name="ListTopikFavorit" component={ListTopikFavorit} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

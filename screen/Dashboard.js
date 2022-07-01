@@ -1,5 +1,7 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, ScrollView, Alert, StatusBar} from 'react-native'
+import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, ScrollView, Alert, StatusBar, ActivityIndicator, Modal} from 'react-native'
 import React, {useEffect, useState} from 'react'
+import * as Location from 'expo-location';
+import axios from 'axios';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import Farmer from '../assets/images/farmer.png'
@@ -43,6 +45,7 @@ const Dashboard = ({navigation}) => {
 
   const [IDUser, setIDUser] = useState(0);
   const [IDController, setIDController] = useState(0);
+  const [NamaUser, setNamaUser] = useState('Perangkat');
   const [NamaPerangkat, setNamaPerangkat] = useState('Perangkat');
   const [JenisTanaman, setJenisTanaman] = useState('');
   const [HumMin, setHumMin] = useState(0);
@@ -52,11 +55,23 @@ const Dashboard = ({navigation}) => {
   const [hidden, setHidden] = useState(false);
   const [statusBarStyle, setStatusBarStyle] = useState(STYLES[0]);
   const [statusBarTransition, setStatusBarTransition] = useState(TRANSITIONS[0]);
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [Suhu, setSuhu] = useState('');
+  const [Kelembaban, setKelembaban] = useState('');
+  const [TekananUdara, setTekananUdara] = useState('');
+  const [IconCuaca, setIconCuaca] = useState('');
+  const [Altitude, setAltitude] = useState('');
+  const [DeskripsiCuaca, setDeskripsiCuaca] = useState('');
+  const [AddressFull, setAddressFull] = useState('');
+  const [modalActivityIndicator, setmodalActivityIndicator] = useState(true);
 
   const isFocused = useIsFocused();
   useEffect(() => {
+    setmodalActivityIndicator(true)
     console.log('Cek Data user di Dashboard');
     LihatDataUser()
+    CekLokasi()
   }, [isFocused])
 
   const LihatDataUser =  async() => {
@@ -66,12 +81,61 @@ const Dashboard = ({navigation}) => {
     console.log(jsonValue)
     console.log(ParsingDataUser[0].id_user)
     if(ParsingDataUser[0].id_user){
+        setNamaUser(ParsingDataUser[0].nama);
         GetController(ParsingDataUser[0].id_user);
     }
     } catch(e) {
     // error reading value
     }
-}
+  }
+
+  const CekLokasi = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync({});
+      console.log(location.coords);
+      setAltitude(location.coords.altitude);
+
+      const latitude = location.coords.latitude;
+      const longitude = location.coords.longitude;
+      
+      let GeoCodingData = await Location.reverseGeocodeAsync({
+        latitude,
+        longitude
+      });
+
+      console.log(GeoCodingData);
+      setAddressFull(GeoCodingData[0].district + ', ' + GeoCodingData[0].city)
+
+      await axios.get('https://api.openweathermap.org/data/2.5/onecall?', {
+        params: {
+          lat: location.coords.latitude,
+          lon: location.coords.longitude,
+          exclude: 'daily,minutely,hourly',
+          appid: '3805c5b035c59b637431659685137022',
+          units: 'metric',
+          lang: 'id'
+        }
+      })
+      .then(response => {
+        console.log(response.data)
+        setIconCuaca('http://openweathermap.org/img/wn/'+response.data.current.weather[0].icon +'.png')
+        let SuhuCek = response.data.current.temp
+        setSuhu(Math.ceil(SuhuCek))
+        setKelembaban(response.data.current.humidity)
+        setTekananUdara(response.data.current.pressure)
+        setDeskripsiCuaca(response.data.current.weather[0].description.replace(/\b(\w)/g, s => s.toUpperCase()));
+        setmodalActivityIndicator(false);
+      })
+      .catch(e => {
+        if (e.response.status === 404) {
+          console.log(e.response.data)
+        }
+      });
+  }
 
   const GetController = async (id_user) => {
     try {
@@ -125,6 +189,21 @@ const Dashboard = ({navigation}) => {
 
   return (
     <SafeAreaView style={{ flex: 1, alignItems: 'center'}}>
+       <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalActivityIndicator}
+          onRequestClose={() => {
+            setmodalActivityIndicator(!modalActivityIndicator);
+          }}
+        >
+          <View style={{flex: 1, alignItems: "center", justifyContent: 'center', padding: 10, backgroundColor:'rgba(0, 0, 0, 0.2)'}}>
+              <ActivityIndicator size="large" color="#00ff00" />
+            {/* <View style={{paddingHorizontal:20, paddingVertical:20, marginHorizontal:20, backgroundColor:'white', borderRadius:10}}>
+              <Text style={styles.TextDeskrispiLoading}>Cek Lokasi Dan Data Cuaca</Text>
+            </View> */}
+        </View>
+        </Modal>
       <StatusBar
         animated={true}
         backgroundColor="green"
@@ -139,11 +218,34 @@ const Dashboard = ({navigation}) => {
           <View style={{width:'100%', paddingHorizontal:10, marginTop:10}}>
             <View style={styles.BoxGreating}>
               <Image source={Farmer} style={styles.FarmerImg} />
-              <View style={{width:175, marginLeft:15, marginTop:45}}>
+              <View style={{width:175, marginLeft:15}}>
                 <Text style={styles.TextGreating}>Teknologi AI dan IoT Pertanian</Text>
               </View>
-              <View style={{width:160, marginLeft:15, marginTop:20}}>
-                <Text style={styles.TextGreatingExpln}>Monitoring & Control 100% Online 24/7</Text>
+              <View style={{width:180, marginLeft:15, marginTop:0, alignItems:'center', flexDirection:'row'}}>
+                  <SimpleLineIcons name="location-pin" size={12} color="black" style={{paddingRight:5}}/>
+                  <Text style={styles.TextDeskrispiCuaca}>{AddressFull}</Text>
+              </View>
+              <View style={{width:180, marginLeft:15, marginTop:0, alignItems:'center', flexDirection:'row'}}>
+                {IconCuaca != '' ?
+                <View style={{flex:1}}>
+                  <Image source={{uri:IconCuaca}} style={{width:50, height:20,borderWidth:1}}/>
+                  <Text style={styles.TextDeskrispiCuaca}>{DeskripsiCuaca}</Text>
+                </View>
+                : <View></View>
+                }
+                <View style={{alignItems:'flex-end'}}>
+                  <Text style={styles.TextSuhu}>{Suhu}&deg;C</Text>
+                </View>
+              </View>
+              <View style={{width:180, marginLeft:15, marginTop:0, alignItems:'center', flexDirection:'row'}}>
+                <View style={{flex:1}}>
+                  <Text style={styles.TextValueCuaca}>{Kelembaban}%</Text>
+                  <Text style={styles.TextDeskrispiCuaca}>Kelembaban</Text>
+                </View>
+                <View style={{flex:1}}>
+                  <Text style={styles.TextValueCuaca}>{TekananUdara} hPa</Text>
+                  <Text style={styles.TextDeskrispiCuaca}>Tekanan Udara</Text>
+                </View>
               </View>
             </View>
           </View>
@@ -157,28 +259,28 @@ const Dashboard = ({navigation}) => {
                 <View style={{width:70, height:70, backgroundColor:'#fec043', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={Penyuluhan} style={{width:50, height:50}} />
                 </View>
-                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Petani Kita</Text>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Petani Kita</Text>
               </TouchableOpacity>
               
               <TouchableOpacity onPress={()=> navigation.navigate('WebviewSawentar')} style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
                 <View style={{width:70, height:70, backgroundColor:'#d34539', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={LocationIcon} style={{width:50, height:50}} />
                 </View>
-                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Pemetaan Wilayah</Text>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Pemetaan Wilayah</Text>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={()=> navigation.navigate('CekTanah')} style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
                 <View style={{width:70, height:70, backgroundColor:'#06934f', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={TesTanahIcon} style={{width:50, height:50}} />
                 </View>
-                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Tes Tanah</Text>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Tes Tanah</Text>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={()=> DaftarControllerCek()} style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
                 <View style={{width:70, height:70, backgroundColor:'#2883e1', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={PenyiramanIcon} style={{width:50, height:50}} />
                 </View>
-                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Penyiraman Otomatis</Text>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Penyiraman Otomatis</Text>
               </TouchableOpacity>
             </View>
 
@@ -188,7 +290,7 @@ const Dashboard = ({navigation}) => {
                 <View style={{width:70, height:70, backgroundColor:'#2883e1', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={NitrogenIcon} style={{width:60, height:60}} />
                 </View>
-                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Cek Kadar Nitrogen</Text>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Cek Kadar Nitrogen</Text>
               </TouchableOpacity>
               
               
@@ -196,21 +298,21 @@ const Dashboard = ({navigation}) => {
                 <View style={{width:70, height:70, backgroundColor:'#06934f', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={HamaPenyakitIcon} style={{width:50, height:50}} />
                 </View>
-                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Deteksi Hama & Penyakit</Text>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Deteksi Hama & Penyakit</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+              <TouchableOpacity onPress={()=>navigation.navigate('Cuaca')} style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
                 <View style={{width:70, height:70, backgroundColor:'#2883e1', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={CuacaIcon} style={{width:50, height:50}} />
                 </View>
-                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Cuaca</Text>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Cuaca</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
                 <View style={{width:70, height:70, backgroundColor:'#d34539', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={UsahaTaniIcon} style={{width:50, height:50}} />
                 </View>
-                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Pencatatan Usaha Tani</Text>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Pencatatan Usaha Tani</Text>
               </TouchableOpacity>
             </View>
 
@@ -220,7 +322,7 @@ const Dashboard = ({navigation}) => {
                 <View style={{width:70, height:70, backgroundColor:'#d34539', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={PermodalanIcon} style={{width:50, height:50}} />
                 </View>
-                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Permodalan</Text>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Permodalan</Text>
               </TouchableOpacity>
               
               
@@ -228,21 +330,21 @@ const Dashboard = ({navigation}) => {
                 <View style={{width:70, height:70, backgroundColor:'#2883e1', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={MarketplaceIcon} style={{width:50, height:50}} />
                 </View>
-                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Pemasaran</Text>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Pemasaran</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+              <TouchableOpacity onPress={()=>navigation.navigate('ListTopikDiskusi', {IDUser:IDUser})} style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
                 <View style={{width:70, height:70, backgroundColor:'#fec043', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={DiskusiIcon} style={{width:50, height:50}} />
                 </View>
-                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Grup Diskusi</Text>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Grup Diskusi</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
                 <View style={{width:70, height:70, backgroundColor:'#06934f', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={TanyaPakaricon} style={{width:50, height:50}} />
                 </View>
-                <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', marginTop:5, textAlign:'center'}}>Tanya Pakar</Text>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Tanya Pakar</Text>
               </TouchableOpacity>
             </View>
 
@@ -300,7 +402,7 @@ const Dashboard = ({navigation}) => {
             <View style={{width:30,height:30, borderRadius:30/2, position:'absolute', backgroundColor:'#0D986A', right:23, top:70}}></View>
             <View style={{width:20,height:20, borderRadius:20/2, position:'absolute', backgroundColor:'#0D986A', left:170, bottom:10}}></View>
             <TouchableOpacity style={{backgroundColor:'#0D986A', borderRadius:10, paddingHorizontal:20, paddingVertical:5, position:'absolute', bottom:30, right:60}} onPress={()=>navigation.navigate('CekTanah')}>
-              <Text style={{fontFamily:'Poppins-Bold', fontSize:12, color:'white'}}>Cek Sekarang</Text>
+              <Text style={{fontFamily:'Poppins-Bold', fontSize:12, color:'white'}}>Cek</Text>
             </TouchableOpacity>
           </TouchableOpacity>
         </ScrollView>
@@ -351,12 +453,14 @@ const styles = StyleSheet.create({
   BoxGreating:{
     backgroundColor:'#9CE5CB',
     width:'100%',
-    height:200,
+    // height:200,
     borderRadius:10,
+    paddingBottom:10,
+    paddingTop:10,
   },
   FarmerImg:{
-    width:175, 
-    height:175,
+    width:150, 
+    height:150,
     resizeMode:'contain',
     position:'absolute',
     right:0,
@@ -370,7 +474,34 @@ const styles = StyleSheet.create({
   TextGreatingExpln:{
     fontFamily:'Poppins-Regular',
     fontSize:12,
-    color:'black'
+    color:'black',
+  },
+  TextDeskrispiCuaca:{
+    fontFamily:'Poppins-Regular',
+    fontSize:10,
+    color:'black',
+  },
+  TextDeskrispiLoading:{
+    fontFamily:'Poppins-Regular',
+    fontSize:10,
+    color:'black',
+    textAlign:'center'
+  },
+  TextValueCuaca:{
+    fontFamily:'Poppins-Bold',
+    fontSize:12,
+    color:'black',
+  },
+  TextSuhu:{
+    fontFamily:'Poppins-Regular',
+    fontSize:24,
+    color:'black',
+  },
+  TextNamaUser:{
+    fontFamily:'Poppins-Regular',
+    fontSize:12,
+    color:'black',
+    fontWeight:'bold',
   },
   BoxDaftarController:{
     borderWidth:1,

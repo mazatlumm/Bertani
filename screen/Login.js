@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput, ScrollView, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput, ScrollView, Alert, StatusBar } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TopImage from '../assets/images/LoginImage.png'
@@ -6,6 +6,10 @@ import IconUsername from '../assets/images/IconUsername.png'
 import IconPassword from '../assets/images/IconPassword.png'
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
+
+//statusbar
+const STYLES = ['default', 'dark-content', 'light-content'];
+const TRANSITIONS = ['fade', 'slide', 'none'];
 
 // Icon
 import { FontAwesome } from '@expo/vector-icons';
@@ -18,6 +22,10 @@ const Login = ({navigation}) => {
     const [SeePassword, setSeePassword] = useState(true);
     const [HideShowPassword, setHideShowPassword] = useState(true);
     const [IconPassword, setIconPassword] = useState('eye-slash');
+
+    const [hidden, setHidden] = useState(false);
+    const [statusBarStyle, setStatusBarStyle] = useState(STYLES[0]);
+    const [statusBarTransition, setStatusBarTransition] = useState(TRANSITIONS[0]);
 
     useEffect(() => {
         LihatDataUser()
@@ -108,6 +116,12 @@ const Login = ({navigation}) => {
 
   return (
     <View style={{ flex: 1}}>
+        <StatusBar
+        animated={true}
+        backgroundColor="green"
+        barStyle={statusBarStyle}
+        showHideTransition={statusBarTransition}
+        hidden={hidden} />
         <ScrollView>
         <View style={{alignItems: 'center', marginBottom:30}}>
             <Image source={TopImage} style={{width:'100%', resizeMode:'cover',height:400}} />
@@ -139,7 +153,14 @@ const Login = ({navigation}) => {
             <TouchableOpacity style={styles.LoginButton} onPress={()=>getDataUsingPost()}>
                 <Text style={styles.TextLoginButton}>Masuk</Text>
             </TouchableOpacity>
-
+                <Text style={styles.TextFooter}>Belum Memiliki Akun?</Text>
+            <TouchableOpacity style={styles.RegisterButton} onPress={()=>navigation.navigate('RegisterScreen')}>
+                <Text style={styles.TextLoginButton}>Daftar Sekarang</Text>
+            </TouchableOpacity>
+            <Text style={styles.TextFooter}>Atau Lupa Password?</Text>
+            <TouchableOpacity style={styles.ResetPassworButton} onPress={()=>navigation.navigate('ResetPassword')}>
+                <Text style={styles.TextRSTPasswordButton}>Reset Password</Text>
+            </TouchableOpacity>
             <View style={styles.FooterLogin}>
                 <Text style={styles.TextFooter}>Kelas Bertani</Text>
                 <Text style={styles.TextFooter}>Copyrigth {'\u00A9'}2022, All Rights Reserved</Text>
@@ -178,10 +199,34 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         width:200,
-        marginTop:20
+        marginTop:20,
+        marginBottom:10
+    },
+    RegisterButton:{
+        height:40,
+        backgroundColor:'#d34539',
+        borderRadius:20,
+        justifyContent:'center',
+        alignItems:'center',
+        width:200,
+        marginTop:0
+    },
+    ResetPassworButton:{
+        height:40,
+        borderRadius:20,
+        justifyContent:'center',
+        alignItems:'center',
+        width:200,
+        marginTop:0,
+        borderWidth:1
     },
     TextLoginButton:{
         color:'white',
+        fontSize:14,
+        fontWeight:'bold'
+    },
+    TextRSTPasswordButton:{
+        color:'black',
         fontSize:14,
         fontWeight:'bold'
     },

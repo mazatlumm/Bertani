@@ -29,7 +29,7 @@ const RoomDiskusi = ({navigation, route}) => {
             }
           })
           .then(response => {
-            console.log(response.data.result)
+            // console.log(response.data.result)
             setMessages(response.data.result)
           })
           .catch(e => {
@@ -64,6 +64,10 @@ const RoomDiskusi = ({navigation, route}) => {
     useEffect(() => {
         LihatDataUser();
         DataRouteNavigation();
+        const interval = setInterval(() => {
+            fetchDataChat(IDTopik)
+        }, 1000);
+        return () => clearInterval(interval);
     }, [isFocused, IDTopik, IDUser])
 
     const DataRouteNavigation = () => {
@@ -180,6 +184,7 @@ const RoomDiskusi = ({navigation, route}) => {
             messages={messages}
             onSend={messages => onSend(messages)}
             showAvatarForEveryMessage={true}
+            renderUsernameOnMessage={true}
             user={{
                 _id: IDUser,
                 name: NamaUser,

@@ -28,6 +28,7 @@ import TanyaPakaricon from '../assets/images/tanyapakar.png'
 import TopBar from './TopBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { Link } from '@react-navigation/native';
 
 //statusbar
 const STYLES = ['default', 'dark-content', 'light-content'];
@@ -38,6 +39,8 @@ import { AntDesign } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SimpleLineIcons } from '@expo/vector-icons'; 
 
+import * as Linking from 'expo-linking';
+
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0))-45;
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))-45;
 
@@ -46,6 +49,7 @@ const Dashboard = ({navigation}) => {
   const [IDUser, setIDUser] = useState(0);
   const [IDController, setIDController] = useState(0);
   const [NamaUser, setNamaUser] = useState('Perangkat');
+  const [Role, setRole] = useState('Perangkat');
   const [NamaPerangkat, setNamaPerangkat] = useState('Perangkat');
   const [JenisTanaman, setJenisTanaman] = useState('');
   const [HumMin, setHumMin] = useState(0);
@@ -82,6 +86,7 @@ const Dashboard = ({navigation}) => {
     console.log(ParsingDataUser[0].id_user)
     if(ParsingDataUser[0].id_user){
         setNamaUser(ParsingDataUser[0].nama);
+        setRole(ParsingDataUser[0].role);
         GetController(ParsingDataUser[0].id_user);
     }
     } catch(e) {
@@ -174,7 +179,13 @@ const Dashboard = ({navigation}) => {
     }
   }
 
-
+  const TanyaPakarGo = () => {
+    if(Role == 'admin' || Role == 'pakar'){
+      navigation.navigate('ListChatPakar');
+    }else{
+      navigation.navigate('RoomDiskusiPakar');
+    }
+  }
   
   let [fontsLoaded] = useFonts({
     'Philosopher': require('../assets/fonts/Philosopher-Regular.ttf'),
@@ -340,7 +351,7 @@ const Dashboard = ({navigation}) => {
                 <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Grup Diskusi</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+              <TouchableOpacity onPress={()=> TanyaPakarGo()} style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
                 <View style={{width:70, height:70, backgroundColor:'#06934f', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={TanyaPakaricon} style={{width:50, height:50}} />
                 </View>

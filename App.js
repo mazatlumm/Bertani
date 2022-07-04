@@ -1,7 +1,11 @@
 // In App.js in a new project
 
-import * as React from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+// Notification
+import PushNotificationIOS from "@react-native-community/push-notification-ios";
+import PushNotification from "react-native-push-notification";
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Dashboard from './screen/Dashboard';
@@ -14,7 +18,7 @@ import QRScanner from './screen/QRScanner';
 import TambahController from './screen/TambahController';
 import Profile from './screen/Profile';
 import TambahPengguna from './screen/TambahPengguna';
-import PushNotification from './screen/PushNotification';
+import PushNotificationTest from './screen/PushNotificationTest';
 import UbahProfile from './screen/UbahProfile';
 import AIDetectPlant from './screen/AIDetectPlant';
 import SplashScreen from './screen/SplashScreen';
@@ -38,12 +42,83 @@ import Cuaca from './screen/Cuaca';
 import RoomDiskusi from './screen/RoomDiskusi';
 import ListTopikDiskusi from './screen/ListTopikDiskusi';
 import ListTopikFavorit from './screen/ListTopikFavorit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { initializeApp } from "firebase/app";
+import * as Linking from 'expo-linking'
+import ListChatPakar from './screen/ListChatPakar';
+import RoomDiskusiPakar from './screen/RoomDiskusiPakar';
+
+const config = {
+  screens: {
+    Dashboard: 'dashboard',
+    Profile: 'profile',
+    ListTopikDiskusi: 'topik/diskusi',
+  },
+};
+
+const linking = {
+  prefixes: ['kelasbertani://', 'kelasbertani.com://'],
+  config: config,
+}
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDWbTDPIFtZpKrCpW-SRfYuZEHF2DwQOM8",
+  authDomain: "kelasbertanichat.firebaseapp.com",
+  projectId: "kelasbertanichat",
+  storageBucket: "kelasbertanichat.appspot.com",
+  messagingSenderId: "261338527558",
+  appId: "1:261338527558:web:bbd81126f6d06f02d59747"
+};
 
 const Stack = createNativeStackNavigator();
 
 function App() {
+
+  const SimpanToken = async (value) => {
+    try {
+      await AsyncStorage.setItem('@token', value)
+    } catch (e) {
+      // saving error
+    }
+  }
+
+  useEffect(() => {
+    console.log('inisialisasi notification!')
+    initializeApp(firebaseConfig);
+    PushNotification.configure({
+      onRegister: function (token) {
+        console.log("TOKEN:", token.token);
+        SimpanToken(token.token)
+      },
+
+      onNotification: function (notification) {
+        console.log("NOTIFICATION:", notification);
+        notification.finish(PushNotificationIOS.FetchResult.NoData);
+      },
+
+      onAction: function (notification) {
+        console.log("ACTION:", notification.action);
+        console.log("NOTIFICATION:", notification);
+      },
+
+      onRegistrationError: function(err) {
+        console.error(err.message, err);
+      },
+ 
+      permissions: {
+        alert: true,
+        badge: true,
+        sound: true,
+      },
+
+      popInitialNotification: true,
+      requestPermissions: true,
+    });
+  }, [])
+
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Stack.Navigator>
         <Stack.Screen name="SplashScreen" component={SplashScreen} options={{headerShown:false}} />
         <Stack.Screen name="Login" component={Login} options={{headerShown:false}} />
@@ -58,7 +133,7 @@ function App() {
         <Stack.Screen name="TambahController" component={TambahController} options={{headerShown:false}} />
         <Stack.Screen name="Profile" component={Profile} options={{headerShown:false}} />
         <Stack.Screen name="TambahPengguna" component={TambahPengguna} options={{headerShown:false}} />
-        <Stack.Screen name="PushNotification" component={PushNotification} options={{headerShown:false}} />
+        <Stack.Screen name="PushNotificationTest" component={PushNotificationTest} options={{headerShown:false}} />
         <Stack.Screen name="UbahProfile" component={UbahProfile} options={{headerShown:false}} />
         <Stack.Screen name="AIDetectPlant" component={AIDetectPlant} options={{headerShown:false}} />
         <Stack.Screen name="UbahUserData" component={UbahUserData} options={{headerShown:false}} />
@@ -79,6 +154,8 @@ function App() {
         <Stack.Screen name="RoomDiskusi" component={RoomDiskusi} options={{headerShown:false}}/>
         <Stack.Screen name="ListTopikDiskusi" component={ListTopikDiskusi} options={{headerShown:false}}/>
         <Stack.Screen name="ListTopikFavorit" component={ListTopikFavorit} options={{headerShown:false}}/>
+        <Stack.Screen name="ListChatPakar" component={ListChatPakar} options={{headerShown:false}}/>
+        <Stack.Screen name="RoomDiskusiPakar" component={RoomDiskusiPakar} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "261338527558",
+    "project_id": "kelasbertanichat",
+    "storage_bucket": "kelasbertanichat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:261338527558:android:e4ff2a2d8ac374fdd59747",
+        "android_client_info": {
+          "package_name": "com.alicestech.kelasbertani"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "261338527558-e2kgt9nvieruvn466ghh9od3g796nu5k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alicestech.kelasbertani",
+            "certificate_hash": "9ccb3e3b429a99e1de4e6d49b9da6bd2cca7fe83"
+          }
+        },
+        {
+          "client_id": "261338527558-89090i4l2s9vekcnrnal0p60vvofn3de.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7mYe679ZKluoWRpcEKZxmbYj9ZiAnJUk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "261338527558-89090i4l2s9vekcnrnal0p60vvofn3de.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

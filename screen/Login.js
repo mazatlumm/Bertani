@@ -22,6 +22,7 @@ const Login = ({navigation}) => {
     const [SeePassword, setSeePassword] = useState(true);
     const [HideShowPassword, setHideShowPassword] = useState(true);
     const [IconPassword, setIconPassword] = useState('eye-slash');
+    const [TokenChat, setTokenChat] = useState('');
 
     const [hidden, setHidden] = useState(false);
     const [statusBarStyle, setStatusBarStyle] = useState(STYLES[0]);
@@ -29,6 +30,7 @@ const Login = ({navigation}) => {
 
     useEffect(() => {
         LihatDataUser()
+        CekToken()
     }, []);
 
     const LihatPassword = () => {
@@ -50,6 +52,16 @@ const Login = ({navigation}) => {
         return jsonValue != null ? JSON.parse(jsonValue) : null;
         } catch(e) {
         // error reading value
+        }
+    }
+
+    const CekToken = async () => {
+        const value = await AsyncStorage.getItem('@token')
+        if(value !== null) {
+          setTokenChat(value)
+          console.log('Token Chat : ' + value)
+        }else{
+            console.log('Token Tidak Tersedia');
         }
     }
     
@@ -79,7 +91,7 @@ const Login = ({navigation}) => {
     // API Login App
     const getDataUsingPost = () => {
         //POST json
-    var dataToSend = { username: Username, password: Password};
+    var dataToSend = { username: Username, password: Password, token: TokenChat};
     //making data to send on server
     var formBody = [];
     for (var key in dataToSend) {

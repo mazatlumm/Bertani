@@ -50,6 +50,8 @@ import ListChatPakar from './screen/ListChatPakar';
 import RoomDiskusiPakar from './screen/RoomDiskusiPakar';
 import CatatanUsahaTani from './screen/CatatanUsahaTani';
 import AgendaKegiatanTani from './screen/AgendaKegiatanTani';
+import CatatanPendapatan from './screen/CatatanPendapatan';
+import CatatanPengeluaran from './screen/CatatanPengeluaran';
 
 const config = {
   screens: {
@@ -177,6 +179,8 @@ function App() {
         <Stack.Screen name="RoomDiskusiPakar" component={RoomDiskusiPakar} options={{headerShown:false}}/>
         <Stack.Screen name="CatatanUsahaTani" component={CatatanUsahaTani} options={{headerShown:false}}/>
         <Stack.Screen name="AgendaKegiatanTani" component={AgendaKegiatanTani} options={{headerShown:false}}/>
+        <Stack.Screen name="CatatanPendapatan" component={CatatanPendapatan} options={{headerShown:false}}/>
+        <Stack.Screen name="CatatanPengeluaran" component={CatatanPengeluaran} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

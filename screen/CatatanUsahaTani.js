@@ -25,6 +25,7 @@ const screenWidth = Dimensions.get('window').width;
 const CatatanUsahaTani = ({navigation, route}) => {
 
     const [currentDate, setCurrentDate] = useState('');
+    const [ModalCatatan, setModalCatatan] = useState(false);
 
     const dataLineChart = {
         labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun"],
@@ -67,6 +68,40 @@ const CatatanUsahaTani = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={{ flex: 1, alignItems: 'center', backgroundColor:'white'}}>
+         {/* Modal Tambah Agenda */}
+         <Modal
+            animationType="slide"
+            transparent={true}
+            visible={ModalCatatan}
+            onRequestClose={() => {
+              setModalCatatan(!ModalCatatan);
+            }}
+          >
+          <View style={{flex: 1, alignItems: "center", justifyContent: 'flex-end', padding: 10}}>
+              <View style={{paddingHorizontal:20, paddingVertical:20, marginHorizontal:20, backgroundColor:'#f7f6f2', borderRadius:10}}>
+                <TouchableOpacity onPress={()=> setModalCatatan(!ModalCatatan) } style={{position:'absolute', top:10, right:10}}>
+                  <SimpleLineIcons name="close" size={20} color="black" />
+                </TouchableOpacity>
+                <View style={{marginHorizontal:10, width:windowWidth-100}}>
+                  <View style={{marginTop:10}}>
+                    <Text style={styles.TextPoppinsCenter}>Apakah Anda ingin membuat catatan pendapatan?</Text>
+                  </View>
+
+                  <TouchableOpacity onPress={()=> navigation.navigate('CatatanPendapatan')} style={styles.BtnSuccess}>
+                      <Text style={styles.TextBtnWhite}>Catatan Pendapatan</Text>
+                  </TouchableOpacity>
+                  
+                  <View style={{marginTop:10}}>
+                    <Text style={styles.TextPoppinsCenter}>Apakah Anda ingin membuat catatan pengeluaran?</Text>
+                  </View>
+
+                  <TouchableOpacity onPress={()=> navigation.navigate('CatatanPengeluaran')} style={styles.BtnDanger}>
+                      <Text style={styles.TextBtnWhite}>Catatan Pengeluaran</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+          </View>
+        </Modal>
         <ScrollView style={styles.ScrollViewBox}>
             <View style={styles.ColorTopBar}></View>
             {/* Top Bar */}
@@ -121,7 +156,7 @@ const CatatanUsahaTani = ({navigation, route}) => {
                     <Image source={CatatanKeuanganPic} style={{width:400, height:200}} resizeMode="contain" />
 
                 </View>
-                <TouchableOpacity style={styles.BtnDanger}>
+                <TouchableOpacity onPress={()=> setModalCatatan(!ModalCatatan)} style={styles.BtnDanger}>
                     <Text style={styles.TextBtnWhite}>Tambah Catatan Sekarang!</Text>
                 </TouchableOpacity>
             </View>
@@ -226,6 +261,12 @@ const styles = StyleSheet.create({
         fontSize:12,
         color:'black'
     },
+    TextPoppinsCenter:{
+        fontFamily:'Poppins-Regular',
+        fontSize:12,
+        color:'black',
+        textAlign:'center'
+    },
     TextPoppinsKecil:{
         fontFamily:'Poppins-Regular',
         fontSize:10,
@@ -268,7 +309,7 @@ const styles = StyleSheet.create({
         paddingHorizontal:10,
         borderRadius:10,
         alignItems:'center',
-        marginTop:20
+        marginTop:10
     },
     BtnSuccess:{
         backgroundColor:'#30B700',
@@ -276,7 +317,7 @@ const styles = StyleSheet.create({
         paddingHorizontal:10,
         borderRadius:10,
         alignItems:'center',
-        marginTop:20
+        marginTop:10
     },
     TextBtnWhite:{
         fontFamily:'Poppins-Bold',

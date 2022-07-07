@@ -196,20 +196,23 @@ const FavouriteLocalData = ({navigation, route}) => {
         </TouchableOpacity>
         
         {/* Bottom Navigation */}
-        <View style={{position:'absolute', bottom:0, left:0, flexDirection:'row', backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20 , paddingTop:15, paddingBottom:10, justifyContent:'center', alignItems:'center', width:'100%'}}>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
-            <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
-          </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}}>
-            <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})} style={{flex:1, alignItems:'center'}}>
-            {/* <Image source={iconBag} style={{height:24, width:24, resizeMode:'contain'}} /> */}
-            <SimpleLineIcons name="game-controller" size={24} color="black" />          
-          </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
-            <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
-          </TouchableOpacity>
+        <View style={{position:'absolute', bottom:0, left:0, flexDirection:'row', backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20 , paddingTop:10, paddingBottom:5, justifyContent:'center', alignItems:'center', width:'100%'}}>
+            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
+                <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
+                <Text style={styles.TextPoppinsKecil}>Dashboard</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('FavouriteLocalData')}>
+                <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
+                <Text style={styles.TextPoppinsKecil}>Data Tanah</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})}>
+                <SimpleLineIcons name="game-controller" size={24} color="black" />
+                <Text style={styles.TextPoppinsKecil}>Controller</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
+                <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
+                <Text style={styles.TextPoppinsKecil}>Akun</Text>
+            </TouchableOpacity>
         </View>
     </SafeAreaView>
   )
@@ -336,5 +339,11 @@ const styles = StyleSheet.create({
                 marginBottom:100
             }
         })
-    }
+    },
+    TextPoppinsKecil:{
+        fontFamily:'Poppins-Regular',
+        fontSize:10,
+        color:'black',
+        marginTop:3
+    },
 })

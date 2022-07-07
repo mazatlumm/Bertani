@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 // Notification
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
-import PushNotification from "react-native-push-notification";
+import PushNotification, {Importance} from "react-native-push-notification";
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -48,6 +48,8 @@ import { initializeApp } from "firebase/app";
 import * as Linking from 'expo-linking'
 import ListChatPakar from './screen/ListChatPakar';
 import RoomDiskusiPakar from './screen/RoomDiskusiPakar';
+import CatatanUsahaTani from './screen/CatatanUsahaTani';
+import AgendaKegiatanTani from './screen/AgendaKegiatanTani';
 
 const config = {
   screens: {
@@ -83,6 +85,22 @@ function App() {
     }
   }
 
+  const CreateChannelNotification = () => {
+    console.log('Membuat Channel Notifikasi')
+    PushNotification.createChannel(
+      {
+        channelId: "AgendaNotification001",
+        channelName: "Agenda",
+        channelDescription: "Notifikasi Jadwal Kegiatan Petani", 
+        playSound: true, 
+        soundName: "default",
+        importance: Importance.HIGH,
+        vibrate: true, 
+      },
+      (created) => console.log(`createChannel returned '${created}'`) //
+    );
+  }
+
   useEffect(() => {
     console.log('inisialisasi notification!')
     initializeApp(firebaseConfig);
@@ -115,6 +133,7 @@ function App() {
       popInitialNotification: true,
       requestPermissions: true,
     });
+    CreateChannelNotification()
   }, [])
 
   return (
@@ -156,6 +175,8 @@ function App() {
         <Stack.Screen name="ListTopikFavorit" component={ListTopikFavorit} options={{headerShown:false}}/>
         <Stack.Screen name="ListChatPakar" component={ListChatPakar} options={{headerShown:false}}/>
         <Stack.Screen name="RoomDiskusiPakar" component={RoomDiskusiPakar} options={{headerShown:false}}/>
+        <Stack.Screen name="CatatanUsahaTani" component={CatatanUsahaTani} options={{headerShown:false}}/>
+        <Stack.Screen name="AgendaKegiatanTani" component={AgendaKegiatanTani} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

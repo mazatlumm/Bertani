@@ -5,6 +5,8 @@ import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
+import Moment from 'moment';
+import 'moment/locale/id'
 
 import iconLove from '../assets/images/iconLove.png'
 import iconHome from '../assets/images/iconHome.png'
@@ -23,10 +25,9 @@ const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))
 
 const ListChatPakar = ({navigation, route}) => {
 
-    const [ArrayListTopik, setArrayListTopik] = useState([]);
+    const [ArrayListChat, setArrayListChat] = useState([]);
     const [IDUser, setIDUser] = useState('');
     const [IDTopik, setIDTopik] = useState('');
-    const [IDPembuatTopik, setIDPembuatTopik] = useState('');
     const [JudulTopik, setJudulTopik] = useState('');
     const [DeskripsiTopik, setDeskripsiTopik] = useState('');
     const [ModalTambahTopik, setModalTambahTopik] = useState(false);
@@ -47,127 +48,44 @@ const ListChatPakar = ({navigation, route}) => {
         }
       }
 
-    const BuatTopik = async () => {
-        const ParameterUrl = { 
-            id_user:IDUser,
-            judul_topik:JudulTopik,
-            deskripsi:DeskripsiTopik,
-        }
-        if(JudulTopik != '' & DeskripsiTopik != ''){
-            console.log(ParameterUrl)
-            await axios.post('https://alicestech.com/kelasbertani/api/topik_diskusi', ParameterUrl)
-            .then(response => {
-            console.log(response.data)
-            if(response.data.status == true){
-                GetTopikDiskusi();
-                Alert.alert('Berhasil', 'Topik Telah Dibuat',[
-                {
-                    text: "Batal",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel"
-                },
-                { text: "Ok", onPress: () => setModalTambahTopik(false) }
-                ]);
-            }
-            })
-            .catch(e => {
-            if (e.response.status === 404) {
-                console.log(e.response.data)
-                Alert.alert('Mohon Maaf', e.response.data.message);
-                }
-            });
-        }else{
-            Alert.alert('Mohon Maaf', "Judul Topik & Deskripsi Wajib Diisi!");
-        }
-    }
-
-    const GetTopikDiskusi = async () => {
+    const GetListChat = async () => {
         try {
             let response = await fetch(
-            'https://alicestech.com/kelasbertani/api/topik_diskusi'
+            'https://alicestech.com/kelasbertani/api/chat_pakar'
             );
             let json = await response.json();
             if(json.status == true){
               console.log(json);
-              setArrayListTopik(json.result);
+              setArrayListChat(json.result);
             }
         } catch (error) {
             console.error(error);
         }
     }
 
-    const SimpanTopikFavorit = async () => {
-        console.log('ID Topik : '+ IDTopik)
-        console.log('ID User : '+ IDUser)
-        await axios.get('https://alicestech.com/kelasbertani/api/topik_diskusi/favorit', {
-            params: {
-              id_topik: IDTopik,
-              id_user: IDUser,
-            }
-          })
-          .then(response => {
-            console.log(response.data.result)
-            GetTopikDiskusi()
-            setModalUbahStatusTopik(!ModalUbahStatusTopik);
-          })
-          .catch(e => {
-            if (e.response.status === 404) {
-              console.log(e.response.data)
-            }
-        });
+    const OpenRoomChat = (value) => {
+        navigation.navigate('RoomDiskusiPakar', {id_user:value});
     }
-
-    const UbahStatusTopik = (id_topik, id_pembuat) => {
-        console.log('UbahStatusTopik' + id_topik);
-        setIDTopik(id_topik);
-        setIDPembuatTopik(id_pembuat)
-        setModalUbahStatusTopik(true);
-    }
-
-    const HapusTopik = async () => {
-        await axios.get('https://alicestech.com/kelasbertani/api/topik_diskusi/hapus', {
-            params: {
-              id_topik: IDTopik,
-            }
-          })
-          .then(response => {
-            console.log(response.data.result)
-            GetTopikDiskusi()
-            setModalUbahStatusTopik(!ModalUbahStatusTopik);
-          })
-          .catch(e => {
-            if (e.response.status === 404) {
-              console.log(e.response.data)
-            }
-        });
-    }
-
-
 
     const isFocused = useIsFocused();
     useEffect(() => {
         LihatDataUser()
-        GetTopikDiskusi()
+        GetListChat()
     }, [isFocused, IDUser]);
 
-    const Item = ({ judul_topik, deskripsi, created_by, status, created, updated, id_topik, id_pembuat}) => (
-        <TouchableOpacity onLongPress={()=>UbahStatusTopik(id_topik, id_pembuat)} onPress={()=> navigation.navigate('RoomDiskusi', {id_topik:id_topik})} style={{marginBottom:10, paddingHorizontal:10, paddingVertical:10, borderRadius:10, shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        
-        elevation: 5, backgroundColor:'white', marginTop:5, marginHorizontal:5}}>
-            <Text style={styles.TextPoppinsBold}>{judul_topik}</Text>
-            <Text style={styles.TextPoppins}>{deskripsi}</Text>
-            <Text style={styles.TextPoppins}>Dibuat Oleh : {created_by}</Text>
-            <Text style={styles.TextPoppins}>Tanggal : {created}</Text>
+    const Item = ({ nama, photo, pekerjaan, createdAt, pesan, id_user}) => (
+        <TouchableOpacity onPress={()=>OpenRoomChat(id_user)} style={styles.CardChatPakar}>
+            <Text style={styles.TextPoppinsBold}>{nama}</Text>
+            <View style={{position:'absolute', top:10, right:10}}>
+                <Image source={{uri:'https://alicestech.com/kelasbertani/upload/profile/' + photo}} style={{width:40, height:40, borderRadius:20}} />
+            </View>
+            <Text style={styles.TextPoppins}>Pekerjaan : {pekerjaan}</Text>
+            <Text style={styles.TextPoppinsPesan}>{pesan}</Text>
+            <Text style={styles.TextPoppins}>{Moment(createdAt).format('LLLL')}</Text>
         </TouchableOpacity>
     );
 
-    const renderItem = ({ item }) => <Item judul_topik={item.judul_topik} deskripsi={item.deskripsi} status={item.status} updated={item.updated} created={item.created} created_by={item.created_by} id_topik={item.id_topik} id_pembuat={item.id_user} />;
+    const renderItem = ({ item }) => <Item nama={item.nama} photo={item.photo} pekerjaan={item.pekerjaan} id_user={item.id_user} createdAt={item.createdAt} pesan={item.pesan}/>;
 
 
     let [fontsLoaded] = useFonts({
@@ -183,95 +101,17 @@ const ListChatPakar = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={{ flex: 1, alignItems: 'center'}}>
-        {/* Modal Tambah Topik */}
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={ModalTambahTopik}
-          onRequestClose={() => {
-            setModalTambahTopik(!ModalTambahTopik);
-          }}
-        >
-            <View style={{flex: 1, alignItems: "center", justifyContent: 'center', padding: 10, backgroundColor:'rgba(0, 0, 0, 0.2)'}}>
-                <View style={{paddingHorizontal:20, width:'100%', backgroundColor:'white', borderRadius:10, paddingVertical:20,}}>
-                    <Text style={styles.TitleModalTopik}>Tambah Topik</Text>
-                    <View style={styles.FormInput}>
-                        <View style={styles.FormInputBox}>
-                            <TextInput 
-                            style={styles.TextInputForm} 
-                            onChangeText={JudulTopik => setJudulTopik(JudulTopik)}
-                            defaultValue={JudulTopik}
-                            placeholder='Judul Topik'
-                            />
-                        </View>
-                    </View>
-                    <View style={styles.FormInput}>
-                        <View style={styles.FormInputBox}>
-                            <TextInput 
-                            style={styles.TextInputForm} 
-                            onChangeText={DeskripsiTopik => setDeskripsiTopik(DeskripsiTopik)}
-                            defaultValue={DeskripsiTopik}
-                            placeholder='Deskripsi atau Permasalahan'
-                            multiline={true}
-                            numberOfLines={10}
-                            />
-                        </View>
-                    </View>
-                    <TouchableOpacity onPress={()=>BuatTopik()} style={styles.SimpanTopikButton}>
-                        <Text style={styles.TextSimpanTopikButton}>Buat Topik</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </Modal>
-
-        {/* Modal Ubah Status Topik */}
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={ModalUbahStatusTopik}
-          onRequestClose={() => {
-            setModalUbahStatusTopik(!ModalUbahStatusTopik);
-          }}
-        >
-            <View style={{flex: 1, alignItems: "center", justifyContent: 'center', padding: 10, backgroundColor:'rgba(0, 0, 0, 0.2)'}}>
-                <View style={{paddingHorizontal:20, width:'100%', backgroundColor:'white', borderRadius:10, paddingVertical:20,}}>
-                    <Text style={styles.TitleModalTopik}>Ubah Status Topik</Text>
-                    <View style={{flexDirection:'row'}}>
-                        <TouchableOpacity onPress={()=>SimpanTopikFavorit()} style={styles.BtnSuccess}>
-                            <Text style={styles.TitleBtnWhite}>Topik Favorit</Text>
-                        </TouchableOpacity>
-                        {IDUser == IDPembuatTopik ?
-                            <TouchableOpacity onPress={()=>HapusTopik()} style={styles.BtnDanger}>
-                                <Text style={styles.TitleBtnWhite}>Hapus Topik</Text>
-                            </TouchableOpacity>
-                            : <View></View>
-                        }
-                    </View>
-                    <View style={{flexDirection:'row'}}>
-                        <TouchableOpacity onPress={()=>setModalUbahStatusTopik(!ModalUbahStatusTopik)} style={styles.BtnOutline}>
-                            <Text style={styles.TitleBtnBlack}>Batal Ubah Status</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
-        </Modal>
-        <TouchableOpacity style={styles.TambahTopik} onPress={()=>setModalTambahTopik(!ModalTambahTopik)}>
-            <AntDesign name="pluscircleo" size={24} color="white" />
-        </TouchableOpacity>
         <View style={styles.ColorTopBar}></View>
         {/* Top Bar */}
         <View style={{width:'100%'}}>
             <View style={styles.TopBarBox}>
                 <View style={{flex:1, justifyContent:'flex-start'}}>
-                    <Text style={styles.TopBarText}>Topik Diskusi</Text>
+                    <Text style={styles.TopBarText}>Ruang Chat Pakar</Text>
                 </View>
-                <TouchableOpacity style={{marginRight:10}} onPress={()=> navigation.navigate('ListTopikFavorit')}>
-                    <EvilIcons name="star" size={30} color="black" />
-                </TouchableOpacity>
             </View>
         </View>
         <View style={styles.ScrollViewBox}>
-            <FlatList style={{marginHorizontal:10}} data={ArrayListTopik} renderItem={renderItem} keyExtractor={item => item.id_topik} scrollEnabled={true} />
+            <FlatList style={{marginHorizontal:10}} data={ArrayListChat} renderItem={renderItem} keyExtractor={item => item.id_user} scrollEnabled={true} />
         </View>
         
         {/* Bottom Navigation */}
@@ -371,6 +211,11 @@ const styles = StyleSheet.create({
     },
     TextPoppins:{
         fontFamily:'Poppins-Regular',
+        fontSize:10,
+        color:'black'
+    },
+    TextPoppinsPesan:{
+        fontFamily:'Poppins-Bold',
         fontSize:10,
         color:'black'
     },
@@ -565,4 +410,20 @@ const styles = StyleSheet.create({
         fontSize:12,
         color:'black',
     },
+    CardChatPakar: {
+        marginBottom:10, 
+        paddingHorizontal:10, 
+        paddingVertical:10, 
+        borderRadius:10, 
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5, 
+        backgroundColor:'white', 
+        marginTop:5, 
+        marginHorizontal:5}
 })

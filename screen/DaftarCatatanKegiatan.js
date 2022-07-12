@@ -5,12 +5,7 @@ import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
-
-import iconLove from '../assets/images/iconLove.png'
-import iconHome from '../assets/images/iconHome.png'
-import iconBag from '../assets/images/iconBag.png'
-import iconUser from '../assets/images/iconUser.png'
-import tanaman from '../assets/images/tanaman.png'
+import moment from 'moment';
 
 // Icon
 import { EvilIcons } from '@expo/vector-icons';
@@ -21,17 +16,16 @@ import { AntDesign } from '@expo/vector-icons';
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0));
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))
 
-const ListTopikDiskusi = ({navigation, route}) => {
+const DaftarCatatanKegiatan = ({navigation, route}) => {
 
-    const [ArrayListTopik, setArrayListTopik] = useState([]);
+    const [ArrayListKegiatan, setArrayListKegiatan] = useState([]);
     const [IDUser, setIDUser] = useState('');
-    const [IDTopik, setIDTopik] = useState('');
-    const [IDPembuatTopik, setIDPembuatTopik] = useState('');
-    const [JudulTopik, setJudulTopik] = useState('');
-    const [DeskripsiTopik, setDeskripsiTopik] = useState('');
-    const [ModalTambahTopik, setModalTambahTopik] = useState(false);
-    const [ModalMenuTopik, setModalMenuTopik] = useState(false);
-    const [ModalUbahStatusTopik, setModalUbahStatusTopik] = useState(false);
+    const [IDLaporan, setIDLaporan] = useState('');
+    const [JenisTanaman, setJenisTanaman] = useState('');
+    const [Varietas, setVarietas] = useState('');
+    const [LuasLahan, setLuasLahan] = useState('');
+    const [ModalTambahCatatanKegiatan, setModalTambahCatatanKegiatan] = useState(false);
+    const [ModalUbahCatatanKegiatan, setModalUbahCatatanKegiatan] = useState(false);
 
     const LihatDataUser =  async() => {
         try {
@@ -47,99 +41,111 @@ const ListTopikDiskusi = ({navigation, route}) => {
         }
       }
 
-    const BuatTopik = async () => {
+    const BuatLaporanKegiatan = async () => {
         const ParameterUrl = { 
             id_user:IDUser,
-            judul_topik:JudulTopik,
-            deskripsi:DeskripsiTopik,
+            jenis_tanaman:JenisTanaman,
+            varietas:Varietas,
+            luas_lahan:LuasLahan,
         }
-        if(JudulTopik != '' & DeskripsiTopik != ''){
+        if(JenisTanaman != ''){
             console.log(ParameterUrl)
-            await axios.post('https://alicestech.com/kelasbertani/api/topik_diskusi', ParameterUrl)
+            await axios.post('https://alicestech.com/kelasbertani/api/laporan_kegiatan', ParameterUrl)
             .then(response => {
             console.log(response.data)
             if(response.data.status == true){
-                GetTopikDiskusi();
-                Alert.alert('Berhasil', 'Topik Telah Dibuat',[
-                {
-                    text: "Batal",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel"
-                },
-                { text: "Ok", onPress: () => setModalTambahTopik(false) }
-                ]);
+                GetLaporanKegiatan();
+                setModalTambahCatatanKegiatan(!ModalTambahCatatanKegiatan);
             }
             })
             .catch(e => {
             if (e.response.status === 404) {
                 console.log(e.response.data)
-                Alert.alert('Mohon Maaf', e.response.data.message);
                 }
             });
         }else{
-            Alert.alert('Mohon Maaf', "Judul Topik & Deskripsi Wajib Diisi!");
+            Alert.alert('Mohon Maaf', "Anda harus mengisi Jenis Tanaman!");
+        }
+    }
+    
+    const SimpanPerubahanLaporan = async () => {
+        const ParameterUrl = { 
+            id:IDLaporan,
+            jenis_tanaman:JenisTanaman,
+            varietas:Varietas,
+            luas_lahan:LuasLahan,
+        }
+        if(JenisTanaman != ''){
+            console.log(ParameterUrl)
+            await axios.post('https://alicestech.com/kelasbertani/api/laporan_kegiatan/edit', ParameterUrl)
+            .then(response => {
+            console.log(response.data)
+            if(response.data.status == true){
+                GetLaporanKegiatan();
+                setModalUbahCatatanKegiatan(!ModalUbahCatatanKegiatan)
+            }
+            })
+            .catch(e => {
+            if (e.response.status === 404) {
+                console.log(e.response.data)
+                }
+            });
+        }else{
+            Alert.alert('Mohon Maaf', "Anda harus mengisi Jenis Tanaman!");
         }
     }
 
-    const GetTopikDiskusi = async () => {
+    const GetLaporanKegiatan = async () => {
         try {
             let response = await fetch(
-            'https://alicestech.com/kelasbertani/api/topik_diskusi'
+            'https://alicestech.com/kelasbertani/api/laporan_kegiatan?id_user=' + IDUser
             );
             let json = await response.json();
             if(json.status == true){
               console.log(json);
-              setArrayListTopik(json.result);
+              setArrayListKegiatan(json.result);
+            }else{
+                setArrayListKegiatan([]);
             }
         } catch (error) {
             console.error(error);
         }
     }
 
-    const SimpanTopikFavorit = async () => {
-        console.log('ID Topik : '+ IDTopik)
-        console.log('ID User : '+ IDUser)
-        await axios.get('https://alicestech.com/kelasbertani/api/topik_diskusi/favorit', {
-            params: {
-              id_topik: IDTopik,
-              id_user: IDUser,
-            }
-          })
-          .then(response => {
-            console.log(response.data.result)
-            GetTopikDiskusi()
-            setModalUbahStatusTopik(!ModalUbahStatusTopik);
-          })
-          .catch(e => {
-            if (e.response.status === 404) {
-              console.log(e.response.data)
-            }
-        });
+    const HapusLaporanKegiatan = async () => {
+        Alert.alert("Hapus Laporan", "Apakah Anda yakin menghapus kegiatan ini?", [
+            {
+                text: "Batal",
+                onPress: () => console.log("Batal"),
+                style: "cancel"
+            },
+            { text: "Iya", onPress: () => {
+                 axios.get('https://alicestech.com/kelasbertani/api/laporan_kegiatan/hapus', {
+                    params: {
+                      id: IDLaporan,
+                    }
+                  })
+                  .then(response => {
+                    console.log(response.data)
+                    setModalUbahCatatanKegiatan(!ModalUbahCatatanKegiatan)
+                    GetLaporanKegiatan()
+                  })
+                  .catch(e => {
+                    if (e.response.status === 404) {
+                      console.log(e.response.data)
+                      setModalUbahCatatanKegiatan(!ModalUbahCatatanKegiatan)
+                    }
+                });
+            }}
+        ]);
     }
 
-    const UbahStatusTopik = (id_topik, id_pembuat) => {
-        console.log('UbahStatusTopik' + id_topik);
-        setIDTopik(id_topik);
-        setIDPembuatTopik(id_pembuat)
-        setModalUbahStatusTopik(true);
-    }
-
-    const HapusTopik = async () => {
-        await axios.get('https://alicestech.com/kelasbertani/api/topik_diskusi/hapus', {
-            params: {
-              id_topik: IDTopik,
-            }
-          })
-          .then(response => {
-            console.log(response.data.result)
-            GetTopikDiskusi()
-            setModalUbahStatusTopik(!ModalUbahStatusTopik);
-          })
-          .catch(e => {
-            if (e.response.status === 404) {
-              console.log(e.response.data)
-            }
-        });
+    const UbahLaporanKegiatan = (id_laporan, jenis_tanaman, varietas, luas_lahan) => {
+        setIDLaporan(id_laporan)
+        setJenisTanaman(jenis_tanaman)
+        setVarietas(varietas)
+        setLuasLahan(luas_lahan)
+        setModalUbahCatatanKegiatan(!ModalUbahCatatanKegiatan)
     }
 
 
@@ -147,11 +153,11 @@ const ListTopikDiskusi = ({navigation, route}) => {
     const isFocused = useIsFocused();
     useEffect(() => {
         LihatDataUser()
-        GetTopikDiskusi()
+        GetLaporanKegiatan()
     }, [isFocused, IDUser]);
 
-    const Item = ({ judul_topik, deskripsi, created_by, status, created, updated, id_topik, id_pembuat}) => (
-        <TouchableOpacity onLongPress={()=>UbahStatusTopik(id_topik, id_pembuat)} onPress={()=> navigation.navigate('RoomDiskusi', {id_topik:id_topik})} style={{marginBottom:10, paddingHorizontal:10, paddingVertical:10, borderRadius:10, shadowColor: "#000",
+    const Item = ({ id, id_user, jenis_tanaman, varietas, luas_lahan ,created, updated}) => (
+        <TouchableOpacity onLongPress={()=>UbahLaporanKegiatan(id, jenis_tanaman, varietas, luas_lahan)} onPress={()=>navigation.navigate('CatatanKegiatan', {id_laporan:id, jenis_tanaman:jenis_tanaman, varietas:varietas, luas_lahan:luas_lahan})} style={{marginBottom:10, paddingHorizontal:10, paddingVertical:10, borderRadius:10, shadowColor: "#000",
         shadowOffset: {
             width: 0,
             height: 2,
@@ -160,14 +166,14 @@ const ListTopikDiskusi = ({navigation, route}) => {
         shadowRadius: 3.84,
         
         elevation: 5, backgroundColor:'white', marginTop:5, marginHorizontal:5}}>
-            <Text style={styles.TextPoppinsBold}>{judul_topik}</Text>
-            <Text style={styles.TextPoppins}>{deskripsi}</Text>
-            <Text style={styles.TextPoppins}>Dibuat Oleh : {created_by}</Text>
-            <Text style={styles.TextPoppins}>Tanggal : {created}</Text>
+            <Text style={styles.TextPoppinsBold}>{jenis_tanaman}</Text>
+            <Text style={styles.TextPoppins}>Varietas : {varietas}</Text>
+            <Text style={styles.TextPoppins}>Luas Lahan : {luas_lahan}</Text>
+            <Text style={styles.TextPoppins}>Tanggal Pembuatan : {moment(created).format('LLLL')}</Text>
         </TouchableOpacity>
     );
 
-    const renderItem = ({ item }) => <Item judul_topik={item.judul_topik} deskripsi={item.deskripsi} status={item.status} updated={item.updated} created={item.created} created_by={item.created_by} id_topik={item.id_topik} id_pembuat={item.id_user} />;
+    const renderItem = ({ item }) => <Item id={item.id} id_user={item.id_user} jenis_tanaman={item.jenis_tanaman} varietas={item.varietas} luas_lahan={item.luas_lahan} created={item.created} updated={item.updated} />;
 
 
     let [fontsLoaded] = useFonts({
@@ -183,25 +189,28 @@ const ListTopikDiskusi = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={{ flex: 1, alignItems: 'center'}}>
-        {/* Modal Tambah Topik */}
+        {/* Modal Tambah Laporan Kegiatan */}
         <Modal
           animationType="fade"
           transparent={true}
-          visible={ModalTambahTopik}
+          visible={ModalTambahCatatanKegiatan}
           onRequestClose={() => {
-            setModalTambahTopik(!ModalTambahTopik);
+            setModalTambahCatatanKegiatan(!ModalTambahCatatanKegiatan);
           }}
         >
             <View style={{flex: 1, alignItems: "center", justifyContent: 'center', padding: 10, backgroundColor:'rgba(0, 0, 0, 0.2)'}}>
                 <View style={{paddingHorizontal:20, width:'100%', backgroundColor:'white', borderRadius:10, paddingVertical:20,}}>
-                    <Text style={styles.TitleModalTopik}>Tambah Topik</Text>
+                    <Text style={styles.TitleModalCatatanKegiatan}>Tambah Kegiatan</Text>
+                    <TouchableOpacity style={{position:'absolute', top:10, right:5}} onPress={()=> setModalTambahCatatanKegiatan(!ModalTambahCatatanKegiatan)}>
+                        <EvilIcons name="close-o" size={30} color="black" />
+                    </TouchableOpacity>
                     <View style={styles.FormInput}>
                         <View style={styles.FormInputBox}>
                             <TextInput 
                             style={styles.TextInputForm} 
-                            onChangeText={JudulTopik => setJudulTopik(JudulTopik)}
-                            defaultValue={JudulTopik}
-                            placeholder='Judul Topik'
+                            onChangeText={JenisTanaman => setJenisTanaman(JenisTanaman)}
+                            defaultValue={JenisTanaman}
+                            placeholder='Jenis Tanaman'
                             />
                         </View>
                     </View>
@@ -209,53 +218,89 @@ const ListTopikDiskusi = ({navigation, route}) => {
                         <View style={styles.FormInputBox}>
                             <TextInput 
                             style={styles.TextInputForm} 
-                            onChangeText={DeskripsiTopik => setDeskripsiTopik(DeskripsiTopik)}
-                            defaultValue={DeskripsiTopik}
-                            placeholder='Deskripsi atau Permasalahan'
-                            multiline={true}
-                            numberOfLines={10}
+                            onChangeText={Varietas => setVarietas(Varietas)}
+                            defaultValue={Varietas}
+                            placeholder='Varietas'
                             />
                         </View>
                     </View>
-                    <TouchableOpacity onPress={()=>BuatTopik()} style={styles.SimpanTopikButton}>
-                        <Text style={styles.TextSimpanTopikButton}>Buat Topik</Text>
+                    <View style={styles.FormInput}>
+                        <View style={styles.FormInputBox}>
+                            <TextInput 
+                            style={styles.TextInputForm} 
+                            onChangeText={LuasLahan => setLuasLahan(LuasLahan)}
+                            defaultValue={LuasLahan}
+                            placeholder='Luas Lahan | Satuan Hektar'
+                            keyboardType='number-pad'
+                            />
+                        </View>
+                    </View>
+                    <TouchableOpacity onPress={()=>BuatLaporanKegiatan()} style={styles.SimpanCatatanKegiatanButton}>
+                        <Text style={styles.TextSimpanCatatanKegiatanButton}>Buat Kegiatan</Text>
                     </TouchableOpacity>
                 </View>
             </View>
         </Modal>
 
-        {/* Modal Ubah Status Topik */}
+        {/* Modal Ubah Catatan Kegiatan */}
         <Modal
           animationType="fade"
           transparent={true}
-          visible={ModalUbahStatusTopik}
+          visible={ModalUbahCatatanKegiatan}
           onRequestClose={() => {
-            setModalUbahStatusTopik(!ModalUbahStatusTopik);
+            setModalUbahCatatanKegiatan(!ModalUbahCatatanKegiatan);
           }}
         >
             <View style={{flex: 1, alignItems: "center", justifyContent: 'center', padding: 10, backgroundColor:'rgba(0, 0, 0, 0.2)'}}>
                 <View style={{paddingHorizontal:20, width:'100%', backgroundColor:'white', borderRadius:10, paddingVertical:20,}}>
-                    <Text style={styles.TitleModalTopik}>Ubah Status Topik</Text>
-                    <View style={{flexDirection:'row'}}>
-                        <TouchableOpacity onPress={()=>SimpanTopikFavorit()} style={styles.BtnSuccess}>
-                            <Text style={styles.TitleBtnWhite}>Topik Favorit</Text>
-                        </TouchableOpacity>
-                        {IDUser == IDPembuatTopik ?
-                            <TouchableOpacity onPress={()=>HapusTopik()} style={styles.BtnDanger}>
-                                <Text style={styles.TitleBtnWhite}>Hapus Topik</Text>
+                    <Text style={styles.TitleModalCatatanKegiatan}>Ubah Kegiatan</Text>
+                    <TouchableOpacity style={{position:'absolute', top:10, right:5}} onPress={()=> setModalUbahCatatanKegiatan(!ModalUbahCatatanKegiatan)}>
+                        <EvilIcons name="close-o" size={30} color="black" />
+                    </TouchableOpacity>
+                        <View style={styles.FormInput}>
+                            <View style={styles.FormInputBox}>
+                                <TextInput 
+                                style={styles.TextInputForm} 
+                                onChangeText={JenisTanaman => setJenisTanaman(JenisTanaman)}
+                                defaultValue={JenisTanaman}
+                                placeholder='Jenis Tanaman'
+                                />
+                            </View>
+                        </View>
+                        <View style={styles.FormInput}>
+                            <View style={styles.FormInputBox}>
+                                <TextInput 
+                                style={styles.TextInputForm} 
+                                onChangeText={Varietas => setVarietas(Varietas)}
+                                defaultValue={Varietas}
+                                placeholder='Varietas'
+                                />
+                            </View>
+                        </View>
+                        <View style={styles.FormInput}>
+                            <View style={styles.FormInputBox}>
+                                <TextInput 
+                                style={styles.TextInputForm} 
+                                onChangeText={LuasLahan => setLuasLahan(LuasLahan)}
+                                defaultValue={LuasLahan}
+                                placeholder='Luas Lahan | Satuan Hektar'
+                                keyboardType='number-pad'
+                                />
+                            </View>
+                        </View>
+                        <View style={{flexDirection:"row"}}>
+                            <TouchableOpacity onPress={()=>HapusLaporanKegiatan()} style={styles.BtnDanger}>
+                                <Text style={styles.TitleBtnWhite}>Hapus Laporan</Text>
                             </TouchableOpacity>
-                            : <View></View>
-                        }
-                    </View>
-                    <View style={{flexDirection:'row'}}>
-                        <TouchableOpacity onPress={()=>setModalUbahStatusTopik(!ModalUbahStatusTopik)} style={styles.BtnOutline}>
-                            <Text style={styles.TitleBtnBlack}>Batal Ubah Status</Text>
-                        </TouchableOpacity>
-                    </View>
+                            <TouchableOpacity onPress={()=>SimpanPerubahanLaporan()} style={styles.BtnSuccess}>
+                                <Text style={styles.TitleBtnWhite}>Simpan Perubahan</Text>
+                            </TouchableOpacity>
+                        </View>
                 </View>
             </View>
         </Modal>
-        <TouchableOpacity style={styles.TambahTopik} onPress={()=>setModalTambahTopik(!ModalTambahTopik)}>
+
+        <TouchableOpacity style={styles.TambahCatatanKegiatan} onPress={()=>setModalTambahCatatanKegiatan(!ModalTambahCatatanKegiatan)}>
             <AntDesign name="pluscircleo" size={24} color="white" />
         </TouchableOpacity>
         <View style={styles.ColorTopBar}></View>
@@ -263,21 +308,21 @@ const ListTopikDiskusi = ({navigation, route}) => {
         <View style={{width:'100%'}}>
             <View style={styles.TopBarBox}>
                 <View style={{flex:1, justifyContent:'flex-start'}}>
-                    <Text style={styles.TopBarText}>Topik Diskusi</Text>
+                    <Text style={styles.TopBarText}>Daftar Kegiatan Bertani</Text>
                 </View>
-                <TouchableOpacity style={{marginRight:10}} onPress={()=> navigation.navigate('ListTopikFavorit')}>
-                    <EvilIcons name="star" size={30} color="black" />
+                <TouchableOpacity onPress={()=>navigation.goBack()} style={{flex:0.5, alignItems:'flex-end', marginRight:10}}>
+                    <EvilIcons name="arrow-left" size={26} color="black" />
                 </TouchableOpacity>
             </View>
         </View>
         <View style={styles.ScrollViewBox}>
-            <FlatList style={{marginHorizontal:10}} data={ArrayListTopik} renderItem={renderItem} keyExtractor={item => item.id_topik} scrollEnabled={true} />
+            <FlatList style={{marginHorizontal:10}} data={ArrayListKegiatan} renderItem={renderItem} keyExtractor={item => item.id} scrollEnabled={true} />
         </View>
     </SafeAreaView>
   )
 }
 
-export default ListTopikDiskusi
+export default DaftarCatatanKegiatan
 
 const styles = StyleSheet.create({
     ScrollViewBox:{
@@ -396,7 +441,7 @@ const styles = StyleSheet.create({
         fontSize:12,
         color:'white',
     },
-    SimpanTopikButton:{
+    SimpanCatatanKegiatanButton:{
         backgroundColor:'#30B700',
         paddingVertical:5,
         borderRadius:10,
@@ -405,12 +450,12 @@ const styles = StyleSheet.create({
         width:'100%', 
         marginTop:10
     },
-    TitleModalTopik:{
+    TitleModalCatatanKegiatan:{
         fontFamily:'Poppins-Bold',
         fontSize:12,
         color:'black',
     },
-    TextSimpanTopikButton:{
+    TextSimpanCatatanKegiatanButton:{
         fontFamily:'Poppins-Bold',
         fontSize:12,
         color:'white',
@@ -442,7 +487,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius:50,
     borderBottomLeftRadius:50,
     },
-    TambahTopik:{
+    TambahCatatanKegiatan:{
         width:50,
         height:50,
         borderRadius:50/2,
@@ -513,8 +558,8 @@ const styles = StyleSheet.create({
         marginHorizontal:5,
         alignItems:'center',
         width:'100%', 
-        flex:1,
-        marginTop:10
+        marginTop:10,
+        flex:1
     },
     BtnSuccess:{
         backgroundColor:'#30B700',
@@ -523,8 +568,8 @@ const styles = StyleSheet.create({
         marginHorizontal:5,
         alignItems:'center',
         width:'100%', 
-        flex:1,
-        marginTop:10
+        marginTop:10,
+        flex:1
     },
     BtnOutline:{
         backgroundColor:'white',

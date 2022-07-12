@@ -8,7 +8,7 @@ import { useFonts } from 'expo-font';
 import { useIsFocused } from '@react-navigation/native';
 import moment from 'moment';
 import DatePicker from 'react-native-date-picker'
-import PushNotification, {Importance} from "react-native-push-notification";
+import PushNotification from "react-native-push-notification";
 
 import iconLove from '../assets/images/iconLove.png'
 import iconHome from '../assets/images/iconHome.png'
@@ -53,7 +53,7 @@ const timeToString = (time) => {
 
 const AgendaKegiatanTani = ({navigation}) => {
   const [items, setItems] = useState({});
-  const [ItemAgenda, setItemAgenda] = useState({});
+  const [ItemAgenda, setItemAgenda] = useState({'2022-07-22': [{name: 'Apa yang ingin Anda Kerjakan?'}]});
   const [PhotoAvatar, setPhotoAvatar] = useState('');
   const [IDUser, setIDUser] = useState('');
   const [IDAgenda, setIDAgenda] = useState('');
@@ -86,7 +86,7 @@ const AgendaKegiatanTani = ({navigation}) => {
   //Jadwal Notifikasi
   const BuatJadwalNotifikasi = (tanggal, judul, jam) => {
     console.log('Buat Jadwal Lokal Notifikasi');
-    // console.log('tanggal notifikasi : ' + tanggal);
+    console.log('tanggal notifikasi : ' + tanggal);
     PushNotification.localNotificationSchedule({
       message: "Hai, Anda memiliki agenda " + judul + ' pukul ' + jam + ", jangan sampai lupa dikerjakan ya, tetap semangat!", 
       date: tanggal,
@@ -148,7 +148,7 @@ const AgendaKegiatanTani = ({navigation}) => {
                 }}>
                   <View style={{flexDirection:'row'}}>
                     <View style={{flex:3}}>
-                      <Text style={styles.TextPoppins}>{item.judul} - {item.jam.replace(':00', '')}</Text>
+                      <Text style={styles.TextPoppins}>{item.judul} - {item.jam}</Text>
                       <Text style={styles.TextPoppins}>{item.uraian}</Text>
                     </View>
                       {PhotoAvatar != '' ? 
@@ -250,6 +250,7 @@ const AgendaKegiatanTani = ({navigation}) => {
       .catch(e => {
         if (e.response.status === 404) {
           console.log(e.response.data)
+          setItemAgenda({});
         }
     });
   }
@@ -290,15 +291,15 @@ const AgendaKegiatanTani = ({navigation}) => {
 
   return (
     <View style={{flex: 1}}>
-      <View style={{flex:1, marginBottom:65}}>
+      <View style={{flex:1, marginBottom:10}}>
         <DatePicker
           modal
           open={OpenTimePicker}
           date={date}
           onConfirm={(date) => {
             setOpenTimePicker(!OpenTimePicker)
-            setJamAgenda(moment(date).format('h:mm'))
-            console.log(moment(date).format('h:mm'))
+            setJamAgenda(moment(date).format('H:mm'))
+            console.log(moment(date).format('H:mm'))
           }}
           onCancel={() => {
             setOpenTimePicker(!OpenTimePicker)
@@ -420,7 +421,7 @@ const AgendaKegiatanTani = ({navigation}) => {
         {DataAgenda == true ? 
         <Agenda
           items={ItemAgenda}
-          loadItemsForMonth={loadItems}
+          // loadItemsForMonth={loadItems}
           selected={moment(new Date()).format('YYYY-MM-DD')}
           renderItem={renderItem}
           onDayLongPress={day => {
@@ -432,28 +433,23 @@ const AgendaKegiatanTani = ({navigation}) => {
             setModalAgenda(!ModalAgenda);
           }}
         />
-        :<View></View>
+        :
+        <Agenda
+        items={ItemAgenda}
+        loadItemsForMonth={loadItems}
+        selected={moment(new Date()).format('YYYY-MM-DD')}
+        renderItem={renderItem}
+        onDayLongPress={day => {
+          // console.log(day.dateString);
+          setTanggalAgenda(day.dateString);
+          setJudulRencanaKegiatan('');
+          setUraianRencanaKegiatan('');
+          setJamAgenda('');
+          setModalAgenda(!ModalAgenda);
+        }}
+      />
         }
       </View>
-      {/* Bottom Navigation */}
-      <View style={{position:'absolute', bottom:0, left:0, flexDirection:'row', backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20 , paddingTop:10, paddingBottom:5, justifyContent:'center', alignItems:'center', width:'100%'}}>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
-                <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
-                <Text style={styles.TextPoppinsKecil}>Dashboard</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('FavouriteLocalData')}>
-                <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
-                <Text style={styles.TextPoppinsKecil}>Data Tanah</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})}>
-                <SimpleLineIcons name="game-controller" size={24} color="black" />
-                <Text style={styles.TextPoppinsKecil}>Controller</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
-                <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
-                <Text style={styles.TextPoppinsKecil}>Akun</Text>
-            </TouchableOpacity>
-        </View>
     </View>
   );
 };

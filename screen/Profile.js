@@ -241,7 +241,7 @@ const Profile = ({navigation}) => {
     const ContentProfile = () => {
         if(Role == 'admin'){
             return (
-                <View style={{marginHorizontal:20, marginTop:20, marginBottom:5, flex:1}}>
+                <View style={{marginHorizontal:20, marginTop:20, flex:1}}>
                     <Text style={styles.TextPoppinsBoldGreen}>Daftar Pengguna Aplikasi</Text>
 
                     <FlatList data={DataListUser} renderItem={renderItem} keyExtractor={item => item.id_user} />
@@ -487,7 +487,7 @@ const Profile = ({navigation}) => {
       }
   return (
     <SafeAreaView style={{ flex: 1, alignItems: 'center'}}>
-        <View style={{marginBottom:50, width:windowWidth, flex:1}}>
+        <View style={{width:windowWidth, flex:1}}>
             <View style={styles.ColorTopBar}></View>
             {/* Top Bar */}
             <View style={{paddingHorizontal:20, width:'100%'}}>
@@ -514,26 +514,6 @@ const Profile = ({navigation}) => {
         </View>
         
         {BtnAddUser()}
-
-         {/* Bottom Navigation */}
-         <View style={{position:'absolute', bottom:0, left:0, flexDirection:'row', backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20 , paddingTop:10, paddingBottom:5, justifyContent:'center', alignItems:'center', width:'100%'}}>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
-                <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
-                <Text style={styles.TextPoppinsKecil}>Dashboard</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('FavouriteLocalData')}>
-                <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
-                <Text style={styles.TextPoppinsKecil}>Data Tanah</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})}>
-                <SimpleLineIcons name="game-controller" size={24} color="black" />
-                <Text style={styles.TextPoppinsKecil}>Controller</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
-                <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
-                <Text style={styles.TextPoppinsKecil}>Akun</Text>
-            </TouchableOpacity>
-        </View>
     </SafeAreaView>
   )
 }
@@ -668,18 +648,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         position:'absolute',
-        bottom:80,
-        right:20
-    },
-    TambahUserBtn:{
-        width:50,
-        height:50,
-        borderRadius:50/2,
-        backgroundColor:'#0D986A',
-        justifyContent:'center',
-        alignItems:'center',
-        position:'absolute',
-        bottom:80,
+        bottom:30,
         right:20
     },
     FormInput:{

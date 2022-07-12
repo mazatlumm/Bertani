@@ -1,38 +1,37 @@
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView, Image, Platform, FlatList, Modal, TextInput, Alert } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView, Image, Platform, FlatList, Modal, TextInput, Alert, Linking } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
-import Moment from 'moment';
-import 'moment/locale/id'
-
-import iconLove from '../assets/images/iconLove.png'
-import iconHome from '../assets/images/iconHome.png'
-import iconBag from '../assets/images/iconBag.png'
-import iconUser from '../assets/images/iconUser.png'
-import tanaman from '../assets/images/tanaman.png'
+import moment from 'moment';
+import DatePicker from 'react-native-date-picker'
+import * as ImagePicker from 'expo-image-picker';
 
 // Icon
 import { EvilIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { SimpleLineIcons } from '@expo/vector-icons';
+import { SimpleLineIcons, FontAwesome } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0));
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))
 
-const ListChatPakar = ({navigation, route}) => {
+const KasihModal = ({navigation, route}) => {
 
-    const [ArrayListChat, setArrayListChat] = useState([]);
+    const [ArrayModal, setArrayModal] = useState([]);
     const [IDUser, setIDUser] = useState('');
-    const [IDTopik, setIDTopik] = useState('');
-    const [JudulTopik, setJudulTopik] = useState('');
-    const [DeskripsiTopik, setDeskripsiTopik] = useState('');
-    const [ModalTambahTopik, setModalTambahTopik] = useState(false);
-    const [ModalMenuTopik, setModalMenuTopik] = useState(false);
-    const [ModalUbahStatusTopik, setModalUbahStatusTopik] = useState(false);
+    const [NamaUser, setNamaUser] = useState('');
+    const [IDPermodalan, setIDPermodalan] = useState('');
+    const [NamaModal, setNamaModal] = useState('');
+    const [Keperluan, setKeperluan] = useState('');
+    const [JumlahPinjaman, setJumlahPinjaman] = useState('');
+    const [NoWhatsapp, setNoWhatsapp] = useState('');
+    const [NamaFotoPetani, setNamaFotoPetani] = useState('');
+    const [ModalTambahPinjaman, setModalTambahPinjaman] = useState(false);
+    const [ModalUbahPinjaman, setModalUbahPinjaman] = useState(false);
+    const [ModalLihatFotoPetani, setModalLihatFotoPetani] = useState(false);
 
     const LihatDataUser =  async() => {
         try {
@@ -42,50 +41,111 @@ const ListChatPakar = ({navigation, route}) => {
         console.log(ParsingDataUser[0].id_user)
         if(ParsingDataUser[0].id_user){
             setIDUser(ParsingDataUser[0].id_user);
+            setNamaUser(ParsingDataUser[0].nama);
         }
         } catch(e) {
         // error reading value
         }
-      }
+    }
 
-    const GetListChat = async () => {
+    const GetDaftarPermodalan = async () => {
         try {
             let response = await fetch(
-            'https://alicestech.com/kelasbertani/api/chat_pakar'
+            'https://alicestech.com/kelasbertani/api/permodalan'
             );
             let json = await response.json();
             if(json.status == true){
-              console.log(json);
-              setArrayListChat(json.result);
+                console.log(json);
+                setArrayModal(json.result);
+            }else{
+                console.log('Modal Kosong')
+                setArrayModal([]);
             }
         } catch (error) {
             console.error(error);
         }
     }
 
-    const OpenRoomChat = (value) => {
-        navigation.navigate('RoomDiskusiPakar', {id_user:value});
+    const UbahModal = (id_permodalan, keperluan, jumlah, wa, foto) => {
+        setIDPermodalan(id_permodalan)
+        setKeperluan(keperluan)
+        setJumlahPinjaman(jumlah)
+        setNoWhatsapp(wa)
+        setNamaFotoPetani(foto)
+        setModalUbahPinjaman(!ModalUbahPinjaman)
     }
+
+    const currencyFormat = (angka, prefix) => {
+        var number_string = angka.replace(/[^,\d]/g, '').toString()
+		var	split   		= number_string.split(',')
+		var	sisa     		= split[0].length % 3
+		var	rupiah     		= split[0].substr(0, sisa)
+		var	ribuan     		= split[0].substr(sisa).match(/\d{3}/gi);
+ 
+			// tambahkan titik jika yang di input sudah menjadi angka ribuan
+			if(ribuan){
+				var separator = sisa ? '.' : '';
+				rupiah += separator + ribuan.join('.');
+			}
+ 
+			rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+			return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+     }
+
+    const WhatsAppLink = (nomorWA, keperluan, jumlah) => {
+    let msg = "Hai Pak/Bu, Saya berminat memberikan modal sesuai dengan keperluan yakni : " + keperluan + ', dengan total modal sejumlah : Rp ' + currencyFormat(jumlah);
+    let mobile = nomorWA;
+    const regex = new RegExp("^0+(?!$)",'g');
+    var strMobileNumber = mobile.toString().replace(regex, "");
+    if(mobile){
+      if(msg){
+      // Kode negara 62 = Indonesia
+        let url = 'whatsapp://send?text=' + msg + '&phone=62' + strMobileNumber;
+        Linking.openURL(url).then((data) => {
+          console.log('WhatsApp Opened');
+        }).catch(() => {
+          Alert.alert('Maaf', 'Silahkan install aplikasi Whatsapp terlebih dahulu');
+        });
+      }else{
+        Alert.alert('Maaf', 'Pencari modal tidak meninggalkan pesan');
+      }
+    }else{
+      Alert.alert('Maaf', 'Pencari Modal Tidak Memasukkan Nomor WA/Telephone');
+    }
+  }
 
     const isFocused = useIsFocused();
     useEffect(() => {
         LihatDataUser()
-        GetListChat()
+        GetDaftarPermodalan()
     }, [isFocused, IDUser]);
 
-    const Item = ({ nama, photo, pekerjaan, createdAt, pesan, id_user}) => (
-        <TouchableOpacity onPress={()=>OpenRoomChat(id_user)} style={styles.CardChatPakar}>
-            <Text style={styles.TextPoppinsBold}>{nama}</Text>
-            <View style={{position:'absolute', top:10, right:10}}>
-                <Image source={{uri:'https://alicestech.com/kelasbertani/upload/profile/' + photo}} style={{width:40, height:40, borderRadius:20}} />
+    const LihatFotoModal = (foto) => {
+        setNamaFotoPetani('https://alicestech.com/kelasbertani/upload/permodalan/' + foto)
+        setModalLihatFotoPetani(!ModalLihatFotoPetani)
+    }
+
+    const Item = ({ id_permodalan, id_user, nama, keperluan, jumlah, wa, foto, created, updated}) => (
+        <TouchableOpacity onPress={()=>LihatFotoModal(foto)} style={styles.CardModal}>
+            <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                {foto == null ?
+                    <FontAwesome name="image" size={70} color="black" />
+                    : <Image source={{uri:'https://alicestech.com/kelasbertani/upload/permodalan/'+foto}} style={{width:100, height:100, borderRadius:20}} resizeMode="contain" />
+                }
             </View>
-            <Text style={styles.TextPoppins}>Pekerjaan : {pekerjaan}</Text>
-            <Text style={styles.TextPoppinsPesan}>{pesan}</Text>
-            <Text style={styles.TextPoppins}>{Moment(createdAt).format('LLLL')}</Text>
+            <View style={{marginTop:10}}>
+                <Text style={styles.TextPoppinsBold}>{nama}</Text>
+                <Text style={styles.TextPoppinsBoldGreen}>{currencyFormat(jumlah, 'Rp. ')}</Text>
+                <Text style={styles.TextPoppins}>Keperluan : {keperluan}</Text>
+                <Text style={styles.TextPoppins}>WA/Telp : {wa}</Text>
+                <TouchableOpacity onPress={()=> WhatsAppLink(wa, keperluan, jumlah) } style={styles.BtnSuccess}>
+                    <Text style={styles.TextBtnWhite}>Kasih Modal</Text>
+                </TouchableOpacity>
+            </View>
         </TouchableOpacity>
     );
 
-    const renderItem = ({ item }) => <Item nama={item.nama} photo={item.photo} pekerjaan={item.pekerjaan} id_user={item.id_user} createdAt={item.createdAt} pesan={item.pesan}/>;
+    const renderItem = ({ item }) => <Item id_permodalan={item.id_permodalan} id_user={item.id_user} nama={item.nama} keperluan={item.keperluan} jumlah={item.jumlah} wa={item.wa} foto={item.foto} created={item.created} updated={item.updated} />;
 
 
     let [fontsLoaded] = useFonts({
@@ -100,35 +160,58 @@ const ListChatPakar = ({navigation, route}) => {
       }
 
   return (
-    <SafeAreaView style={{ flex: 1, alignItems: 'center'}}>
+    <SafeAreaView style={{ flex: 1, alignItems: 'center', backgroundColor:'white'}}>
+        {/* Modal Lihat Foto Petani */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={ModalLihatFotoPetani}
+          onRequestClose={() => {
+            setModalLihatFotoPetani(!ModalLihatFotoPetani);
+          }}
+        >
+            <View style={{flex: 1, alignItems: "center", justifyContent: 'center', padding: 10, backgroundColor:'rgba(0, 0, 0, 0.2)'}}>
+                <View style={{paddingHorizontal:20, width:'100%', backgroundColor:'white', borderRadius:10, paddingVertical:20,}}>
+                    <Text style={styles.TitleModalCatatanKegiatan}>Foto Petani</Text>
+                    <TouchableOpacity style={{position:'absolute', top:10, right:5, alignItems:'center', justifyContent:'center'}} onPress={()=> setModalLihatFotoPetani(!ModalLihatFotoPetani)}>
+                        <EvilIcons name="close-o" size={30} color="black" />
+                    </TouchableOpacity>
+                    { NamaFotoPetani != '' ? 
+                        <Image source={{uri:NamaFotoPetani}} style={{ width:windowWidth-1000, height:300, borderRadius:20, marginTop:10, alignItems:'center', justifyContent:'center'}} resizeMode="contain" />
+                        :
+                        <View style={{justifyContent:'center', alignItems:'center'}}>
+                            <FontAwesome name="image" size={70} color="black" />
+                            <Text style={styles.TextPoppins}>Foto Petani Belum Ditambahkan</Text>
+                        </View>
+                    }
+                </View>
+            </View>
+        </Modal>
+
         <View style={styles.ColorTopBar}></View>
         {/* Top Bar */}
         <View style={{width:'100%'}}>
             <View style={styles.TopBarBox}>
-                <View style={{flex:1, justifyContent:'flex-start'}}>
-                    <Text style={styles.TopBarText}>Ruang Chat Pakar</Text>
+                <View style={{flex:7, justifyContent:'flex-start'}}>
+                    <Text style={styles.TopBarText}>Daftar Pencari Modal</Text>
                 </View>
+                <TouchableOpacity onPress={()=>navigation.goBack()} style={{flex:0.5, alignItems:'flex-end', marginRight:10}}>
+                    <EvilIcons name="arrow-left" size={26} color="black" />
+                </TouchableOpacity>
             </View>
         </View>
         <View style={styles.ScrollViewBox}>
-            <FlatList style={{marginHorizontal:10}} data={ArrayListChat} renderItem={renderItem} keyExtractor={item => item.id_user} scrollEnabled={true} />
+            <FlatList style={{marginHorizontal:10}} numColumns={2} data={ArrayModal} renderItem={renderItem} keyExtractor={item => item.id_permodalan} />
         </View>
     </SafeAreaView>
   )
 }
 
-export default ListChatPakar
+export default KasihModal
 
 const styles = StyleSheet.create({
     ScrollViewBox:{
-        ...Platform.select({
-            ios:{
-                flex:1
-            },
-            android:{
-                flex:1
-            }
-        }),
+        flex:1,
         width:windowWidth, 
         backgroundColor:'white',
     },
@@ -193,17 +276,17 @@ const styles = StyleSheet.create({
     },
     TextPoppins:{
         fontFamily:'Poppins-Regular',
-        fontSize:10,
-        color:'black'
-    },
-    TextPoppinsPesan:{
-        fontFamily:'Poppins-Bold',
-        fontSize:10,
+        fontSize:12,
         color:'black'
     },
     TextPoppinsBold:{
         fontFamily:'Poppins-Bold',
         fontSize:16,
+        color:'black'
+    },
+    TextPoppinsBoldH3:{
+        fontFamily:'Poppins-Bold',
+        fontSize:12,
         color:'black'
     },
     TextPoppinsBoldGreen:{
@@ -241,7 +324,7 @@ const styles = StyleSheet.create({
         fontSize:12,
         color:'white',
     },
-    SimpanTopikButton:{
+    SimpanModalButton:{
         backgroundColor:'#30B700',
         paddingVertical:5,
         borderRadius:10,
@@ -250,12 +333,12 @@ const styles = StyleSheet.create({
         width:'100%', 
         marginTop:10
     },
-    TitleModalTopik:{
+    TitleModalModal:{
         fontFamily:'Poppins-Bold',
         fontSize:12,
         color:'black',
     },
-    TextSimpanTopikButton:{
+    TextSimpanModalButton:{
         fontFamily:'Poppins-Bold',
         fontSize:12,
         color:'white',
@@ -287,7 +370,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius:50,
     borderBottomLeftRadius:50,
     },
-    TambahTopik:{
+    TambahModal:{
         width:50,
         height:50,
         borderRadius:50/2,
@@ -295,7 +378,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         position:'absolute',
-        bottom:80,
+        bottom:30,
         right:20,
         zIndex:10
     },
@@ -358,18 +441,22 @@ const styles = StyleSheet.create({
         marginHorizontal:5,
         alignItems:'center',
         width:'100%', 
-        flex:1,
-        marginTop:10
+        marginTop:10,
+        flex:1
     },
     BtnSuccess:{
         backgroundColor:'#30B700',
         paddingVertical:5,
         borderRadius:10,
-        marginHorizontal:5,
         alignItems:'center',
         width:'100%', 
-        flex:1,
-        marginTop:10
+        marginTop:10,
+        flex:1
+    },
+    TextBtnWhite:{
+      fontFamily:'Poppins-Bold',
+      fontSize:12,
+      color:'white',
     },
     BtnOutline:{
         backgroundColor:'white',
@@ -392,7 +479,22 @@ const styles = StyleSheet.create({
         fontSize:12,
         color:'black',
     },
-    CardChatPakar: {
+    CardLaporan:{
+        backgroundColor:'white',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        marginTop:10,
+        borderRadius:20,
+        paddingHorizontal:20,
+        paddingVertical:10
+    },
+    CardModal:{
         marginBottom:10, 
         paddingHorizontal:10, 
         paddingVertical:10, 
@@ -407,5 +509,7 @@ const styles = StyleSheet.create({
         elevation: 5, 
         backgroundColor:'white', 
         marginTop:5, 
-        marginHorizontal:5}
+        marginHorizontal:5,
+        width:windowWidth/2.2
+    }
 })

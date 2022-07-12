@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView, Image, Platform, FlatList, Alert, Modal, Pressable } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView, Image, Platform, Modal, ToastAndroid } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import { ProgressChart, LineChart } from 'react-native-chart-kit'
 import { useIsFocused } from '@react-navigation/native';
+import axios from 'axios';
 
 import iconLove from '../assets/images/iconLove.png'
 import iconHome from '../assets/images/iconHome.png'
@@ -12,6 +13,7 @@ import iconBag from '../assets/images/iconBag.png'
 import iconUser from '../assets/images/iconUser.png'
 import CatatanKeuanganPic from '../assets/images/CatatanKeuangan.jpg'
 import PetaniActivityPic from '../assets/images/petaniactivity.png'
+import CatatanUsahaTaniPic from '../assets/images/catatan_usaha_tani.jpg'
 
 // Icon
 import { EvilIcons } from '@expo/vector-icons';
@@ -26,20 +28,26 @@ const CatatanUsahaTani = ({navigation, route}) => {
 
     const [currentDate, setCurrentDate] = useState('');
     const [ModalCatatan, setModalCatatan] = useState(false);
+    const [IDUser, setIDUser] = useState('');
+    const [StatusGrafik, setStatusGrafik] = useState('previous');
+    const [ArrBulan, setArrBulan] = useState(["Jul", "Agu", "Sep", "Okt", "Nov", "Des"]);
+    const [ArrTotalPendapatan, setArrTotalPendapatan] = useState([0,0,0,0,0,0]);
+    const [ArrTotalPengeluaran, setArrTotalPengeluaran] = useState([0,0,0,0,0,0]);
+
 
     const dataLineChart = {
-        labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun"],
+        labels: ArrBulan,
         datasets: [
           {
-            data: [20, 45, 28, 80, 99, 43],
+            data: ArrTotalPendapatan,
             color: (opacity = 1) => `rgba(0, 185, 35, ${opacity})`,
           },
           {
-            data: [20, 30, 20, 65, 75, 90],
+            data: ArrTotalPengeluaran,
             color: (opacity = 1) => `rgba(207, 40, 40, ${opacity})`,
           }
         ],
-        legend: ["Pendapatan", "Pengeluaran"] // optional
+        legend: ["Pendapatan", "Pengeluaran"], // optional
     };
 
     const UpdateCurrentTime = () => {
@@ -55,6 +63,83 @@ const CatatanUsahaTani = ({navigation, route}) => {
         );
     }
 
+    const LihatDataUser =  async() => {
+        try {
+        const jsonValue = await AsyncStorage.getItem('@DataUser')
+        const ParsingDataUser = JSON.parse(jsonValue);
+        // console.log(jsonValue)
+        setIDUser(ParsingDataUser[0].id_user);
+        } catch(e) {
+        // error reading value
+        }
+    }
+
+    const GetGrafikPendapatan = async (status_grafik) => {
+        if(IDUser != ''){
+          await axios.get('https://alicestech.com/kelasbertani/api/pendapatan/grafik', {
+                params: {
+                  id_user: IDUser,
+                  status: status_grafik,
+                }
+              })
+              .then(response => {
+                console.log('data pendapatan : ');
+                console.log(response.data.bulan)
+                console.log(response.data.total)
+                setArrBulan(response.data.bulan)
+                setArrTotalPendapatan(response.data.total)
+              })
+              .catch(e => {
+                if (e.response.status === 404) {
+                  console.log(e.response.data)
+                }
+            });
+        }
+    }
+    
+    const GetGrafikPengeluaran = (status_grafik) => {
+        if(IDUser != ''){
+            axios.get('https://alicestech.com/kelasbertani/api/pengeluaran/grafik', {
+                params: {
+                  id_user: IDUser,
+                  status: status_grafik,
+                }
+              })
+              .then(response => {
+                console.log('data pengeluaran : ');
+                console.log(response.data.bulan)
+                console.log(response.data.total)
+                setArrBulan(response.data.bulan)
+                setArrTotalPengeluaran(response.data.total)
+              })
+              .catch(e => {
+                if (e.response.status === 404) {
+                  console.log(e.response.data)
+                }
+            });
+        }
+    }
+
+      const isFocused = useIsFocused();
+      useEffect(() => {
+        LihatDataUser();
+        GetGrafikPendapatan(StatusGrafik);
+        GetGrafikPengeluaran(StatusGrafik);
+      }, [isFocused, IDUser])
+
+      const GantiData = (statusData) =>{
+          if(statusData == 1){
+                setStatusGrafik('previous');
+                GetGrafikPendapatan('previous');
+                GetGrafikPengeluaran('previous');
+          }else{
+                setStatusGrafik('next');
+                GetGrafikPendapatan('next');
+                GetGrafikPengeluaran('next');
+          }
+      }
+      
+
     let [fontsLoaded] = useFonts({
         'Philosopher': require('../assets/fonts/Philosopher-Regular.ttf'),
         'Philosopher-Bold': require('../assets/fonts/Philosopher-Bold.ttf'),
@@ -68,7 +153,7 @@ const CatatanUsahaTani = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={{ flex: 1, alignItems: 'center', backgroundColor:'white'}}>
-         {/* Modal Tambah Agenda */}
+         {/* Modal Tambah Catatan */}
          <Modal
             animationType="slide"
             transparent={true}
@@ -87,7 +172,10 @@ const CatatanUsahaTani = ({navigation, route}) => {
                     <Text style={styles.TextPoppinsCenter}>Apakah Anda ingin membuat catatan pendapatan?</Text>
                   </View>
 
-                  <TouchableOpacity onPress={()=> navigation.navigate('CatatanPendapatan')} style={styles.BtnSuccess}>
+                  <TouchableOpacity onPress={()=> {
+                      navigation.navigate('CatatanPendapatan')
+                      setModalCatatan(!ModalCatatan);
+                  }} style={styles.BtnSuccess}>
                       <Text style={styles.TextBtnWhite}>Catatan Pendapatan</Text>
                   </TouchableOpacity>
                   
@@ -121,13 +209,26 @@ const CatatanUsahaTani = ({navigation, route}) => {
                     <TouchableOpacity>
                         <LineChart
                             data={dataLineChart}
+                            yAxisSuffix={" Jt"}
                             width={Dimensions.get('window').width - 50}
+                            bezier
+                            onDataPointClick={({value}) => {
+                                console.log('value:',value)
+                                ToastAndroid.showWithGravity(
+                                    value + ' Jt',
+                                    ToastAndroid.SHORT,
+                                    ToastAndroid.CENTER,
+                                    ToastAndroid.TOP,
+                                );
+                            }
+                            }
                             height={220}
                             chartConfig={{
                                 backgroundColor: 'rgba(0, 185, 35, 0.3)',
                                 backgroundGradientFrom: 'rgba(0, 185, 35, 0.3)',
                                 backgroundGradientTo: 'white',
                                 color: (opacity = 1) => `rgba(41, 41, 41, ${opacity})`,
+                                decimalPlaces:0
                             }}
                             style={{borderRadius:15,}}
                         />
@@ -137,6 +238,29 @@ const CatatanUsahaTani = ({navigation, route}) => {
                     <View style={{marginTop:10, flexDirection:'row', alignItems:'center'}}>
                     </View>
                 </View>
+                <View style={{flexDirection:'row'}}>
+                    <TouchableOpacity onPress={()=> GantiData(1)} style={{borderWidth:0.5, borderRadius:10, paddingHorizontal:10, paddingVertical:5, flex:1, alignItems:'center', marginHorizontal:20}}>
+                        <Text style={styles.TextPoppinsKecil}>Januari - Juni</Text>
+                    </TouchableOpacity>
+                    <View style={{justifyContent:'center', alignItems:'center'}}>
+                        <Text style={styles.TextPoppinsBold}>-</Text>
+                    </View>
+                    <TouchableOpacity onPress={()=> GantiData(2)} style={{borderWidth:0.5, borderRadius:10, paddingHorizontal:10, paddingVertical:5, flex:1, alignItems:'center', marginHorizontal:20}}>
+                        <Text style={styles.TextPoppinsKecil}>Juli - Desember</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+            <View style={{borderTopWidth:0.2, borderTopColor:'grey', marginHorizontal:20, marginTop:20}}></View>
+            <View style={{marginHorizontal:20, marginTop:10}}>
+                <Text style={styles.TextPoppinsBold}>Pencatatan Kegiatan Usaha Tani</Text>
+                <Text style={styles.TextPoppins}>Masukkan data jenis tanaman, varietas, luas lahan dan kegiatan-kegiatan bertani disertai foto. Anda akan memiliki dokumentasi yang lengkap, hal ini akan membantu Anda untuk menganalisa hasil usaha tani.</Text>
+                <View style={{ alignItems:'center'}}>
+                    <Image source={CatatanUsahaTaniPic} style={{width:400, height:200}} resizeMode="contain" />
+
+                </View>
+                <TouchableOpacity onPress={()=> navigation.navigate('DaftarCatatanKegiatan')} style={styles.BtnSuccess}>
+                    <Text style={styles.TextBtnWhite}>Buat Pencatatan Kegiatan!</Text>
+                </TouchableOpacity>
             </View>
             <View style={{marginHorizontal:20, marginTop:10}}>
                 <Text style={styles.TextPoppinsBold}>Buat Rencana Kegiatan Usaha Tani</Text>
@@ -146,41 +270,21 @@ const CatatanUsahaTani = ({navigation, route}) => {
 
                 </View>
                 <TouchableOpacity onPress={()=> navigation.navigate('AgendaKegiatanTani')} style={styles.BtnSuccess}>
-                    <Text style={styles.TextBtnWhite}>Buat Rencana Kegiatan!</Text>
+                    <Text style={styles.TextBtnWhite}>Buat Agenda Kegiatan!</Text>
                 </TouchableOpacity>
             </View>
-            <View style={{marginHorizontal:20, marginTop:20}}>
+            <View style={{marginHorizontal:20, marginTop:20, marginBottom:10}}>
                 <Text style={styles.TextPoppinsBold}>Catat Pengeluaran & Pendapatan Usaha Tani Anda</Text>
                 <Text style={styles.TextPoppins}>Kegiatan ini dapat membantu mengidentifikasi masalah keuangan usaha Anda, dan melihat apakah usaha Anda telah mencapai target yang Anda impikan selama ini</Text>
                 <View style={{ alignItems:'center'}}>
                     <Image source={CatatanKeuanganPic} style={{width:400, height:200}} resizeMode="contain" />
 
                 </View>
-                <TouchableOpacity onPress={()=> setModalCatatan(!ModalCatatan)} style={styles.BtnDanger}>
+                <TouchableOpacity onPress={()=> setModalCatatan(!ModalCatatan)} style={styles.BtnSuccess}>
                     <Text style={styles.TextBtnWhite}>Tambah Catatan Sekarang!</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>
-        
-        {/* Bottom Navigation */}
-        <View style={{position:'absolute', bottom:0, left:0, flexDirection:'row', backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20 , paddingTop:10, paddingBottom:5, justifyContent:'center', alignItems:'center', width:'100%'}}>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
-                <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
-                <Text style={styles.TextPoppinsKecil}>Dashboard</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('FavouriteLocalData')}>
-                <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
-                <Text style={styles.TextPoppinsKecil}>Data Tanah</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})}>
-                <SimpleLineIcons name="game-controller" size={24} color="black" />
-                <Text style={styles.TextPoppinsKecil}>Controller</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
-                <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
-                <Text style={styles.TextPoppinsKecil}>Akun</Text>
-            </TouchableOpacity>
-        </View>
     </SafeAreaView>
   )
 }
@@ -191,10 +295,8 @@ const styles = StyleSheet.create({
     ScrollViewBox:{
         ...Platform.select({
             ios:{
-                marginBottom:5
             },
             android:{
-                marginBottom:60
             }
         }),
         width:windowWidth, 

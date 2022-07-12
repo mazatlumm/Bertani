@@ -25,10 +25,16 @@ import PermodalanIcon from '../assets/images/permodalan.png'
 import MarketplaceIcon from '../assets/images/marketplace.png'
 import DiskusiIcon from '../assets/images/chatbubble.png'
 import TanyaPakaricon from '../assets/images/tanyapakar.png'
+import MarketImage from '../assets/images/market.jpg'
+import KelolaProdukPic from '../assets/images/kelolaproduk.jpg'
+import CariModalPic from '../assets/images/carimodal.jpg'
+import KasihModalPic from '../assets/images/kasihmodal.jpg'
 import TopBar from './TopBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import { Link } from '@react-navigation/native';
+
+import PushNotification, {Importance} from "react-native-push-notification";
 
 //statusbar
 const STYLES = ['default', 'dark-content', 'light-content'];
@@ -36,8 +42,8 @@ const TRANSITIONS = ['fade', 'slide', 'none'];
 
 // Icon
 import { AntDesign } from '@expo/vector-icons';
+import { SimpleLineIcons, FontAwesome } from '@expo/vector-icons'; 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { SimpleLineIcons } from '@expo/vector-icons'; 
 
 import * as Linking from 'expo-linking';
 
@@ -69,6 +75,28 @@ const Dashboard = ({navigation}) => {
   const [DeskripsiCuaca, setDeskripsiCuaca] = useState('');
   const [AddressFull, setAddressFull] = useState('');
   const [modalActivityIndicator, setmodalActivityIndicator] = useState(true);
+  const [ModalPemasaran, setModalPemasaran] = useState(false);
+  const [ModalPermodalan, setModalPermodalan] = useState(false);
+
+  const CreateChannelNotification = (token) => {
+    console.log('Membuat Channel Notifikasi')
+    PushNotification.createChannel(
+      {
+        channelId: token,
+        channelName: "Agenda",
+        channelDescription: "Notifikasi Jadwal Kegiatan Petani", 
+        playSound: true, 
+        soundName: "default",
+        importance: Importance.HIGH,
+        vibrate: true, 
+      },
+      (created) => console.log(`createChannel returned '${created}'`) //
+    );
+    console.log('Daftar Channel');
+    PushNotification.getChannels(function (channel_ids) {
+      console.log(channel_ids);
+    });
+  }
 
   const isFocused = useIsFocused();
   useEffect(() => {
@@ -76,7 +104,7 @@ const Dashboard = ({navigation}) => {
     console.log('Cek Data user di Dashboard');
     LihatDataUser()
     CekLokasi()
-  }, [isFocused])
+  }, [isFocused, IDUser])
 
   const LihatDataUser =  async() => {
     try {
@@ -88,11 +116,36 @@ const Dashboard = ({navigation}) => {
     if(ParsingDataUser[0].id_user){
         setNamaUser(ParsingDataUser[0].nama);
         setRole(ParsingDataUser[0].role);
-        GetController(ParsingDataUser[0].id_user);
+        // GetController(ParsingDataUser[0].id_user);
     }
+    // //cek token
+    // messaging()
+    //   .getToken()
+    //   .then(token => {
+    //     console.log('Token Firebase : ' + token);
+    //     CreateChannelNotification(token)
+    //     SimpanTokenKeServer(ParsingDataUser[0].id_user, token)
+    // }); 
     } catch(e) {
-    // error reading value
+      // console.log(e)
     }
+  }
+
+  const SimpanTokenKeServer = async (IdUser, Token) => {
+    const ParameterUrl = { 
+      id_user:IdUser,
+      token:Token,
+    }
+    console.log(ParameterUrl)
+    await axios.post('https://alicestech.com/kelasbertani/api/token/change', ParameterUrl)
+    .then(response => {
+      console.log(response.data)
+    })
+    .catch(e => {
+      if (e.response.status === 404) {
+        console.log(e.response.data)
+      }
+    });
   }
 
   const CekLokasi = async () => {
@@ -139,6 +192,7 @@ const Dashboard = ({navigation}) => {
       .catch(e => {
         if (e.response.status === 404) {
           console.log(e.response.data)
+          setmodalActivityIndicator(false);
         }
       });
   }
@@ -188,6 +242,26 @@ const Dashboard = ({navigation}) => {
       navigation.navigate('RoomDiskusiPakar', {id_user:IDUser});
     }
   }
+
+  const KelolaProduk = () => {
+    navigation.navigate('KelolaProduk')
+    setModalPemasaran(!ModalPemasaran);
+  }
+
+  const PasarBertani = () => {
+    navigation.navigate('PasarBertani')
+    setModalPemasaran(!ModalPemasaran);
+  }
+  
+  const KasihModal = () => {
+    navigation.navigate('KasihModal')
+    setModalPermodalan(!ModalPermodalan);
+  }
+  
+  const CariModal = () => {
+    navigation.navigate('CariModal')
+    setModalPermodalan(!ModalPermodalan);
+  }
   
   let [fontsLoaded] = useFonts({
     'Philosopher': require('../assets/fonts/Philosopher-Regular.ttf'),
@@ -212,53 +286,124 @@ const Dashboard = ({navigation}) => {
         >
           <View style={{flex: 1, alignItems: "center", justifyContent: 'center', padding: 10, backgroundColor:'rgba(0, 0, 0, 0.2)'}}>
               <ActivityIndicator size="large" color="#00ff00" />
-            {/* <View style={{paddingHorizontal:20, paddingVertical:20, marginHorizontal:20, backgroundColor:'white', borderRadius:10}}>
-              <Text style={styles.TextDeskrispiLoading}>Cek Lokasi Dan Data Cuaca</Text>
-            </View> */}
         </View>
         </Modal>
+        {/* Modal Pemasaran */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={ModalPemasaran}
+          onRequestClose={() => {
+            setModalPemasaran(!ModalPemasaran);
+          }}
+        >
+          <View style={{flex: 1, alignItems: "center", justifyContent: 'center', padding: 10, backgroundColor:'rgba(0, 0, 0, 0.5)'}}>
+            <View style={{paddingHorizontal:20, paddingVertical:20, marginHorizontal:20, backgroundColor:'white', borderRadius:10, flexDirection:'row', width:windowWidth, alignItems:'center', justifyContent:'center'}}>
+              <TouchableOpacity onPress={()=> setModalPemasaran(!ModalPemasaran)} style={{position:'absolute', top:10, right:10, zIndex:10}}>
+                <SimpleLineIcons name="close" size={20} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity style={{alignItems:'center'}} onPress={()=>KelolaProduk()}>
+                <Image source={KelolaProdukPic} style={{width:100, height:100}} resizeMode="contain"/>
+                <View style={{borderWidth:1, alignItems:'center', borderRadius:10, paddingVertical:5, paddingHorizontal:5, width:'100%'}}>
+                  <Text style={styles.TextDeskrispiCuaca}>Kelola Produk Anda</Text>
+                </View>
+              </TouchableOpacity>
+              <View style={{borderLeftWidth:0.5, marginHorizontal:10, borderLeftColor:'grey', height:'100%'}}></View>
+              <TouchableOpacity style={{alignItems:'center'}} onPress={()=>PasarBertani()}>
+                <Image source={MarketImage} style={{width:100, height:100}} resizeMode="contain"/>
+                <View style={{borderWidth:1, alignItems:'center', borderRadius:10, paddingVertical:5, paddingHorizontal:5, width:'100%'}}>
+                  <Text style={styles.TextDeskrispiCuaca}>Masuk Pasar Bertani</Text>
+                </View>
+              </TouchableOpacity>
+              </View>
+        </View>
+        </Modal>
+          {/* Modal Permodalan */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={ModalPermodalan}
+          onRequestClose={() => {
+            setModalPermodalan(!ModalPermodalan);
+          }}
+        >
+          <View style={{flex: 1, alignItems: "center", justifyContent: 'center', padding: 10, backgroundColor:'rgba(0, 0, 0, 0.5)'}}>
+            <View style={{paddingHorizontal:20, paddingVertical:20, marginHorizontal:20, backgroundColor:'white', borderRadius:10, flexDirection:'row', width:windowWidth, alignItems:'center', justifyContent:'center'}}>
+              <TouchableOpacity onPress={()=> setModalPermodalan(!ModalPermodalan)} style={{position:'absolute', top:10, right:10, zIndex:10}}>
+                <SimpleLineIcons name="close" size={20} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity style={{alignItems:'center'}} onPress={()=>KasihModal()}>
+                <Image source={KasihModalPic} style={{width:100, height:100}} resizeMode="contain"/>
+                <View style={{borderWidth:1, alignItems:'center', borderRadius:10, paddingVertical:5, paddingHorizontal:5, width:'100%'}}>
+                  <Text style={styles.TextDeskrispiCuaca}>Kasih Modal</Text>
+                </View>
+              </TouchableOpacity>
+              <View style={{borderLeftWidth:0.5, marginHorizontal:10, borderLeftColor:'grey', height:'100%'}}></View>
+              <TouchableOpacity style={{alignItems:'center'}} onPress={()=>CariModal()}>
+                <Image source={CariModalPic} style={{width:100, height:100}} resizeMode="contain"/>
+                <View style={{borderWidth:1, alignItems:'center', borderRadius:10, paddingVertical:5, paddingHorizontal:5, width:'100%'}}>
+                  <Text style={styles.TextDeskrispiCuaca}>Cari Modal</Text>
+                </View>
+              </TouchableOpacity>
+              </View>
+        </View>
+        </Modal>
+
       <StatusBar
         animated={true}
         backgroundColor="green"
         barStyle={statusBarStyle}
         showHideTransition={statusBarTransition}
         hidden={hidden} />
-      <ScrollView style={styles.ScrollViewBox}>  
-          {/* Top Bar */}
-          {/* <TopBar /> */}
 
+      <TouchableOpacity onPress={()=>navigation.navigate('Profile')} style={{width:'100%', paddingHorizontal:13, backgroundColor:'white', paddingTop:10, flexDirection:'row', alignItems:'center'}}>
+        <View style={{width:20, height:20, borderWidth:1, borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+          <FontAwesome name="user" size={16} color="black" />
+        </View>
+        <View style={{flexDirection:'row'}}>
+          <Text style={{fontFamily:'Poppins-Bold', fontSize:14, color:'black', marginLeft:5}}>  Hai, </Text>
+          <Text style={{fontFamily:'Poppins-Bold', fontSize:14, color:'black', textDecorationLine:'underline'}}>{NamaUser}</Text>
+        </View>
+      </TouchableOpacity>
+      <ScrollView style={styles.ScrollViewBox}>  
           {/* Greating Text Box Hijau */}
           <View style={{width:'100%', paddingHorizontal:10, marginTop:10}}>
             <View style={styles.BoxGreating}>
-              <Image source={Farmer} style={styles.FarmerImg} />
-              <View style={{width:175, marginLeft:15}}>
-                <Text style={styles.TextGreating}>Teknologi AI dan IoT Pertanian</Text>
+              <View style={{flex:2}}>
+                <View style={{marginLeft:15,}}>
+                  <Text style={styles.TextGreating}>Aplikasi Bertani</Text>
+                  <Text style={styles.TextDeskrispiCuaca}>Adalah aplikasi yang berbasis teknologi AI dan IoT yang menyediakan data dan informasi pertanian</Text>
+                  <View style={{borderTopWidth:0.5, marginBottom:8, marginTop:5}}></View>
+                </View>
+                <View style={{marginLeft:15, marginTop:0, alignItems:'center', flexDirection:'row'}}>
+                    <SimpleLineIcons name="location-pin" size={12} color="black" style={{paddingRight:5}}/>
+                    <Text style={styles.TextDeskrispiCuaca}>{AddressFull}</Text>
+                </View>
+                <View style={{marginLeft:15, marginTop:0, alignItems:'center', flexDirection:'row'}}>
+                  {IconCuaca != '' ?
+                  <View style={{flex:1}}>
+                    <Image source={{uri:IconCuaca}} style={{width:50, height:30,borderWidth:1}}/>
+                    <Text style={styles.TextDeskrispiCuaca}>{DeskripsiCuaca}</Text>
+                  </View>
+                  : <View></View>
+                  }
+                  <View style={{alignItems:'flex-start', flex:1, paddingLeft:10}}>
+                    <Text style={styles.TextSuhu}>{Suhu}&deg;C</Text>
+                  </View>
+                </View>
+                <View style={{marginLeft:15, marginTop:0, alignItems:'center', flexDirection:'row'}}>
+                  <View style={{flex:1}}>
+                    <Text style={styles.TextValueCuaca}>{Kelembaban}%</Text>
+                    <Text style={styles.TextDeskrispiCuaca}>Kelembaban</Text>
+                  </View>
+                  <View style={{falignItems:'flex-start', flex:1, paddingLeft:10}}>
+                    <Text style={styles.TextValueCuaca}>{TekananUdara} hPa</Text>
+                    <Text style={styles.TextDeskrispiCuaca}>Tekanan Udara</Text>
+                  </View>
+                </View>
               </View>
-              <View style={{width:180, marginLeft:15, marginTop:0, alignItems:'center', flexDirection:'row'}}>
-                  <SimpleLineIcons name="location-pin" size={12} color="black" style={{paddingRight:5}}/>
-                  <Text style={styles.TextDeskrispiCuaca}>{AddressFull}</Text>
-              </View>
-              <View style={{width:180, marginLeft:15, marginTop:0, alignItems:'center', flexDirection:'row'}}>
-                {IconCuaca != '' ?
-                <View style={{flex:1}}>
-                  <Image source={{uri:IconCuaca}} style={{width:50, height:20,borderWidth:1}}/>
-                  <Text style={styles.TextDeskrispiCuaca}>{DeskripsiCuaca}</Text>
-                </View>
-                : <View></View>
-                }
-                <View style={{alignItems:'flex-end'}}>
-                  <Text style={styles.TextSuhu}>{Suhu}&deg;C</Text>
-                </View>
-              </View>
-              <View style={{width:180, marginLeft:15, marginTop:0, alignItems:'center', flexDirection:'row'}}>
-                <View style={{flex:1}}>
-                  <Text style={styles.TextValueCuaca}>{Kelembaban}%</Text>
-                  <Text style={styles.TextDeskrispiCuaca}>Kelembaban</Text>
-                </View>
-                <View style={{flex:1}}>
-                  <Text style={styles.TextValueCuaca}>{TekananUdara} hPa</Text>
-                  <Text style={styles.TextDeskrispiCuaca}>Tekanan Udara</Text>
-                </View>
+              <View style={{flex:1, paddingLeft:10,justifyContent:'center', alignItems:'center'}}>
+                <Image source={Farmer} style={styles.FarmerImg} />
               </View>
             </View>
           </View>
@@ -331,7 +476,7 @@ const Dashboard = ({navigation}) => {
 
             <View style={styles.MenuBox}>
               {/* Icon Menu */}
-              <TouchableOpacity style={{alignItems:'center', justifyContent:'flex-start', flex:1}}>
+              <TouchableOpacity onPress={()=>setModalPermodalan(!ModalPermodalan)} style={{alignItems:'center', justifyContent:'flex-start', flex:1}}>
                 <View style={{width:70, height:70, backgroundColor:'#d34539', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={PermodalanIcon} style={{width:50, height:50}} />
                 </View>
@@ -339,7 +484,7 @@ const Dashboard = ({navigation}) => {
               </TouchableOpacity>
               
               
-              <TouchableOpacity style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+              <TouchableOpacity onPress={()=> setModalPemasaran(!ModalPemasaran)} style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
                 <View style={{width:70, height:70, backgroundColor:'#2883e1', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={MarketplaceIcon} style={{width:50, height:50}} />
                 </View>
@@ -360,85 +505,8 @@ const Dashboard = ({navigation}) => {
                 <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Tanya Pakar</Text>
               </TouchableOpacity>
             </View>
-
           </View>
-          
-          {/* Daftar Controller */}
-          <View style={{flexDirection:'row', width:'100%', paddingHorizontal:20, marginTop:20}}>
-            <TouchableOpacity style={styles.BoxDaftarController} onPress={()=>DaftarControllerCek()}>
-              <Text style={styles.TextScan}>Daftar Controller</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.BoxSetKanal} onPress={()=>navigation.navigate('TambahController')}>
-              <AntDesign name="pluscircleo" size={20} color="black" />
-            </TouchableOpacity>
-          </View>
-
-          <View style={{width:'100%', marginTop:20, alignItems:'flex-start', paddingHorizontal:23}}>
-            <TouchableOpacity onPress={()=> DaftarControllerCek()}>
-              <Text style={{fontFamily:'Poppins-Bold', fontSize:12, color:'#0D986A'}}>Automatic & Control Pengairan</Text>
-              <View style={{borderBottomWidth:2, borderBottomColor:'#0D986A', width:40, marginTop:5}}></View>
-            </TouchableOpacity>
-          </View>
-          
-          <TouchableOpacity style={{width:'100%', paddingHorizontal:20, marginTop:10, alignItems:'center', justifyContent:'center', position:'relative'}} onPress={()=>DetailControllerCek()}>
-              <View style={styles.JajarGenjang}>
-              </View>
-              <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'black', position:'absolute', left:50, top:25}}>Detail Data</Text>
-              <Text style={{fontFamily:'Philosopher-Bold', fontSize:18, color:'black', position:'absolute', left:50, top:50}}>{NamaPerangkat}</Text>
-              <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black', position:'absolute', left:50, top:85}}>Tanaman {JenisTanaman}</Text>
-              <View style={{position:'absolute', right:0, bottom:50}}>
-                <Image source={tanaman} style={{width:190, height:190,resizeMode:'contain'}} />
-              </View>
-              <View style={{position:'absolute', left:50, bottom:50, flexDirection:'row', alignItems:'center'}}>
-                <Text style={{color:'black',fontFamily:'Poppins-Regular', fontSize:12}}>Hum Min : </Text>
-                <Text style={{color:'black',fontFamily:'Poppins-Bold', paddingLeft:0, fontSize:14}}>{HumMin}%</Text>
-                <Text style={{color:'black',fontFamily:'Poppins-Regular', paddingLeft:10, fontSize:12}}>Hum Max : </Text>
-                <Text style={{color:'black',fontFamily:'Poppins-Bold', paddingLeft:0, fontSize:14}}>{HumMax}%</Text>
-              </View>
-              <View style={{position:'absolute', left:50, bottom:20, width:260}}>
-                <Text style={{fontFamily:'Philosopher', fontSize:12, color:'black'}}>Lokasi : {Lokasi}</Text>
-              </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={{width:'100%', marginTop:20, paddingHorizontal:20, position:'relative', marginBottom:10}}>
-            <View style={{height:160, backgroundColor:'#8CEC8A', opacity:0.3, borderRadius:20}}>
-            </View>
-            <View style={{width:240, position:'absolute', left:40, top:20}}>
-              <Text style={{fontFamily:'Philosopher-Bold', fontSize:18, color:'black', position:'absolute'}}>Cari Produk Hasil Pertanian Nusantara</Text>
-            </View>
-            <View style={{width:160, position:'absolute', left:40, top:80}}>
-              <Text style={{fontFamily:'Poppins-Regular', fontSize:12, color:'#0D986A', position:'absolute'}}>Penuhi kebutuhan usaha anda dengan produk unggulan pertanian Indonesia</Text>
-            </View>
-            <View style={{width:50,height:50, borderRadius:25, position:'absolute', backgroundColor:'#0D986A', right:40, top:20}}></View>
-            <View style={{width:15,height:15, borderRadius:15/2, position:'absolute', backgroundColor:'#0D986A', left:30, top:5}}></View>
-            <View style={{width:10,height:10, borderRadius:10/2, position:'absolute', backgroundColor:'#0D986A', left:23, top:30}}></View>
-            <View style={{width:30,height:30, borderRadius:30/2, position:'absolute', backgroundColor:'#0D986A', right:23, top:70}}></View>
-            <View style={{width:20,height:20, borderRadius:20/2, position:'absolute', backgroundColor:'#0D986A', left:170, bottom:10}}></View>
-            <TouchableOpacity style={{backgroundColor:'#0D986A', borderRadius:10, paddingHorizontal:20, paddingVertical:5, position:'absolute', bottom:30, right:60}} onPress={()=>navigation.navigate('CekTanah')}>
-              <Text style={{fontFamily:'Poppins-Bold', fontSize:12, color:'white'}}>Cek</Text>
-            </TouchableOpacity>
-          </TouchableOpacity>
         </ScrollView>
-
-        {/* Bottom Navigation */}
-        <View style={{position:'absolute', bottom:0, left:0, flexDirection:'row', backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20 , paddingTop:10, paddingBottom:5, justifyContent:'center', alignItems:'center', width:'100%'}}>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
-                <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
-                <Text style={styles.TextPoppinsKecil}>Dashboard</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('FavouriteLocalData')}>
-                <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
-                <Text style={styles.TextPoppinsKecil}>Data Tanah</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})}>
-                <SimpleLineIcons name="game-controller" size={24} color="black" />
-                <Text style={styles.TextPoppinsKecil}>Controller</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
-                <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
-                <Text style={styles.TextPoppinsKecil}>Akun</Text>
-            </TouchableOpacity>
-        </View>
   </SafeAreaView>
   )
 }
@@ -452,7 +520,7 @@ const styles = StyleSheet.create({
             marginBottom:0
         },
         android:{
-            marginBottom:50
+            marginBottom:0
         }
     }),
     width:'100%', 
@@ -474,18 +542,16 @@ const styles = StyleSheet.create({
     borderRadius:10,
     paddingBottom:10,
     paddingTop:10,
+    flexDirection:'row'
   },
   FarmerImg:{
     width:150, 
     height:150,
     resizeMode:'contain',
-    position:'absolute',
-    right:0,
-    bottom:0
   },
   TextGreating:{
-    fontFamily:'Philosopher-Bold',
-    fontSize:20,
+    fontFamily:'Poppins-Bold',
+    fontSize:16,
     color:'black'
   },
   TextGreatingExpln:{
@@ -622,6 +688,7 @@ const styles = StyleSheet.create({
   MenuListBox:{
     paddingVertical:15,
     marginTop:10,
+    marginBottom:10,
     marginHorizontal:10,
     shadowColor: "#000",
     shadowOffset: {

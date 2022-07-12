@@ -2,8 +2,6 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput, ScrollView,
 import React, {useEffect, useState} from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TopImage from '../assets/images/LoginImage.png'
-import IconUsername from '../assets/images/IconUsername.png'
-import IconPassword from '../assets/images/IconPassword.png'
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 
@@ -22,7 +20,6 @@ const Login = ({navigation}) => {
     const [SeePassword, setSeePassword] = useState(true);
     const [HideShowPassword, setHideShowPassword] = useState(true);
     const [IconPassword, setIconPassword] = useState('eye-slash');
-    const [TokenChat, setTokenChat] = useState('');
 
     const [hidden, setHidden] = useState(false);
     const [statusBarStyle, setStatusBarStyle] = useState(STYLES[0]);
@@ -30,7 +27,6 @@ const Login = ({navigation}) => {
 
     useEffect(() => {
         LihatDataUser()
-        CekToken()
     }, []);
 
     const LihatPassword = () => {
@@ -52,16 +48,6 @@ const Login = ({navigation}) => {
         return jsonValue != null ? JSON.parse(jsonValue) : null;
         } catch(e) {
         // error reading value
-        }
-    }
-
-    const CekToken = async () => {
-        const value = await AsyncStorage.getItem('@token')
-        if(value !== null) {
-          setTokenChat(value)
-          console.log('Token Chat : ' + value)
-        }else{
-            console.log('Token Tidak Tersedia');
         }
     }
     
@@ -91,7 +77,7 @@ const Login = ({navigation}) => {
     // API Login App
     const getDataUsingPost = () => {
         //POST json
-    var dataToSend = { username: Username, password: Password, token: TokenChat};
+    var dataToSend = { username: Username, password: Password};
     //making data to send on server
     var formBody = [];
     for (var key in dataToSend) {
@@ -114,7 +100,9 @@ const Login = ({navigation}) => {
       .then((responseJson) => {
         if(responseJson.status == true){
             SimpanDataUSer(responseJson.result)
-            navigation.navigate('Dashboard');
+            setTimeout(() => {
+                navigation.navigate('Dashboard');
+            }, 1000);
         }else{
             Alert.alert('Status Login', 'Username & Password Tidak Sesuai');
         }
@@ -169,6 +157,7 @@ const Login = ({navigation}) => {
             <TouchableOpacity style={styles.RegisterButton} onPress={()=>navigation.navigate('RegisterScreen')}>
                 <Text style={styles.TextLoginButton}>Daftar Sekarang</Text>
             </TouchableOpacity>
+            <View style={{marginTop:10}}></View>
             <Text style={styles.TextFooter}>Atau Lupa Password?</Text>
             <TouchableOpacity style={styles.ResetPassworButton} onPress={()=>navigation.navigate('ResetPassword')}>
                 <Text style={styles.TextRSTPasswordButton}>Reset Password</Text>

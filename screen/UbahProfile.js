@@ -196,7 +196,7 @@ const UbahProfile = ({navigation}) => {
                 </View>
             </View>
         </Modal>
-        <ScrollView style={{marginBottom:50, width:windowWidth}}>
+        <ScrollView style={{width:windowWidth}}>
             <View style={styles.ColorTopBar}></View>
             {/* Top Bar */}
             <View style={{paddingHorizontal:20, width:'100%'}}>
@@ -306,22 +306,6 @@ const UbahProfile = ({navigation}) => {
             </View>
            
         </ScrollView>
-
-        {/* Bottom Navigation */}
-        <View style={{position:'absolute', bottom:0, left:0, flexDirection:'row', backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20 , paddingTop:15, paddingBottom:10, justifyContent:'center', alignItems:'center', width:'100%'}}>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
-            <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={()=>navigation.navigate('FavouriteLocalData')} style={{flex:1, alignItems:'center'}}>
-            <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
-          </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})}>
-            <SimpleLineIcons name="game-controller" size={24} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
-            <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
-          </TouchableOpacity>
-        </View>
     </View>
   )
 }

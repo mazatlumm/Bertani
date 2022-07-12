@@ -120,26 +120,6 @@ const DaftarController = ({navigation, route}) => {
         <View style={styles.ScrollViewBox}>
             <FlatList style={{marginHorizontal:10}} data={ArrayListController} renderItem={renderItem} keyExtractor={item => item.id_controller} scrollEnabled={true} />
         </View>
-        
-        {/* Bottom Navigation */}
-        <View style={{position:'absolute', bottom:0, left:0, flexDirection:'row', backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20 , paddingTop:10, paddingBottom:5, justifyContent:'center', alignItems:'center', width:'100%'}}>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
-                <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
-                <Text style={styles.TextPoppinsKecil}>Dashboard</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('FavouriteLocalData')}>
-                <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
-                <Text style={styles.TextPoppinsKecil}>Data Tanah</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})}>
-                <SimpleLineIcons name="game-controller" size={24} color="black" />
-                <Text style={styles.TextPoppinsKecil}>Controller</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
-                <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
-                <Text style={styles.TextPoppinsKecil}>Akun</Text>
-            </TouchableOpacity>
-        </View>
     </SafeAreaView>
   )
 }
@@ -150,12 +130,10 @@ const styles = StyleSheet.create({
     ScrollViewBox:{
         ...Platform.select({
             ios:{
-                marginBottom:50,
-                height:windowHeight-140,
+                
             },
             android:{
-                marginBottom:50,
-                height:windowHeight-130,
+                
             }
         }),
         width:windowWidth, 

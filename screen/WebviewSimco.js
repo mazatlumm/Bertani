@@ -36,7 +36,7 @@ const WebviewSimco = () => {
       return (
         <WebView 
           style={styles.container}
-          source={{ uri: 'https://alicestech.com/simco/api/auto_login?email='+Email+'&nama='+NamaUser}}
+          source={{ uri: 'https://alicestech.com/petani/api/auto_login?email='+Email+'&nama='+NamaUser}}
         />
       )
     }else{

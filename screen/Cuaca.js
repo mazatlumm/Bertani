@@ -162,20 +162,6 @@ const Cuaca = ({navigation}) => {
                         <Image style={{width:200}} resizeMode={'contain'} source={GIFCuaca} />
                         <Text style={styles.ValueCuacaDeskripsi}>Sedang Mengambil Data Cuaca ...</Text>
                     </View>
-                    <View style={{position:'absolute', bottom:0, left:0, flexDirection:'row', backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20 , paddingTop:15, paddingBottom:10, justifyContent:'center', alignItems:'center', width:'100%'}}>
-                    <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
-                        <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('FavouriteLocalData')}>
-                        <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})}>
-                        <SimpleLineIcons name="game-controller" size={24} color="black" />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
-                        <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
-                    </TouchableOpacity>
-                    </View>
                 </View>
             )
         }else{
@@ -196,22 +182,7 @@ const Cuaca = ({navigation}) => {
                     />
                 </View>
                 <View>
-                    <FlatList style={{marginHorizontal:10, marginBottom:400, marginTop:10}} data={ArrayCuacaFix} renderItem={renderItem} keyExtractor={item => item.id} scrollEnabled={true} />
-                </View>
-                {/* Bottom Navigation */}
-                <View style={{position:'absolute', bottom:0, left:0, flexDirection:'row', backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20 , paddingTop:15, paddingBottom:10, justifyContent:'center', alignItems:'center', width:'100%'}}>
-                <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Dashboard')}>
-                    <Image source={iconHome} style={{height:24, width:24, resizeMode:'contain'}} />
-                </TouchableOpacity>
-                <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('FavouriteLocalData')}>
-                    <Image source={iconLove} style={{height:24, width:24, resizeMode:'contain'}} />
-                </TouchableOpacity>
-                <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('DaftarController', {IDUser:IDUser})}>
-                    <SimpleLineIcons name="game-controller" size={24} color="black" />
-                </TouchableOpacity>
-                <TouchableOpacity style={{flex:1, alignItems:'center'}} onPress={()=>navigation.navigate('Profile')}>
-                    <Image source={iconUser} style={{height:24, width:24, resizeMode:'contain'}} />
-                </TouchableOpacity>
+                    <FlatList style={{marginHorizontal:10, marginTop:10, marginBottom:350}} data={ArrayCuacaFix} renderItem={renderItem} keyExtractor={item => item.id} scrollEnabled={true} />
                 </View>
             </View>
             )

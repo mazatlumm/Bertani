@@ -45,6 +45,7 @@ import ListTopikFavorit from './screen/ListTopikFavorit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { initializeApp } from "firebase/app";
+
 import * as Linking from 'expo-linking'
 import ListChatPakar from './screen/ListChatPakar';
 import RoomDiskusiPakar from './screen/RoomDiskusiPakar';
@@ -52,6 +53,12 @@ import CatatanUsahaTani from './screen/CatatanUsahaTani';
 import AgendaKegiatanTani from './screen/AgendaKegiatanTani';
 import CatatanPendapatan from './screen/CatatanPendapatan';
 import CatatanPengeluaran from './screen/CatatanPengeluaran';
+import DaftarCatatanKegiatan from './screen/DaftarCatatanKegiatan';
+import CatatanKegiatan from './screen/CatatanKegiatan';
+import KelolaProduk from './screen/KelolaProduk';
+import PasarBertani from './screen/PasarBertani';
+import CariModal from './screen/CariModal';
+import KasihModal from './screen/KasihModal';
 
 const config = {
   screens: {
@@ -75,41 +82,18 @@ const firebaseConfig = {
   appId: "1:261338527558:web:bbd81126f6d06f02d59747"
 };
 
+
 const Stack = createNativeStackNavigator();
 
 function App() {
 
-  const SimpanToken = async (value) => {
-    try {
-      await AsyncStorage.setItem('@token', value)
-    } catch (e) {
-      // saving error
-    }
-  }
-
-  const CreateChannelNotification = () => {
-    console.log('Membuat Channel Notifikasi')
-    PushNotification.createChannel(
-      {
-        channelId: "AgendaNotification001",
-        channelName: "Agenda",
-        channelDescription: "Notifikasi Jadwal Kegiatan Petani", 
-        playSound: true, 
-        soundName: "default",
-        importance: Importance.HIGH,
-        vibrate: true, 
-      },
-      (created) => console.log(`createChannel returned '${created}'`) //
-    );
-  }
-
   useEffect(() => {
     console.log('inisialisasi notification!')
     initializeApp(firebaseConfig);
+
     PushNotification.configure({
       onRegister: function (token) {
-        console.log("TOKEN:", token.token);
-        SimpanToken(token.token)
+        console.log('Push Notification Token : ' + token)
       },
 
       onNotification: function (notification) {
@@ -135,7 +119,6 @@ function App() {
       popInitialNotification: true,
       requestPermissions: true,
     });
-    CreateChannelNotification()
   }, [])
 
   return (
@@ -181,6 +164,12 @@ function App() {
         <Stack.Screen name="AgendaKegiatanTani" component={AgendaKegiatanTani} options={{headerShown:false}}/>
         <Stack.Screen name="CatatanPendapatan" component={CatatanPendapatan} options={{headerShown:false}}/>
         <Stack.Screen name="CatatanPengeluaran" component={CatatanPengeluaran} options={{headerShown:false}}/>
+        <Stack.Screen name="DaftarCatatanKegiatan" component={DaftarCatatanKegiatan} options={{headerShown:false}}/>
+        <Stack.Screen name="CatatanKegiatan" component={CatatanKegiatan} options={{headerShown:false}}/>
+        <Stack.Screen name="KelolaProduk" component={KelolaProduk} options={{headerShown:false}}/>
+        <Stack.Screen name="PasarBertani" component={PasarBertani} options={{headerShown:false}}/>
+        <Stack.Screen name="CariModal" component={CariModal} options={{headerShown:false}}/>
+        <Stack.Screen name="KasihModal" component={KasihModal} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,11 +1,5 @@
-// In App.js in a new project
-
-import React, {useEffect, useState} from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-// Notification
-import PushNotificationIOS from "@react-native-community/push-notification-ios";
-import PushNotification, {Importance} from "react-native-push-notification";
-
+import React, {useEffect} from 'react';
+import { Alert } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Dashboard from './screen/Dashboard';
@@ -18,7 +12,6 @@ import QRScanner from './screen/QRScanner';
 import TambahController from './screen/TambahController';
 import Profile from './screen/Profile';
 import TambahPengguna from './screen/TambahPengguna';
-import PushNotificationTest from './screen/PushNotificationTest';
 import UbahProfile from './screen/UbahProfile';
 import AIDetectPlant from './screen/AIDetectPlant';
 import SplashScreen from './screen/SplashScreen';
@@ -42,11 +35,7 @@ import Cuaca from './screen/Cuaca';
 import RoomDiskusi from './screen/RoomDiskusi';
 import ListTopikDiskusi from './screen/ListTopikDiskusi';
 import ListTopikFavorit from './screen/ListTopikFavorit';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { initializeApp } from "firebase/app";
-
-import * as Linking from 'expo-linking'
 import ListChatPakar from './screen/ListChatPakar';
 import RoomDiskusiPakar from './screen/RoomDiskusiPakar';
 import CatatanUsahaTani from './screen/CatatanUsahaTani';
@@ -60,69 +49,31 @@ import PasarBertani from './screen/PasarBertani';
 import CariModal from './screen/CariModal';
 import KasihModal from './screen/KasihModal';
 
-const config = {
-  screens: {
-    Dashboard: 'dashboard',
-    Profile: 'profile',
-    ListTopikDiskusi: 'topik/diskusi',
-  },
-};
-
-const linking = {
-  prefixes: ['kelasbertani://', 'kelasbertani.com://'],
-  config: config,
-}
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDWbTDPIFtZpKrCpW-SRfYuZEHF2DwQOM8",
-  authDomain: "kelasbertanichat.firebaseapp.com",
-  projectId: "kelasbertanichat",
-  storageBucket: "kelasbertanichat.appspot.com",
-  messagingSenderId: "261338527558",
-  appId: "1:261338527558:web:bbd81126f6d06f02d59747"
-};
-
+//notifikasi
+import PushNotification, { Importance } from "react-native-push-notification";
 
 const Stack = createNativeStackNavigator();
 
 function App() {
 
+  const createChannel = () => {
+    PushNotification.createChannel({
+        channelId: "BertaniChannel", // (required)
+        channelName: "BertaniApp", // (required)
+        channelDescription: "Channel for local and remote notification", // (optional) default: undefined.
+        playSound: true, // (optional) default: true
+        soundName: "default", // (optional) See `soundName` parameter of `localNotification` function
+        importance: Importance.HIGH, // (optional) default: Importance.HIGH. Int value of the Android notification importance
+        vibrate: true, // (optional) default: true. Creates the default vibration pattern if tru
+    },(created) => console.log(`createChannel returned '${created}'`))
+  }
+
   useEffect(() => {
-    console.log('inisialisasi notification!')
-    initializeApp(firebaseConfig);
-
-    PushNotification.configure({
-      onRegister: function (token) {
-        console.log('Push Notification Token : ' + token)
-      },
-
-      onNotification: function (notification) {
-        console.log("NOTIFICATION:", notification);
-        notification.finish(PushNotificationIOS.FetchResult.NoData);
-      },
-
-      onAction: function (notification) {
-        console.log("ACTION:", notification.action);
-        console.log("NOTIFICATION:", notification);
-      },
-
-      onRegistrationError: function(err) {
-        console.error(err.message, err);
-      },
- 
-      permissions: {
-        alert: true,
-        badge: true,
-        sound: true,
-      },
-
-      popInitialNotification: true,
-      requestPermissions: true,
-    });
+    createChannel()
   }, [])
 
   return (
-    <NavigationContainer linking={linking}>
+    <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="SplashScreen" component={SplashScreen} options={{headerShown:false}} />
         <Stack.Screen name="Login" component={Login} options={{headerShown:false}} />
@@ -137,7 +88,6 @@ function App() {
         <Stack.Screen name="TambahController" component={TambahController} options={{headerShown:false}} />
         <Stack.Screen name="Profile" component={Profile} options={{headerShown:false}} />
         <Stack.Screen name="TambahPengguna" component={TambahPengguna} options={{headerShown:false}} />
-        <Stack.Screen name="PushNotificationTest" component={PushNotificationTest} options={{headerShown:false}} />
         <Stack.Screen name="UbahProfile" component={UbahProfile} options={{headerShown:false}} />
         <Stack.Screen name="AIDetectPlant" component={AIDetectPlant} options={{headerShown:false}} />
         <Stack.Screen name="UbahUserData" component={UbahUserData} options={{headerShown:false}} />

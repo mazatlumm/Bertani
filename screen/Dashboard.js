@@ -5,14 +5,6 @@ import axios from 'axios';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import Farmer from '../assets/images/farmer.png'
-import iconsetcanal from '../assets/images/iconsetcanal.png'
-import tanaman from '../assets/images/tanaman.png'
-import iconHome from '../assets/images/iconHome.png'
-import iconLove from '../assets/images/iconLove.png'
-import iconBag from '../assets/images/iconBag.png'
-import iconUser from '../assets/images/iconUser.png'
-import Simco from '../assets/images/simco.png'
-import Sawentar from '../assets/images/sawentar.png'
 import Penyuluhan from '../assets/images/penyuluhan.png'
 import LocationIcon from '../assets/images/location.png'
 import TesTanahIcon from '../assets/images/growing-plant.png'
@@ -29,23 +21,16 @@ import MarketImage from '../assets/images/market.jpg'
 import KelolaProdukPic from '../assets/images/kelolaproduk.jpg'
 import CariModalPic from '../assets/images/carimodal.jpg'
 import KasihModalPic from '../assets/images/kasihmodal.jpg'
-import TopBar from './TopBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
-import { Link } from '@react-navigation/native';
-
-import PushNotification, {Importance} from "react-native-push-notification";
 
 //statusbar
 const STYLES = ['default', 'dark-content', 'light-content'];
 const TRANSITIONS = ['fade', 'slide', 'none'];
 
 // Icon
-import { AntDesign } from '@expo/vector-icons';
 import { SimpleLineIcons, FontAwesome } from '@expo/vector-icons'; 
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import * as Linking from 'expo-linking';
 
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0))-45;
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))-45;
@@ -78,32 +63,13 @@ const Dashboard = ({navigation}) => {
   const [ModalPemasaran, setModalPemasaran] = useState(false);
   const [ModalPermodalan, setModalPermodalan] = useState(false);
 
-  const CreateChannelNotification = (token) => {
-    console.log('Membuat Channel Notifikasi')
-    PushNotification.createChannel(
-      {
-        channelId: token,
-        channelName: "Agenda",
-        channelDescription: "Notifikasi Jadwal Kegiatan Petani", 
-        playSound: true, 
-        soundName: "default",
-        importance: Importance.HIGH,
-        vibrate: true, 
-      },
-      (created) => console.log(`createChannel returned '${created}'`) //
-    );
-    console.log('Daftar Channel');
-    PushNotification.getChannels(function (channel_ids) {
-      console.log(channel_ids);
-    });
-  }
-
   const isFocused = useIsFocused();
   useEffect(() => {
     setmodalActivityIndicator(true)
     console.log('Cek Data user di Dashboard');
     LihatDataUser()
     CekLokasi()
+    CekToken()
   }, [isFocused, IDUser])
 
   const LihatDataUser =  async() => {
@@ -112,40 +78,44 @@ const Dashboard = ({navigation}) => {
     const ParsingDataUser = JSON.parse(jsonValue);
     console.log(jsonValue)
     setIDUser(ParsingDataUser[0].id_user)
-    console.log(ParsingDataUser[0].id_user)
     if(ParsingDataUser[0].id_user){
         setNamaUser(ParsingDataUser[0].nama);
         setRole(ParsingDataUser[0].role);
-        // GetController(ParsingDataUser[0].id_user);
+        GetController(ParsingDataUser[0].id_user);
+        CekToken(ParsingDataUser[0].id_user)
     }
-    // //cek token
-    // messaging()
-    //   .getToken()
-    //   .then(token => {
-    //     console.log('Token Firebase : ' + token);
-    //     CreateChannelNotification(token)
-    //     SimpanTokenKeServer(ParsingDataUser[0].id_user, token)
-    // }); 
+    } catch(e) {
+      // console.log(e)
+    }
+  }
+
+  const CekToken =  async(id_user) => {
+    try {
+    const tokenSave = await AsyncStorage.getItem('@token')
+    console.log('Token Tersimpan : ' + tokenSave);
+    SimpanTokenKeServer(id_user, tokenSave);
     } catch(e) {
       // console.log(e)
     }
   }
 
   const SimpanTokenKeServer = async (IdUser, Token) => {
-    const ParameterUrl = { 
-      id_user:IdUser,
-      token:Token,
-    }
-    console.log(ParameterUrl)
-    await axios.post('https://alicestech.com/kelasbertani/api/token/change', ParameterUrl)
-    .then(response => {
-      console.log(response.data)
-    })
-    .catch(e => {
-      if (e.response.status === 404) {
-        console.log(e.response.data)
+    if(IdUser != '' || IdUser != null){
+      const ParameterUrl = { 
+        id_user:IdUser,
+        token:Token,
       }
-    });
+      console.log(ParameterUrl)
+      await axios.post('https://alicestech.com/kelasbertani/api/token/change', ParameterUrl)
+      .then(response => {
+        console.log(response.data)
+      })
+      .catch(e => {
+        if (e.response.status === 404) {
+          console.log(e.response.data)
+        }
+      });
+    }
   }
 
   const CekLokasi = async () => {
@@ -155,7 +125,7 @@ const Dashboard = ({navigation}) => {
         return;
       }
       let location = await Location.getCurrentPositionAsync({});
-      console.log(location.coords);
+      // console.log(location.coords);
       setAltitude(location.coords.altitude);
 
       const latitude = location.coords.latitude;
@@ -166,7 +136,7 @@ const Dashboard = ({navigation}) => {
         longitude
       });
 
-      console.log(GeoCodingData);
+      // console.log(GeoCodingData);
       setAddressFull(GeoCodingData[0].district + ', ' + GeoCodingData[0].city)
 
       await axios.get('https://api.openweathermap.org/data/2.5/onecall?', {
@@ -180,7 +150,7 @@ const Dashboard = ({navigation}) => {
         }
       })
       .then(response => {
-        console.log(response.data)
+        // console.log(response.data)
         setIconCuaca('http://openweathermap.org/img/wn/'+response.data.current.weather[0].icon +'.png')
         let SuhuCek = response.data.current.temp
         setSuhu(Math.ceil(SuhuCek))
@@ -204,7 +174,7 @@ const Dashboard = ({navigation}) => {
         );
         let json = await response.json();
         if(json.status == true){
-          console.log(json.result[0]);
+          // console.log(json.result[0]);
           setIDUser(id_user);
           setIDController(json.result[0].id_controller);
           setNamaPerangkat(json.result[0].nama_perangkat);

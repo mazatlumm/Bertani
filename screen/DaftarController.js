@@ -15,6 +15,7 @@ import tanaman from '../assets/images/tanaman.png'
 import { EvilIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SimpleLineIcons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 
 const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0));
 const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))
@@ -105,6 +106,9 @@ const DaftarController = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={{ flex: 1, alignItems: 'center', backgroundColor:'white'}}>
+        <TouchableOpacity style={styles.TambahControllerBtn} onPress={()=>navigation.navigate('TambahController')}>
+            <AntDesign name="pluscircleo" size={24} color="white" />
+        </TouchableOpacity>
         <View style={styles.ColorTopBar}></View>
         {/* Top Bar */}
         <View style={{paddingHorizontal:20, width:'100%'}}>
@@ -285,5 +289,16 @@ const styles = StyleSheet.create({
         fontSize:10,
         color:'black',
         marginTop:3
+    },
+    TambahControllerBtn:{
+        width:50,
+        height:50,
+        borderRadius:50/2,
+        backgroundColor:'#0D986A',
+        justifyContent:'center',
+        alignItems:'center',
+        position:'absolute',
+        bottom:30,
+        right:20
     },
 })

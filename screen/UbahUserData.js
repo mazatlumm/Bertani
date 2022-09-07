@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Dimensions, TouchableOpacity, Image, Platform,TextInput, Alert } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Dimensions, TouchableOpacity, Image, Platform,TextInput, Alert, Modal } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import TopBar from './TopBar';
 import AppLoading from 'expo-app-loading';
@@ -30,6 +30,8 @@ const UbahUserData = ({navigation, route}) => {
     const [Email, setEmail] = useState('');
     const [NoTelp, setNoTelp] = useState('');
     const [AlamatRumah, setAlamatRumah] = useState('');
+    const [ModalGantiRole, setModalGantiRole] = useState(false);
+    const [RoleUser, setRoleUser] = useState(false);
 
     const LihatDataUserLogin =  async() => {
         try {
@@ -61,6 +63,7 @@ const UbahUserData = ({navigation, route}) => {
         email: Email,
         no_telp: NoTelp,
         alamat: AlamatRumah,
+        role: RoleUser,
         }
 
         var formBody = [];
@@ -115,6 +118,7 @@ const UbahUserData = ({navigation, route}) => {
                 setEmail(result.result[0].email);
                 setAlamatRumah(result.result[0].alamat);
                 setNoTelp(result.result[0].no_telp);
+                setRoleUser(result.result[0].role);
             }else{
                 console.log('Gagal Mendapatkan Data User')
             }
@@ -195,6 +199,11 @@ const UbahUserData = ({navigation, route}) => {
         }
     }
 
+    const PilihRoleUser = (role) => {
+        setRoleUser(role);
+        setModalGantiRole(!ModalGantiRole);
+    }
+
     const isFocused = useIsFocused();
     useEffect(() => {
         AmbilDataRoute();
@@ -213,6 +222,28 @@ const UbahUserData = ({navigation, route}) => {
       }
   return (
     <View style={{ flex: 1, alignItems: 'center'}}>
+        {/* Modal Ganti Role */}
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={ModalGantiRole}
+            onRequestClose={() => {
+                // Alert.alert("Modal has been closed.");
+                setModalVisibleJenisKelamin(!ModalGantiRole);
+            }}
+            >
+            <View style={{backgroundColor:'rgba(0, 0, 0, 0.3)', flex:1, alignItems:'center', justifyContent:'center', paddingHorizontal:20}}>
+                <View style={{backgroundColor:'white', paddingHorizontal:10, paddingVertical:20, borderRadius:10, width:'100%', paddingHorizontal:20}}>
+                    <Text style={styles.TextInputForm}>Pilih Role User</Text>
+                    <TouchableOpacity onPress={()=>PilihRoleUser('Penyuluh')} style={{borderWidth:1, borderRadius:10, paddingHorizontal:10, paddingVertical:5, alignItems:'center', marginTop:10}}>
+                    <Text style={styles.TextInputForm}>Penyuluh</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>PilihRoleUser('Pengguna Umum')} style={{borderWidth:1, borderRadius:10, paddingHorizontal:10, paddingVertical:5, alignItems:'center', marginTop:10}}>
+                    <Text style={styles.TextInputForm}>Pengguna Umum</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
         <ScrollView style={{width:windowWidth}}>
             <View style={styles.ColorTopBar}></View>
             {/* Top Bar */}
@@ -283,6 +314,14 @@ const UbahUserData = ({navigation, route}) => {
                         defaultValue={Pekerjaan}
                         />
                     </View>
+                </View>
+                <View style={styles.FormInputList}>
+                    <Text style={styles.TextPoppins}>Role User</Text>
+                    <TouchableOpacity style={styles.FormInputBoxList} onPress={() => setModalGantiRole(!ModalGantiRole)}>
+                        <View>
+                        <Text style={styles.TextInputFormList}>{RoleUser}</Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.FormInput}>
                     <Text style={styles.TextPoppins}>Password</Text>
@@ -486,5 +525,23 @@ const styles = StyleSheet.create({
         fontFamily:'Poppins-Bold',
         fontSize:12,
         color:'white',
-    }
+    },
+    FormInputList:{
+        marginTop:10,
+        zIndex:10
+    },
+    FormInputBoxList:{
+        borderWidth:1,
+        borderRadius:10,
+        paddingHorizontal:0,
+        paddingVertical:0,
+        zIndex:10,
+        paddingVertical:10,
+        paddingHorizontal:10
+    },
+    TextInputFormList:{
+        fontFamily:'Poppins-Regular',
+        color:'black',
+        fontSize:12
+    },
 })

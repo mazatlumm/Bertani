@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
             marginTop:50,
             },
             android:{
-            marginTop:35
+            marginTop:14
             }
         }),
         width:'100%', 
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
                 height:90,
             },
             android:{
-                height:70
+                height:50
             }
         }), 
         backgroundColor:'#9CE5CB', 

@@ -33,6 +33,8 @@ const ListChatPakar = ({navigation, route}) => {
     const [ModalTambahTopik, setModalTambahTopik] = useState(false);
     const [ModalMenuTopik, setModalMenuTopik] = useState(false);
     const [ModalUbahStatusTopik, setModalUbahStatusTopik] = useState(false);
+    const [ModalHapusChatPop, setModalHapusChatPop] = useState(false);
+    const [PengirimPesan, setPengirimPesan] = useState('');
 
     const LihatDataUser =  async() => {
         try {
@@ -59,12 +61,32 @@ const ListChatPakar = ({navigation, route}) => {
               setArrayListChat(json.result);
             }
         } catch (error) {
-            console.error(error);
+            // console.error(error);
         }
     }
 
     const OpenRoomChat = (value) => {
         navigation.navigate('RoomDiskusiPakar', {id_user:value});
+    }
+
+    const ModalHapusChat = (pengirim) => {
+        setModalHapusChatPop(!ModalHapusChatPop)
+        setPengirimPesan(pengirim);
+    }
+
+    const HapusChat = async () => {
+        try {
+            let response = await fetch(
+            'https://alicestech.com/kelasbertani/api/chat_pakar/hapus_room?pengirim='+PengirimPesan
+            );
+            let json = await response.json();
+            if(json.status == true){
+                GetListChat();
+                setModalHapusChatPop(!ModalHapusChatPop);
+            }
+        } catch (error) {
+            // console.error(error);
+        }
     }
 
     const isFocused = useIsFocused();
@@ -74,7 +96,7 @@ const ListChatPakar = ({navigation, route}) => {
     }, [isFocused, IDUser]);
 
     const Item = ({ nama, photo, pekerjaan, createdAt, pesan, id_user}) => (
-        <TouchableOpacity onPress={()=>OpenRoomChat(id_user)} style={styles.CardChatPakar}>
+        <TouchableOpacity onLongPress={()=>ModalHapusChat(id_user)} onPress={()=>OpenRoomChat(id_user)} style={styles.CardChatPakar}>
             <Text style={styles.TextPoppinsBold}>{nama}</Text>
             <View style={{position:'absolute', top:10, right:10}}>
                 <Image source={{uri:'https://alicestech.com/kelasbertani/upload/profile/' + photo}} style={{width:40, height:40, borderRadius:20}} />
@@ -101,6 +123,29 @@ const ListChatPakar = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={{ flex: 1, alignItems: 'center'}}>
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={ModalHapusChatPop}
+          onRequestClose={() => {
+            setModalHapusChatPop(!ModalHapusChatPop);
+          }}
+        >
+          <View style={{flex: 1, alignItems: "center", justifyContent: 'center', padding: 10, backgroundColor:'rgba(0, 0, 0, 0.5)'}}>
+
+            <View style={{paddingHorizontal:10, paddingVertical:20, marginHorizontal:20, backgroundColor:'white', borderRadius:10,  width:windowWidth, justifyContent:'center'}}>
+                <TouchableOpacity onPress={()=> setModalHapusChatPop(!ModalHapusChatPop)} style={{position:'absolute', top:10, right:10, zIndex:10}}>
+                    <SimpleLineIcons name="close" size={20} color="black" />
+                </TouchableOpacity>
+                <View style={{marginTop:10}}></View>
+                <Text style={styles.TextPoppins}>Apakah Anda yakin Ingin Menghapus Chat ini?</Text>
+                <View style={{marginTop:10}}></View>
+                <TouchableOpacity onPress={()=>HapusChat()} style={styles.BtnDanger}>
+                    <Text style={styles.TitleBtnWhite}>Hapus</Text>
+                </TouchableOpacity>
+              </View>
+        </View>
+        </Modal>
         <View style={styles.ColorTopBar}></View>
         {/* Top Bar */}
         <View style={{width:'100%'}}>
@@ -358,7 +403,6 @@ const styles = StyleSheet.create({
         marginHorizontal:5,
         alignItems:'center',
         width:'100%', 
-        flex:1,
         marginTop:10
     },
     BtnSuccess:{

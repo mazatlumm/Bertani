@@ -5,7 +5,7 @@ import Constants from 'expo-constants';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const WebviewSimco = () => {
+const WebviewPetani = () => {
 
   const [NamaUser, setNamaUser] = useState('');
   const [Email, setEmail] = useState('');
@@ -38,7 +38,7 @@ const WebviewSimco = () => {
       return (
         <WebView 
           style={styles.container}
-          source={{ uri: 'https://alicestech.com/simco/api/auto_login?email='+Email+'&nama='+NamaUser+'&role='+Role}}
+          source={{ uri: 'https://alicestech.com/petani/api/auto_login?email='+Email+'&nama='+NamaUser+'&role='+Role}}
         />
       )
     }else{
@@ -51,7 +51,7 @@ const WebviewSimco = () => {
   )
 }
 
-export default WebviewSimco
+export default WebviewPetani
 
 const styles = StyleSheet.create({
     container: {

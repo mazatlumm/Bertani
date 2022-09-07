@@ -37,9 +37,12 @@ const Profile = ({navigation}) => {
     const [Password, setPassword] = useState('');
     const [PasswordKonf, setPasswordKonf] = useState('');
     const [DataListUser, setDataListUser] = useState('');
+    const [DataAllUser, setDataAllUser] = useState('');
     const [Email, setEmail] = useState('');
     const [NoTelp, setNoTelp] = useState('');
     const [AlamatRumah, setAlamatRumah] = useState('');
+    const [RoleUser, setRoleUser] = useState('');
+    const [SearchPengguna, setSearchPengguna] = useState('');
     const [ProfileImage, setProfileImage] = useState('');
     const [Gender, setGender] = useState('Pilih Jenis Kelamin');
     const [TanggalLahir, setTanggalLahir] = useState('Tanggal Lahir')
@@ -61,7 +64,7 @@ const Profile = ({navigation}) => {
         CekDataUserUpdate(ParsingDataUser[0].id_user);
         setGender(ParsingDataUser[0].gender);
         setTanggalLahir(ParsingDataUser[0].birthday);
-
+        setRoleUser(ParsingDataUser[0].role);
         } catch(e) {
         // error reading value
         }
@@ -92,6 +95,7 @@ const Profile = ({navigation}) => {
                 setProfileImage(result.result[0].photo);
                 setGender(result.result[0].gender);
                 setTanggalLahir(result.result[0].birthday);
+                setRoleUser(result.result[0].role);
             }else{
                 console.log('Gagal Mendapatkan Data User')
             }
@@ -211,8 +215,9 @@ const Profile = ({navigation}) => {
         .then(response => response.json())
         .then(result => {
             if(result.status == true){
-                console.log(result.result);
+                // console.log(result.result);
                 setDataListUser(result.result);
+                setDataAllUser(result.result);
             }
         })
         .catch(error => console.log('error', error));
@@ -238,12 +243,34 @@ const Profile = ({navigation}) => {
         }
     }
 
+    const SearchUser = (cari) => {
+        const search = what => DataListUser.find(element => element.email === what);
+        const found = search(cari);
+        if (found && cari != "") {
+            console.log(found);
+            setDataListUser([found])
+        } else {
+            console.log('No result found');
+            setDataListUser(DataAllUser);
+        }
+    }
+
     const ContentProfile = () => {
         if(Role == 'admin'){
             return (
                 <View style={{marginHorizontal:20, marginTop:20, flex:1}}>
+                    <View style={styles.FormInput}>
+                        <View style={styles.FormInputBox}>
+                            <TextInput style={styles.TextInputForm} 
+                            onChangeText={SearchPengguna => SearchUser(SearchPengguna)}
+                            defaultValue={SearchPengguna}
+                            placeholder='Cari Berdasarkan Email'
+                            />
+                        </View>
+                    </View>
+                    <View style={{marginBottom:10}}></View>
                     <Text style={styles.TextPoppinsBoldGreen}>Daftar Pengguna Aplikasi</Text>
-
+                    
                     <FlatList data={DataListUser} renderItem={renderItem} keyExtractor={item => item.id_user} />
                    
     
@@ -417,6 +444,7 @@ const Profile = ({navigation}) => {
         password: Password,
         gender: Gender,
         birthday: TanggalLahir,
+        role: RoleUser,
         }
 
         var formBody = [];

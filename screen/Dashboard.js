@@ -14,8 +14,12 @@ import HamaPenyakitIcon from '../assets/images/caterpillar.png'
 import UsahaTaniIcon from '../assets/images/usahatani.png'
 import CuacaIcon from '../assets/images/cloudy.png'
 import PermodalanIcon from '../assets/images/permodalan.png'
+import SimcoIcon from '../assets/images/simco.png'
 import MarketplaceIcon from '../assets/images/marketplace.png'
 import DiskusiIcon from '../assets/images/chatbubble.png'
+import InfoTaniIcon from '../assets/images/envelope.png'
+import GoPenyuluhIcon from '../assets/images/motocross.png'
+import CekTernakIcon from '../assets/images/livestock.png'
 import TanyaPakaricon from '../assets/images/tanyapakar.png'
 import MarketImage from '../assets/images/market.jpg'
 import KelolaProdukPic from '../assets/images/kelolaproduk.jpg'
@@ -40,7 +44,7 @@ const Dashboard = ({navigation}) => {
   const [IDUser, setIDUser] = useState(0);
   const [IDController, setIDController] = useState(0);
   const [NamaUser, setNamaUser] = useState('Perangkat');
-  const [Role, setRole] = useState('Perangkat');
+  const [Role, setRole] = useState('');
   const [NamaPerangkat, setNamaPerangkat] = useState('Perangkat');
   const [JenisTanaman, setJenisTanaman] = useState('');
   const [HumMin, setHumMin] = useState(0);
@@ -70,7 +74,7 @@ const Dashboard = ({navigation}) => {
     LihatDataUser()
     CekLokasi()
     CekToken()
-  }, [isFocused, IDUser])
+  }, [isFocused, IDUser, Role])
 
   const LihatDataUser =  async() => {
     try {
@@ -118,6 +122,33 @@ const Dashboard = ({navigation}) => {
     }
   }
 
+  const KirimLokasi = async (lat, long) => {
+    if(IDUser && Role){
+      const ParameterUrl = { 
+        id_user:IDUser,
+        role:Role,
+        latitude:lat,
+        longitude:long,
+      }
+  
+      console.log(ParameterUrl)
+      await axios.post('https://alicestech.com/kelasbertani/api/user/location', ParameterUrl)
+      .then(response => {
+        console.log(response.data)
+        if(response.data.status == true){
+          
+        }
+      })
+      .catch(e => {
+        if (e.response.status === 404) {
+          
+        }
+      });
+    }else{
+      console.log('IDUser dan Role Belum Terisi');
+    }
+  }
+
   const CekLokasi = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -130,6 +161,8 @@ const Dashboard = ({navigation}) => {
 
       const latitude = location.coords.latitude;
       const longitude = location.coords.longitude;
+
+      KirimLokasi(latitude, longitude);
       
       let GeoCodingData = await Location.reverseGeocodeAsync({
         latitude,
@@ -197,11 +230,7 @@ const Dashboard = ({navigation}) => {
   }
   
   const DaftarControllerCek = () => {
-    if(IDController != 0){
       navigation.navigate('DaftarController', {IDUser:IDUser, IDController:IDController})
-    }else{
-      Alert.alert('Controller Tidak Tersedia', 'Tambahkan Controller Terlebih Dahulu');
-    }
   }
 
   const TanyaPakarGo = () => {
@@ -232,6 +261,17 @@ const Dashboard = ({navigation}) => {
     navigation.navigate('CariModal')
     setModalPermodalan(!ModalPermodalan);
   }
+  
+  const GoPenyuluh = () => {
+    if(Role != 'Penyuluh'){
+      navigation.navigate('GoPenyuluh', {IDUser:IDUser});
+    }else{
+      console.log('Halaman Penyuluh')
+      navigation.navigate('MapPenyuluh');
+    }
+  }
+
+
   
   let [fontsLoaded] = useFonts({
     'Philosopher': require('../assets/fonts/Philosopher-Regular.ttf'),
@@ -383,11 +423,11 @@ const Dashboard = ({navigation}) => {
 
             <View style={styles.MenuBox}>
               {/* Icon Menu */}
-              <TouchableOpacity onPress={()=>navigation.navigate('WebviewSimco')} style={{alignItems:'center', justifyContent:'flex-start', flex:1}}>
+              <TouchableOpacity onPress={()=>navigation.navigate('WebviewPetani')} style={{alignItems:'center', justifyContent:'flex-start', flex:1}}>
                 <View style={{width:70, height:70, backgroundColor:'#fec043', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
                   <Image source={Penyuluhan} style={{width:50, height:50}} />
                 </View>
-                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Petani Kita</Text>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Data Petani</Text>
               </TouchableOpacity>
               
               <TouchableOpacity onPress={()=> navigation.navigate('WebviewSawentar')} style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
@@ -473,6 +513,38 @@ const Dashboard = ({navigation}) => {
                   <Image source={TanyaPakaricon} style={{width:50, height:50}} />
                 </View>
                 <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Tanya Pakar</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.MenuBox}>
+              {/* Icon Menu */}
+              <TouchableOpacity onPress={()=>navigation.navigate('WebviewSimco')} style={{alignItems:'center', justifyContent:'flex-start', flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#06934f', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={SimcoIcon} style={{width:50, height:50}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Data Penyuluh</Text>
+              </TouchableOpacity>
+              
+              
+              <TouchableOpacity onPress={()=> navigation.navigate('WebviewInfoTani')} style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#fec043', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={InfoTaniIcon} style={{width:50, height:50}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Info Tani</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={()=>GoPenyuluh()} style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#2883e1', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={GoPenyuluhIcon} style={{width:50, height:50}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Go Penyuluh</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={()=> navigation.navigate('CekTernak')} style={{alignItems:'center', justifyContent:'flex-start' , flex:1}}>
+                <View style={{width:70, height:70, backgroundColor:'#06934f', borderRadius:10, alignItems:'center', justifyContent:'center'}}>
+                  <Image source={CekTernakIcon} style={{width:50, height:50}} />
+                </View>
+                <Text style={{fontFamily:'Poppins-Regular', fontSize:10, color:'black', marginTop:5, textAlign:'center'}}>Cek Ternak</Text>
               </TouchableOpacity>
             </View>
           </View>

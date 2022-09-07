@@ -26,7 +26,7 @@ import KalibrasiKualitasTanah from './screen/KalibrasiKualitasTanah';
 import PenyakitTanaman from './screen/PenyakitTanaman';
 import DeteksiNitrogen from './screen/DeteksiNitrogen';
 import CaptureDaun from './screen/CaptureDaun';
-import WebviewSimco from './screen/WebviewSimco';
+import WebviewPetani from './screen/WebviewPetani';
 import WebviewSawentar from './screen/WebviewSawentar';
 import WebviewPenyuluhan from './screen/WebviewPenyuluhan';
 import RegisterScreen from './screen/RegisterScreen';
@@ -51,6 +51,17 @@ import KasihModal from './screen/KasihModal';
 
 //notifikasi
 import PushNotification, { Importance } from "react-native-push-notification";
+import StandardKualitasTanah from './screen/StandardKualitasTanah';
+import WebviewSimco from './screen/WebviewSimco';
+import WebviewInfoTani from './screen/WebviewInfoTani';
+import GoPenyuluh from './screen/GoPenyuluh';
+import CekTernak from './screen/CekTernak';
+import ListOrderPenyuluh from './screen/ListOrderPenyuluh';
+import MapPenyuluh from './screen/MapPenyuluh';
+import MapTrackingPenyuluh from './screen/MapTrackingPenyuluh';
+import LaporanPenyuluh from './screen/LaporanPenyuluh';
+import MapTrackingPemesan from './screen/MapTrackingPemesan';
+import DataTernak from './screen/DataTernak';
 
 const Stack = createNativeStackNavigator();
 
@@ -96,10 +107,13 @@ function App() {
         <Stack.Screen name="FavouriteOnlineData" component={FavouriteOnlineData} options={{headerShown:false}} />
         <Stack.Screen name="DetailDataTanahOnline" component={DetailDataTanahOnline} options={{headerShown:false}} />
         <Stack.Screen name="KalibrasiKualitasTanah" component={KalibrasiKualitasTanah} options={{headerShown:false}} />
+        <Stack.Screen name="StandardKualitasTanah" component={StandardKualitasTanah} options={{headerShown:false}} />
         <Stack.Screen name="PenyakitTanaman" component={PenyakitTanaman} options={{headerShown:false}} />
         <Stack.Screen name="DeteksiNitrogen" component={DeteksiNitrogen} options={{headerShown:false}} />
         <Stack.Screen name="CaptureDaun" component={CaptureDaun} options={{headerShown:false}} />
+        <Stack.Screen name="WebviewPetani" component={WebviewPetani} options={{headerShown:false}} />
         <Stack.Screen name="WebviewSimco" component={WebviewSimco} options={{headerShown:false}} />
+        <Stack.Screen name="WebviewInfoTani" component={WebviewInfoTani} options={{headerShown:false}} />
         <Stack.Screen name="WebviewSawentar" component={WebviewSawentar} options={{headerShown:false}} />
         <Stack.Screen name="WebviewPenyuluhan" component={WebviewPenyuluhan} options={{headerShown:false}} />
         <Stack.Screen name="RegisterScreen" component={RegisterScreen} options={{headerShown:false}} />
@@ -120,6 +134,14 @@ function App() {
         <Stack.Screen name="PasarBertani" component={PasarBertani} options={{headerShown:false}}/>
         <Stack.Screen name="CariModal" component={CariModal} options={{headerShown:false}}/>
         <Stack.Screen name="KasihModal" component={KasihModal} options={{headerShown:false}}/>
+        <Stack.Screen name="GoPenyuluh" component={GoPenyuluh} options={{headerShown:false}}/>
+        <Stack.Screen name="CekTernak" component={CekTernak} options={{headerShown:false}}/>
+        <Stack.Screen name="ListOrderPenyuluh" component={ListOrderPenyuluh} options={{headerShown:false}}/>
+        <Stack.Screen name="MapPenyuluh" component={MapPenyuluh} options={{headerShown:false}}/>
+        <Stack.Screen name="MapTrackingPenyuluh" component={MapTrackingPenyuluh} options={{headerShown:false}}/>
+        <Stack.Screen name="LaporanPenyuluh" component={LaporanPenyuluh} options={{headerShown:false}}/>
+        <Stack.Screen name="MapTrackingPemesan" component={MapTrackingPemesan} options={{headerShown:false}}/>
+        <Stack.Screen name="DataTernak" component={DataTernak} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

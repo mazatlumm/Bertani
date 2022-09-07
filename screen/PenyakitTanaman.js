@@ -164,7 +164,7 @@ const PenyakitTanaman = ({navigation}) => {
         const logits = result.dataSync();
         // Logits should be the probability of two classes (hot dog, not hot dog).
         console.log(logits)
-        const arrClassName = ["Apple Scab","Apple Black Rot","Apple Cedar Rust","Apple Healthy","Corn Cercospora Grey Spot","Corn Rusty Common","Corn Healthy","Corn North Blight","Rice Bacteria Blight","Rice Brown Spot","Rice Leaf Smut","Mango Healthy","Mango Diseased","Ipad","Iphone","Macbook"];
+        const arrClassName = ["Apple Scab","Apple Black Rot","Apple Cedar Rust","Apple Healthy","Corn Cercospora Grey Spot","Corn Rusty Common","Corn Healthy","Corn North Blight","Rice Bacteria Blight","Rice Brown Spot","Rice Leaf Smut","Mango Healthy","Mango Diseased"];
         if(logits){
           for (let index = 0; index < logits.length; index++) {
             let ValueClass = logits[index] * 100;

@@ -7,6 +7,7 @@ import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
+import axios from 'axios';
 
 import plantGrow from '../assets/images/plantGrow.png'
 import IconSmile from '../assets/images/IconSmile.png'
@@ -39,6 +40,7 @@ let KalibrasiSalinitas = 0;
 let KalibrasiTDS = 0;
 
 const CekTanah = ({navigation, route}) => {
+    const [URL, setURL] = useState('https://alicestech.com/kelasbertani/');
     const [currentDate, setCurrentDate] = useState('');
     const [TimeClock, setTimeClock] = useState('');
     const [IDUser, setIDUser] = useState('');
@@ -53,6 +55,60 @@ const CekTanah = ({navigation, route}) => {
     const [Mikroorganisme, setMikroorganisme] = useState('');
     const [Salinitas, setSalinitas] = useState('');
     const [TDS, setTDS] = useState('');
+    const [NitrogenMax, setNitrogenMax] = useState('');
+    const [PhosporusMax, setPhosporusMax] = useState('');
+    const [KaliumMax, setKaliumMax] = useState('');
+    const [SuhuMax, setSuhuMax] = useState('');
+    const [KelembabanMax, setKelembabanMax] = useState('');
+    const [PHMax, setPHMax] = useState('');
+    const [KonduktifitasMax, setKonduktifitasMax] = useState('');
+    const [SalinitasMax, setSalinitasMax] = useState('');
+    const [TDSMax, setTDSMax] = useState('');
+    const [NitrogenMin, setNitrogenMin] = useState('');
+    const [PhosporusMin, setPhosporusMin] = useState('');
+    const [KaliumMin, setKaliumMin] = useState('');
+    const [SuhuMin, setSuhuMin] = useState('');
+    const [KelembabanMin, setKelembabanMin] = useState('');
+    const [PHMin, setPHMin] = useState('');
+    const [KonduktifitasMin, setKonduktifitasMin] = useState('');
+    const [SalinitasMin, setSalinitasMin] = useState('');
+    const [TDSMin, setTDSMin] = useState('');
+    const [NitrogenPesan, setNitrogenPesan] = useState('');
+    const [PhosporusPesan, setPhosporusPesan] = useState('');
+    const [KaliumPesan, setKaliumPesan] = useState('');
+    const [SuhuPesan, setSuhuPesan] = useState('');
+    const [KelembabanPesan, setKelembabanPesan] = useState('');
+    const [PHPesan, setPHPesan] = useState('');
+    const [KonduktifitasPesan, setKonduktifitasPesan] = useState('');
+    const [SalinitasPesan, setSalinitasPesan] = useState('');
+    const [TDSPesan, setTDSPesan] = useState('');
+    const [NitrogenKurang, setNitrogenKurang] = useState('');
+    const [NitrogenSesuai, setNitrogenSesuai] = useState('');
+    const [NitrogenBerlebih, setNitrogenBerlebih] = useState('');
+    const [PhosporusKurang, setPhosporusKurang] = useState('');
+    const [PhosporusSesuai, setPhosporusSesuai] = useState('');
+    const [PhosporusBerlebih, setPhosporusBerlebih] = useState('');
+    const [KaliumKurang, setKaliumKurang] = useState('');
+    const [KaliumSesuai, setKaliumSesuai] = useState('');
+    const [KaliumBerlebih, setKaliumBerlebih] = useState('');
+    const [SuhuKurang, setSuhuKurang] = useState('');
+    const [SuhuSesuai, setSuhuSesuai] = useState('');
+    const [SuhuBerlebih, setSuhuBerlebih] = useState('');
+    const [KelembabanKurang, setKelembabanKurang] = useState('');
+    const [KelembabanSesuai, setKelembabanSesuai] = useState('');
+    const [KelembabanBerlebih, setKelembabanBerlebih] = useState('');
+    const [PHKurang, setPHKurang] = useState('');
+    const [PHSesuai, setPHSesuai] = useState('');
+    const [PHBerlebih, setPHBerlebih] = useState('');
+    const [KonduktifitasKurang, setKonduktifitasKurang] = useState('');
+    const [KonduktifitasSesuai, setKonduktifitasSesuai] = useState('');
+    const [KonduktifitasBerlebih, setKonduktifitasBerlebih] = useState('');
+    const [SalinitasKurang, setSalinitasKurang] = useState('');
+    const [SalinitasSesuai, setSalinitasSesuai] = useState('');
+    const [SalinitasBerlebih, setSalinitasBerlebih] = useState('');
+    const [TDSKurang, setTDSKurang] = useState('');
+    const [TDSSesuai, setTDSSesuai] = useState('');
+    const [TDSBerlebih, setTDSBerlebih] = useState('');
     const [ColorConnected, setColorConnected] = useState('red');
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
@@ -63,6 +119,98 @@ const CekTanah = ({navigation, route}) => {
     const [modalVisibleFavourite, setmodalVisibleFavourite] = useState(false);
     const [NamaKomoditas, setNamaKomoditas] = useState('');
     const [KeteranganLainnya, setKeteranganLainnya] = useState('');
+
+    // Get Standard Tanah dari Server
+    const GetStandardTanah = async () => {
+        await axios.get(URL + 'api/standard_kualitas_tanah')
+          .then(response => {
+            if(response.data.status == true){
+                const DataResult = response.data.result[0];
+                SimpanStandardTanahLocal(DataResult);
+            }
+          })
+          .catch(e => {
+            if (e.response.status === 404) {
+              console.log(e.response.data)
+            }
+        });
+    }
+
+    // Menyimpan Standard Tanah ke Async Storage
+    const SimpanStandardTanahLocal = async (value) => {
+        try {
+          const jsonValue = JSON.stringify(value)
+          await AsyncStorage.setItem('@StandardTanah', jsonValue)
+          console.log('Simpan Standard Tanah Ke Local Storage')
+        } catch (e) {
+          // saving error
+        }
+    }
+
+    // Cek Standard Tanah di Local Storage
+    const CekStandardTanahLocal = async () => {
+        try {
+            const jsonValue = await AsyncStorage.getItem('@StandardTanah')
+            const ParsingDataTanah = JSON.parse(jsonValue);
+            console.log('Standard Tanah Local Data : ')
+            console.log(ParsingDataTanah);
+            setNitrogenMin(ParsingDataTanah.nitrogen);
+            setNitrogenMax(ParsingDataTanah.nitrogen_max);
+            setNitrogenKurang(ParsingDataTanah.nitrogen_kurang);
+            setNitrogenSesuai(ParsingDataTanah.nitrogen_sesuai);
+            setNitrogenBerlebih(ParsingDataTanah.nitrogen_berlebih);
+
+            setPhosporusMin(ParsingDataTanah.phosporus);
+            setPhosporusMax(ParsingDataTanah.phosporus_max);
+            setPhosporusKurang(ParsingDataTanah.phosporus_kurang);
+            setPhosporusSesuai(ParsingDataTanah.phosporus_sesuai);
+            setPhosporusBerlebih(ParsingDataTanah.phosporus_berlebih);
+
+            setKaliumMin(ParsingDataTanah.kalium);
+            setKaliumMax(ParsingDataTanah.kalium_max);
+            setKaliumKurang(ParsingDataTanah.kalium_kurang);
+            setKaliumSesuai(ParsingDataTanah.kalium_sesuai);
+            setKaliumBerlebih(ParsingDataTanah.kalium_berlebih);
+
+            setSuhuMin(ParsingDataTanah.suhu);
+            setSuhuMax(ParsingDataTanah.suhu_max);
+            setSuhuKurang(ParsingDataTanah.suhu_kurang);
+            setSuhuSesuai(ParsingDataTanah.suhu_sesuai);
+            setSuhuBerlebih(ParsingDataTanah.suhu_berlebih);
+           
+            setKelembabanMin(ParsingDataTanah.kelembaban);
+            setKelembabanMax(ParsingDataTanah.kelembaban_max);
+            setKelembabanKurang(ParsingDataTanah.kelembaban_kurang);
+            setKelembabanSesuai(ParsingDataTanah.kelembaban_sesuai);
+            setKelembabanBerlebih(ParsingDataTanah.kelembaban_berlebih);
+            
+            setPHMin(ParsingDataTanah.ph);
+            setPHMax(ParsingDataTanah.ph_max);
+            setPHKurang(ParsingDataTanah.ph_kurang);
+            setPHSesuai(ParsingDataTanah.ph_sesuai);
+            setPHBerlebih(ParsingDataTanah.ph_berlebih);
+            
+            setKonduktifitasMin(ParsingDataTanah.konduktifitas);
+            setKonduktifitasMax(ParsingDataTanah.konduktifitas_max);
+            setKonduktifitasKurang(ParsingDataTanah.konduktifitas_kurang);
+            setKonduktifitasSesuai(ParsingDataTanah.konduktifitas_sesuai);
+            setKonduktifitasBerlebih(ParsingDataTanah.konduktifitas_berlebih);
+            
+            setSalinitasMin(ParsingDataTanah.salinitas);
+            setSalinitasMax(ParsingDataTanah.salinitas_max);
+            setSalinitasKurang(ParsingDataTanah.salinitas_kurang);
+            setSalinitasSesuai(ParsingDataTanah.salinitas_sesuai);
+            setSalinitasBerlebih(ParsingDataTanah.salinitas_berlebih);
+            
+            setTDSMin(ParsingDataTanah.tds);
+            setTDSMax(ParsingDataTanah.tds_max);
+            setTDSKurang(ParsingDataTanah.tds_kurang);
+            setTDSSesuai(ParsingDataTanah.tds_sesuai);
+            setTDSBerlebih(ParsingDataTanah.tds_berlebih);
+        } catch(e) {
+            // error reading value
+        }
+    }
 
     const CekLocation = () => {
         (async () => {
@@ -196,8 +344,8 @@ const CekTanah = ({navigation, route}) => {
         redirect: 'follow'
         };
 
-        // fetch("https://alicestech.com/kelasbertani/api/cek_tanah/tes_alat?id_device="+IDDevice, requestOptions)
-        fetch("http://192.168.2.1/getData", requestOptions)
+        fetch("https://alicestech.com/kelasbertani/api/cek_tanah/tes_alat?id_device="+IDDevice, requestOptions)
+        // fetch("http://192.168.2.1/getData", requestOptions)
         .then(response => response.json())
         .then(result => {
             // console.log(result);
@@ -205,83 +353,94 @@ const CekTanah = ({navigation, route}) => {
                 setStatusDevice('Terhubung');
                 setColorConnected('#0D986A');
                 // for online Data
-                // setIDDevice(result.result[0].id_device);
-                // let NilaiNitrogen = parseInt(result.result[0].nitrogen) + parseInt(KalibrasiNitrogen);
-                // let NilaiPhospor = parseInt(result.result[0].phospor) + parseInt(KalibrasiPhosporus);
-                // let NilaiKalium = parseInt(result.result[0].kalium) + parseInt(KalibrasiKalium);
-                // let NilaiSuhu = parseInt(result.result[0].suhu) + parseInt(KalibrasiSuhu);
-                // let NilaiKelembaban = parseInt(result.result[0].kelembaban) + parseInt(KalibrasiKelembaban);
-                // let NilaiPH = parseInt(result.result[0].ph) + parseInt(KalibrasiPH);
-                // let NilaiKonduktifitas = parseInt(result.result[0].mikroorganisme) + parseInt(KalibrasiKonduktifitas);
-                // let NilaiSalinitas = parseInt(result.result[0].salinitas) + parseInt(KalibrasiSalinitas);
-                // let NilaiTDS = parseInt(result.result[0].tds) + parseInt(KalibrasiTDS);
+                setIDDevice(result.result[0].id_device);
+                let NilaiNitrogen = parseInt(result.result[0].nitrogen) + parseInt(KalibrasiNitrogen);
+                let NilaiPhospor = parseInt(result.result[0].phospor) + parseInt(KalibrasiPhosporus);
+                let NilaiKalium = parseInt(result.result[0].kalium) + parseInt(KalibrasiKalium);
+                let NilaiSuhu = parseInt(result.result[0].suhu) + parseInt(KalibrasiSuhu);
+                let NilaiKelembaban = parseInt(result.result[0].kelembaban) + parseInt(KalibrasiKelembaban);
+                let NilaiPH = parseInt(result.result[0].ph) + parseInt(KalibrasiPH);
+                let NilaiKonduktifitas = parseInt(result.result[0].mikroorganisme) + parseInt(KalibrasiKonduktifitas);
+                let NilaiSalinitas = parseInt(result.result[0].salinitas) + parseInt(KalibrasiSalinitas);
+                let NilaiTDS = parseInt(result.result[0].tds) + parseInt(KalibrasiTDS);
 
-                setIDDevice(result.result.id_device);
-                let NilaiNitrogen = parseInt(result.result.nitrogen) + parseInt(KalibrasiNitrogen);
-                let NilaiPhospor = parseInt(result.result.phospor) + parseInt(KalibrasiPhosporus);
-                let NilaiKalium = parseInt(result.result.kalium) + parseInt(KalibrasiKalium);
-                let NilaiSuhu = parseInt(result.result.suhu) + parseInt(KalibrasiSuhu);
-                let NilaiKelembaban = parseInt(result.result.kelembaban) + parseInt(KalibrasiKelembaban);
-                let NilaiPH = parseInt(result.result.ph) + parseInt(KalibrasiPH);
-                let NilaiKonduktifitas = parseInt(result.result.mikroorganisme) + parseInt(KalibrasiKonduktifitas);
-                let NilaiSalinitas = parseInt(result.result.salinitas) + parseInt(KalibrasiSalinitas);
-                let NilaiTDS = parseInt(result.result.tds) + parseInt(KalibrasiTDS);
+                // for local data device
+                // setIDDevice(result.result.id_device);
+                // let NilaiNitrogen = parseInt(result.result.nitrogen) + parseInt(KalibrasiNitrogen);
+                // let NilaiPhospor = parseInt(result.result.phospor) + parseInt(KalibrasiPhosporus);
+                // let NilaiKalium = parseInt(result.result.kalium) + parseInt(KalibrasiKalium);
+                // let NilaiSuhu = parseInt(result.result.suhu) + parseInt(KalibrasiSuhu);
+                // let NilaiKelembaban = parseInt(result.result.kelembaban) + parseInt(KalibrasiKelembaban);
+                // let NilaiPH = parseInt(result.result.ph) + parseInt(KalibrasiPH);
+                // let NilaiKonduktifitas = parseInt(result.result.mikroorganisme) + parseInt(KalibrasiKonduktifitas);
+                // let NilaiSalinitas = parseInt(result.result.salinitas) + parseInt(KalibrasiSalinitas);
+                // let NilaiTDS = parseInt(result.result.tds) + parseInt(KalibrasiTDS);
 
                 if(NilaiNitrogen < 0){
                     setNitrogen(0);
+                    NilaiNitrogen = 0;
                 }else{
                     setNitrogen(NilaiNitrogen);
                 }
 
                 if(NilaiPhospor < 0){
                     setPhospor(0);
+                    NilaiPhospor = 0
                 }else{
                     setPhospor(NilaiPhospor);
                 }
 
                 if(NilaiKalium < 0){
                     setKalium(0);
+                    NilaiKalium = 0;
                 }else{
                     setKalium(NilaiKalium);
                 }
 
                 if(NilaiSuhu < 0){
                     setSuhu(0);
+                    NilaiSuhu = 0;
                 }else{
                     setSuhu(NilaiSuhu);
                 }
 
                 if(NilaiKelembaban < 0){
                     setKelembaban(0);
+                    NilaiKelembaban = 0;
                 }else{
                     setKelembaban(NilaiKelembaban);
                 }
 
                 if(NilaiPH < 0){
                     setPH(0);
+                    NilaiPH = 0;
                 }else{
                     setPH(NilaiPH);
                 }
 
                 if(NilaiKonduktifitas < 0){
                     setMikroorganisme(0);
+                    NilaiKonduktifitas = 0;
                 }else{
                     setMikroorganisme(NilaiKonduktifitas);
                 }
 
                 if(NilaiSalinitas < 0){
                     setSalinitas(0);
+                    NilaiSalinitas = 0;
                 }else{
                     setSalinitas(NilaiSalinitas);
                 }
 
                 if(NilaiTDS < 0){
                     setTDS(0);
+                    NilaiTDS = 0;
                 }else{
                     setTDS(NilaiTDS);
                 }
                 CekTime();
                 console.log('success');
+                AnalisaKualitasTanah(NilaiNitrogen, NilaiPhospor, NilaiKalium, NilaiSuhu, NilaiKelembaban, NilaiPH, NilaiKonduktifitas, NilaiSalinitas, NilaiTDS);
             }
             if(result.status == false){
                 setStatusDevice('Tidak Terhubung');
@@ -291,6 +450,134 @@ const CekTanah = ({navigation, route}) => {
             }
         })
         .catch(error => console.log('error', error));
+    }
+
+    const AnalisaKualitasTanah = (NilaiNitrogen, NilaiPhospor, NilaiKalium, NilaiSuhu, NilaiKelembaban, NilaiPH, NilaiKonduktifitas, NilaiSalinitas, NilaiTDS) => {
+        // Nitrogen
+        if(NilaiNitrogen >= NitrogenMin && NilaiNitrogen <= NitrogenMax){
+            setNitrogenPesan(NitrogenSesuai);
+            console.log(NitrogenSesuai)
+        }
+        if(NilaiNitrogen < NitrogenMin){
+            setNitrogenPesan(NitrogenKurang);
+            console.log(NitrogenKurang)
+        }
+        if(NilaiNitrogen > NitrogenMax){
+            setNitrogenPesan(NitrogenBerlebih);
+            console.log(NitrogenBerlebih)
+        }
+        
+        // Phosporus
+        if(NilaiPhospor >= PhosporusMin && NilaiPhospor <= PhosporusMax){
+            setPhosporusPesan(PhosporusSesuai);
+            console.log(PhosporusSesuai)
+        }
+        if(NilaiPhospor < PhosporusMin){
+            setPhosporusPesan(PhosporusKurang);
+            console.log(PhosporusKurang)
+        }
+        if(NilaiPhospor > PhosporusMax){
+            setPhosporusPesan(PhosporusBerlebih);
+            console.log(PhosporusBerlebih)
+        }
+        
+        // Kalium
+        if(NilaiKalium >= KaliumMin && NilaiKalium <= KaliumMax){
+            setKaliumPesan(KaliumSesuai);
+            console.log(KaliumSesuai)
+        }
+        if(NilaiKalium < KaliumMin){
+            setKaliumPesan(KaliumKurang);
+            console.log(KaliumKurang)
+        }
+        if(NilaiKalium > KaliumMax){
+            setKaliumPesan(KaliumBerlebih);
+            console.log(KaliumBerlebih)
+        }
+        
+        // Suhu
+        if(NilaiSuhu >= SuhuMin && NilaiSuhu <= SuhuMax){
+            setSuhuPesan(SuhuSesuai);
+            console.log(SuhuSesuai)
+        }
+        if(NilaiSuhu < SuhuMin){
+            setSuhuPesan(SuhuKurang);
+            console.log(SuhuKurang)
+        }
+        if(NilaiSuhu > SuhuMax){
+            setSuhuPesan(SuhuBerlebih);
+            console.log(SuhuBerlebih)
+        }
+        
+        // Kelembaban
+        if(NilaiKelembaban >= KelembabanMin && NilaiKelembaban <= KelembabanMax){
+            setKelembabanPesan(KelembabanSesuai);
+            console.log(KelembabanSesuai)
+        }
+        if(NilaiKelembaban < KelembabanMin){
+            setKelembabanPesan(KelembabanKurang);
+            console.log(KelembabanKurang)
+        }
+        if(NilaiKelembaban > KelembabanMax){
+            setKelembabanPesan(KelembabanBerlebih);
+            console.log(KelembabanBerlebih)
+        }
+
+        // PH
+        if(NilaiPH >= PHMin && NilaiPH <= PHMax){
+            setPHPesan(PHSesuai);
+            console.log(PHSesuai)
+        }
+        if(NilaiPH < PHMin){
+            setPHPesan(PHKurang);
+            console.log(PHKurang)
+        }
+        if(NilaiPH > PHMax){
+            setPHPesan(PHBerlebih);
+            console.log(PHBerlebih)
+        }
+        
+        // Konduktifitas
+        if(NilaiKonduktifitas >= KonduktifitasMin && NilaiKonduktifitas <= KonduktifitasMax){
+            setKonduktifitasPesan(KonduktifitasSesuai);
+            console.log(KonduktifitasSesuai)
+        }
+        if(NilaiKonduktifitas < KonduktifitasMin){
+            setKonduktifitasPesan(KonduktifitasKurang);
+            console.log(KonduktifitasKurang)
+        }
+        if(NilaiKonduktifitas > KonduktifitasMax){
+            setKonduktifitasPesan(KonduktifitasBerlebih);
+            console.log(KonduktifitasBerlebih)
+        }
+        
+        // Salinitas
+        if(NilaiSalinitas >= SalinitasMin && NilaiSalinitas <= SalinitasMax){
+            setSalinitasPesan(SalinitasSesuai);
+            console.log(SalinitasSesuai)
+        }
+        if(NilaiSalinitas < SalinitasMin){
+            setSalinitasPesan(SalinitasKurang);
+            console.log(SalinitasKurang)
+        }
+        if(NilaiSalinitas > SalinitasMax){
+            setSalinitasPesan(SalinitasBerlebih);
+            console.log(SalinitasBerlebih)
+        }
+        
+        // TDS
+        if(NilaiTDS >= TDSMin && NilaiTDS <= TDSMax){
+            setTDSPesan(TDSSesuai);
+            console.log(TDSSesuai)
+        }
+        if(NilaiTDS < TDSMin){
+            setTDSPesan(TDSKurang);
+            console.log(TDSKurang)
+        }
+        if(NilaiTDS > TDSMax){
+            setTDSPesan(TDSBerlebih);
+            console.log(TDSBerlebih)
+        }
     }
 
     const CekTime = () => {
@@ -369,12 +656,14 @@ const CekTanah = ({navigation, route}) => {
 
     const isFocused = useIsFocused();
     useEffect(() => {
+        GetStandardTanah();
         CekKalibrasiTersimpan();
         LihatDataUser();
         AmbilDataRoute();
         CekTime();
         CekLocation();
         CekAsynFavourite();
+        CekStandardTanahLocal();
       }, [isFocused]);
 
     let [fontsLoaded] = useFonts({
@@ -521,6 +810,54 @@ const CekTanah = ({navigation, route}) => {
                         <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>{currentDate}</Text>
                     </View>
                 </View>
+
+                {StatusDevice == 'Terhubung' ?
+                <View style={{marginBottom:20}}>
+                     <Text style={{fontFamily:'Poppins-Bold', fontSize:14, color:'black'}}>Hasil Analisa Kualitas Tanah</Text>
+                     {/* Nitrogen */}
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>Standard Nilai Nitrogen : {NitrogenMin} - {NitrogenMax} mg/L</Text>
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>{NitrogenPesan}</Text>
+                     <View style={{borderTopWidth:0.5, marginBottom:5}}></View>
+                     {/* Phosporus */}
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>Standard Nilai Phosporus : {PhosporusMin} - {PhosporusMax} mg/L</Text>
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>{PhosporusPesan}</Text>
+                     <View style={{borderTopWidth:0.5, marginBottom:5}}></View>
+                     {/* Kalium */}
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>Standard Nilai Kalium : {KaliumMin} - {KaliumMax} mg/L</Text>
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>{KaliumPesan}</Text>
+                     <View style={{borderTopWidth:0.5, marginBottom:5}}></View>
+                     {/* Suhu */}
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>Standard Nilai Suhu : {SuhuMin}&deg;C - {SuhuMax}&deg;C</Text>
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>{SuhuPesan}</Text>
+                     <View style={{borderTopWidth:0.5, marginBottom:5}}></View>
+                     {/* Kelembaban */}
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>Standard Nilai Kelembaban : {KelembabanMin}% - {KelembabanMax}%</Text>
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>{KelembabanPesan}</Text>
+                     <View style={{borderTopWidth:0.5, marginBottom:5}}></View>
+                     {/* PH */}
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>Standard Nilai PH : {PHMin} - {PHMax}</Text>
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>{PHPesan}</Text>
+                     <View style={{borderTopWidth:0.5, marginBottom:5}}></View>
+                     {/* Konduktifitas */}
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>Standard Nilai Konduktifitas : {KonduktifitasMin} - {KonduktifitasMax} us/cm</Text>
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>{KonduktifitasPesan}</Text>
+                     <View style={{borderTopWidth:0.5, marginBottom:5}}></View>
+                     {/* Salinitas */}
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>Standard Nilai Salinitas : {SalinitasMin}% - {SalinitasMax}%</Text>
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>{SalinitasPesan}</Text>
+                     <View style={{borderTopWidth:0.5, marginBottom:5}}></View>
+                     {/* TDS */}
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>Standard Nilai TDS : {TDSMin}% - {TDSMax}%</Text>
+                     <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>{TDSPesan}</Text>
+                     <View style={{borderTopWidth:0.5, marginBottom:5}}></View>
+                </View>
+                :
+                <View></View>
+                }
+
+                <TouchableOpacity onPress={()=>navigation.navigate('StandardKualitasTanah')} style={{paddingVertical:7, paddingHorizontal:10, borderRadius:10, backgroundColor:'#0D986A', marginBottom:20, alignItems:'center'}}>
+                    <Text style={{color:"white", fontFamily:'Poppins-Bold', fontSize:12}}>Standard Kualitas Tanah</Text>
+                </TouchableOpacity>
         </View>
         </ScrollView>
         

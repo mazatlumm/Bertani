@@ -30,6 +30,7 @@ const UbahProfile = ({navigation}) => {
     const [Email, setEmail] = useState('');
     const [NoTelp, setNoTelp] = useState('');
     const [AlamatRumah, setAlamatRumah] = useState('');
+    const [RoleUser, setRoleUser] = useState('');
     const [Gender, setGender] = useState('Pilih Jenis Kelamin');
     const [TanggalLahir, setTanggalLahir] = useState('Tanggal Lahir')
     const [modalVisibleJenisKelamin, setModalVisibleJenisKelamin] = useState(false);
@@ -60,6 +61,7 @@ const UbahProfile = ({navigation}) => {
             password: Password,
             gender: Gender,
             birthday: TanggalLahir,
+            role: RoleUser,
         }
 
         var formBody = [];
@@ -109,6 +111,7 @@ const UbahProfile = ({navigation}) => {
         setEmail(ParsingDataUser[0].email);
         setGender(ParsingDataUser[0].gender);
         setTanggalLahir(ParsingDataUser[0].birthday);
+        setRoleUser(ParsingDataUser[0].role);
         } catch(e) {
         // error reading value
         }

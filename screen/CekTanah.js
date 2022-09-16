@@ -344,8 +344,8 @@ const CekTanah = ({navigation, route}) => {
         redirect: 'follow'
         };
 
-        fetch("https://alicestech.com/kelasbertani/api/cek_tanah/tes_alat?id_device="+IDDevice, requestOptions)
-        // fetch("http://192.168.2.1/getData", requestOptions)
+        // fetch("https://alicestech.com/kelasbertani/api/cek_tanah/tes_alat?id_device="+IDDevice, requestOptions)
+        fetch("http://192.168.2.1/getData", requestOptions)
         .then(response => response.json())
         .then(result => {
             // console.log(result);
@@ -353,28 +353,28 @@ const CekTanah = ({navigation, route}) => {
                 setStatusDevice('Terhubung');
                 setColorConnected('#0D986A');
                 // for online Data
-                setIDDevice(result.result[0].id_device);
-                let NilaiNitrogen = parseInt(result.result[0].nitrogen) + parseInt(KalibrasiNitrogen);
-                let NilaiPhospor = parseInt(result.result[0].phospor) + parseInt(KalibrasiPhosporus);
-                let NilaiKalium = parseInt(result.result[0].kalium) + parseInt(KalibrasiKalium);
-                let NilaiSuhu = parseInt(result.result[0].suhu) + parseInt(KalibrasiSuhu);
-                let NilaiKelembaban = parseInt(result.result[0].kelembaban) + parseInt(KalibrasiKelembaban);
-                let NilaiPH = parseInt(result.result[0].ph) + parseInt(KalibrasiPH);
-                let NilaiKonduktifitas = parseInt(result.result[0].mikroorganisme) + parseInt(KalibrasiKonduktifitas);
-                let NilaiSalinitas = parseInt(result.result[0].salinitas) + parseInt(KalibrasiSalinitas);
-                let NilaiTDS = parseInt(result.result[0].tds) + parseInt(KalibrasiTDS);
+                // setIDDevice(result.result[0].id_device);
+                // let NilaiNitrogen = parseInt(result.result[0].nitrogen) + parseInt(KalibrasiNitrogen);
+                // let NilaiPhospor = parseInt(result.result[0].phospor) + parseInt(KalibrasiPhosporus);
+                // let NilaiKalium = parseInt(result.result[0].kalium) + parseInt(KalibrasiKalium);
+                // let NilaiSuhu = parseInt(result.result[0].suhu) + parseInt(KalibrasiSuhu);
+                // let NilaiKelembaban = parseInt(result.result[0].kelembaban) + parseInt(KalibrasiKelembaban);
+                // let NilaiPH = parseInt(result.result[0].ph) + parseInt(KalibrasiPH);
+                // let NilaiKonduktifitas = parseInt(result.result[0].mikroorganisme) + parseInt(KalibrasiKonduktifitas);
+                // let NilaiSalinitas = parseInt(result.result[0].salinitas) + parseInt(KalibrasiSalinitas);
+                // let NilaiTDS = parseInt(result.result[0].tds) + parseInt(KalibrasiTDS);
 
                 // for local data device
-                // setIDDevice(result.result.id_device);
-                // let NilaiNitrogen = parseInt(result.result.nitrogen) + parseInt(KalibrasiNitrogen);
-                // let NilaiPhospor = parseInt(result.result.phospor) + parseInt(KalibrasiPhosporus);
-                // let NilaiKalium = parseInt(result.result.kalium) + parseInt(KalibrasiKalium);
-                // let NilaiSuhu = parseInt(result.result.suhu) + parseInt(KalibrasiSuhu);
-                // let NilaiKelembaban = parseInt(result.result.kelembaban) + parseInt(KalibrasiKelembaban);
-                // let NilaiPH = parseInt(result.result.ph) + parseInt(KalibrasiPH);
-                // let NilaiKonduktifitas = parseInt(result.result.mikroorganisme) + parseInt(KalibrasiKonduktifitas);
-                // let NilaiSalinitas = parseInt(result.result.salinitas) + parseInt(KalibrasiSalinitas);
-                // let NilaiTDS = parseInt(result.result.tds) + parseInt(KalibrasiTDS);
+                setIDDevice(result.result.id_device);
+                let NilaiNitrogen = parseInt(result.result.nitrogen) + parseInt(KalibrasiNitrogen);
+                let NilaiPhospor = parseInt(result.result.phospor) + parseInt(KalibrasiPhosporus);
+                let NilaiKalium = parseInt(result.result.kalium) + parseInt(KalibrasiKalium);
+                let NilaiSuhu = parseInt(result.result.suhu) + parseInt(KalibrasiSuhu);
+                let NilaiKelembaban = parseInt(result.result.kelembaban) + parseInt(KalibrasiKelembaban);
+                let NilaiPH = parseInt(result.result.ph) + parseInt(KalibrasiPH);
+                let NilaiKonduktifitas = parseInt(result.result.mikroorganisme) + parseInt(KalibrasiKonduktifitas);
+                let NilaiSalinitas = parseInt(result.result.salinitas) + parseInt(KalibrasiSalinitas);
+                let NilaiTDS = parseInt(result.result.tds) + parseInt(KalibrasiTDS);
 
                 if(NilaiNitrogen < 0){
                     setNitrogen(0);

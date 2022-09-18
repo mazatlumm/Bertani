@@ -8,6 +8,9 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View, BackHandler, Alert } from 'react-native';
 
+const windowWidth = parseInt((Dimensions.get('window').width).toFixed(0))-45;
+const windowHeight = parseInt((Dimensions.get('window').height).toFixed(0))-45;
+
 const TensorCamera = cameraWithTensors(Camera);
 
 // The size of camera preview.
@@ -164,7 +167,7 @@ const PenyakitTanaman = ({navigation}) => {
         const logits = result.dataSync();
         // Logits should be the probability of two classes (hot dog, not hot dog).
         console.log(logits)
-        const arrClassName = ["Apple Scab","Apple Black Rot","Apple Cedar Rust","Apple Healthy","Corn Cercospora Grey Spot","Corn Rusty Common","Corn Healthy","Corn North Blight","Rice Bacteria Blight","Rice Brown Spot","Rice Leaf Smut","Mango Healthy","Mango Diseased"];
+        const arrClassName = ["Wereng Coklat","Penggerek Batang Padi Kuning","Walang Sangit","Bercak Daun Padi","Bercak Daun Padi Coklat","Hawar Daun Padi","Hawar Daun Jagung","Bercak Daun Jagung Abu-Abu","Karat Daun Jagung"];
         if(logits){
           for (let index = 0; index < logits.length; index++) {
             let ValueClass = logits[index] * 100;
@@ -228,6 +231,9 @@ const PenyakitTanaman = ({navigation}) => {
           resizeDepth={3}
           onReady={handleCameraStream}
         />
+        <View style={{position:'absolute', top:0, left:0, zIndex:101, borderRadius:10, width:'100%', height:windowHeight, alignItems:'center', justifyContent:'center', paddingHorizontal:40}}>
+        <View style={{zIndex:102, borderWidth:2, borderColor:'#3CDFFF', borderRadius:10, width:'100%', height:windowHeight/2}}></View>
+        </View>
         <View style={styles.ClassResult}>
           <Text style={styles.resultText}>
             {ClassName}

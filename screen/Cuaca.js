@@ -58,14 +58,10 @@ const Cuaca = ({navigation}) => {
         });
         // console.log(GeoCodingData);
         setAddressFull(GeoCodingData[0].district + ', ' + GeoCodingData[0].city + ', ' + GeoCodingData[0].subregion)
-        await axios.get('https://api.openweathermap.org/data/2.5/onecall?', {
+        await axios.get('https://alicestech.com/kelasbertani/api/cuaca/forecast', {
             params: {
               lat: latitude,
               lon: longitude,
-              exclude: 'current,minutely,hourly',
-              appid: '3805c5b035c59b637431659685137022',
-              units: 'metric',
-              lang: 'id'
             }
           })
           .then(response => {

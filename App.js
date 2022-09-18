@@ -62,6 +62,7 @@ import MapTrackingPenyuluh from './screen/MapTrackingPenyuluh';
 import LaporanPenyuluh from './screen/LaporanPenyuluh';
 import MapTrackingPemesan from './screen/MapTrackingPemesan';
 import DataTernak from './screen/DataTernak';
+import QRScannerTernak from './screen/QRScannerTernak';
 
 const Stack = createNativeStackNavigator();
 
@@ -142,6 +143,7 @@ function App() {
         <Stack.Screen name="LaporanPenyuluh" component={LaporanPenyuluh} options={{headerShown:false}}/>
         <Stack.Screen name="MapTrackingPemesan" component={MapTrackingPemesan} options={{headerShown:false}}/>
         <Stack.Screen name="DataTernak" component={DataTernak} options={{headerShown:false}}/>
+        <Stack.Screen name="QRScannerTernak" component={QRScannerTernak} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

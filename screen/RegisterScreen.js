@@ -110,7 +110,7 @@ const RegisterScreen = ({navigation}) => {
           pekerjaan:Pekerjaan,
           no_telp:NoTelp,
           alamat:AlamatRumah,
-          role:"penyuluh",
+          role:"Pengguna Umum",
           password:Password,
         }
         console.log(ParameterUrl)

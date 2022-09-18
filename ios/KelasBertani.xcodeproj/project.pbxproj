@@ -322,7 +322,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.alicestech.kelasbertani;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kelasbertani;
 				PRODUCT_NAME = "KelasBertani";
 				SWIFT_OBJC_BRIDGING_HEADER = "KelasBertani/KelasBertani-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -348,7 +348,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.alicestech.kelasbertani;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kelasbertani;
 				PRODUCT_NAME = "KelasBertani";
 				SWIFT_OBJC_BRIDGING_HEADER = "KelasBertani/KelasBertani-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

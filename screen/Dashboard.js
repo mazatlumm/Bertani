@@ -136,7 +136,7 @@ const Dashboard = ({navigation}) => {
       .then(response => {
         console.log(response.data)
         if(response.data.status == true){
-          
+          setmodalActivityIndicator(false);
         }
       })
       .catch(e => {
@@ -172,14 +172,10 @@ const Dashboard = ({navigation}) => {
       // console.log(GeoCodingData);
       setAddressFull(GeoCodingData[0].district + ', ' + GeoCodingData[0].city)
 
-      await axios.get('https://api.openweathermap.org/data/2.5/onecall?', {
+      await axios.get('https://alicestech.com/kelasbertani/api/cuaca/dashboard', {
         params: {
           lat: location.coords.latitude,
           lon: location.coords.longitude,
-          exclude: 'daily,minutely,hourly',
-          appid: '3805c5b035c59b637431659685137022',
-          units: 'metric',
-          lang: 'id'
         }
       })
       .then(response => {

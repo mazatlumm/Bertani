@@ -1,4 +1,4 @@
-package com.alicestech.kelasbertani;
+package com.kelasbertani;
 
 import android.os.Build;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package com.alicestech.kelasbertani;
+package com.kelasbertani;
 
 import android.app.Application;
 import android.content.Context;
@@ -21,6 +21,7 @@ import com.facebook.react.bridge.JSIModulePackage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+import com.reactnativecommunity.cameraroll.CameraRollPackage;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost = new ReactNativeHostWrapper(
@@ -37,6 +38,7 @@ public class MainApplication extends Application implements ReactApplication {
       List<ReactPackage> packages = new PackageList(this).getPackages();
       // Packages that cannot be autolinked yet can be added manually here, for example:
       // packages.add(new MyReactNativePackage());
+      // packages.add(new CameraRollPackage());
       return packages;
     }
 
@@ -81,7 +83,7 @@ public class MainApplication extends Application implements ReactApplication {
          We use reflection here to pick up the class that initializes Flipper,
         since Flipper library is not available in release mode
         */
-        Class<?> aClass = Class.forName("com.alicestech.kelasbertani.ReactNativeFlipper");
+        Class<?> aClass = Class.forName("com.kelasbertani.ReactNativeFlipper");
         aClass
             .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
             .invoke(null, context, reactInstanceManager);

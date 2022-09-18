@@ -221,7 +221,7 @@ const CekTernak = ({navigation, route}) => {
               }
             </View>
         </View>
-    </Modal>
+      </Modal>
         {/* Top Bar */}
         <View style={{width:'100%'}}>
             <View style={styles.TopBarBox}>
@@ -238,6 +238,9 @@ const CekTernak = ({navigation, route}) => {
             </View>
           }
         </View>
+        <TouchableOpacity style={styles.ScanTernak} onPress={()=>navigation.navigate('QRScannerTernak')}>
+            <AntDesign name="qrcode" size={24} color="white" />
+        </TouchableOpacity>
         <TouchableOpacity style={styles.TambahKandangBtn} onPress={()=>TambahKandang()}>
             <AntDesign name="pluscircleo" size={24} color="white" />
         </TouchableOpacity>
@@ -320,6 +323,17 @@ const styles = StyleSheet.create({
       alignItems:'center',
       position:'absolute',
       bottom:30,
+      right:20
+  },
+  ScanTernak:{
+      width:50,
+      height:50,
+      borderRadius:50/2,
+      backgroundColor:'#296E85',
+      justifyContent:'center',
+      alignItems:'center',
+      position:'absolute',
+      bottom:90,
       right:20
   },
   FormInputList:{

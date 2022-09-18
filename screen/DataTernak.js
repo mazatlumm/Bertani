@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView, Image, Platform, FlatList, Modal, TextInput, Alert } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView, Image, Platform, FlatList, Modal, TextInput, Alert, ToastAndroid, PermissionsAndroid } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppLoading from 'expo-app-loading';
@@ -9,6 +9,9 @@ import DatePicker from 'react-native-date-picker'
 import moment from 'moment';
 import * as ImagePicker from 'expo-image-picker';
 import ImageResizer from 'react-native-image-resizer';
+import QRCode from 'react-native-qrcode-svg';
+import RNFS from "react-native-fs"
+import CameraRoll from "@react-native-community/cameraroll";
 
 // Icon
 import { EvilIcons } from '@expo/vector-icons';
@@ -45,6 +48,9 @@ const DataTernak = ({navigation, route}) => {
     const [OpenDatePicker, setOpenDatePicker] = useState(false);
     const [StartDate, setStartDate] = useState(new Date());
     const [EditDataTernakStat, setEditDataTernakStat] = useState(false);
+    const [ModalCekQRCode, setModalCekQRCode] = useState(false);
+    const [QRCodeValue, setQRCodeValue] = useState('');
+    const [DataQRCode, setDataQRCode] = useState('');
 
     const LihatDataUser =  async() => {
         try {
@@ -169,7 +175,7 @@ const DataTernak = ({navigation, route}) => {
         setModalFormTernak(!ModalFormTernak);
     }
 
-    const Item = ({nomor_urut, id_ternak, id_kandang, nama_ternak, kelamin, tanggal_kepemilikan, tanggal_kawin, umur_kandungan, umur_ternak, tanggal_melahirkan, jumlah_anak, foto, pertumbuhan, reproduksi, kesehatan, produksi_susu}) => (
+    const Item = ({nomor_urut, id_ternak, id_kandang, qrcode, nama_ternak, kelamin, tanggal_kepemilikan, tanggal_kawin, umur_kandungan, umur_ternak, tanggal_melahirkan, jumlah_anak, foto, pertumbuhan, reproduksi, kesehatan, produksi_susu}) => (
         <TouchableOpacity onPress={()=>UpdateDataTernak(id_ternak, id_kandang, nama_ternak, kelamin, tanggal_kepemilikan, tanggal_kawin, umur_kandungan, umur_ternak, tanggal_melahirkan, jumlah_anak, foto, pertumbuhan, reproduksi, kesehatan, produksi_susu)} style={styles.CardListKandang}>
           <View style={{flexDirection:'row'}}>
             <View style={{justifyContent:'center', marginRight:10}}>
@@ -181,6 +187,11 @@ const DataTernak = ({navigation, route}) => {
               <Text style={styles.TextPoppins}>Jenis Kelamin : {kelamin}</Text>
               <Text style={styles.TextPoppins}>Umur : {umur_ternak} Tahun</Text>
               <Text style={styles.TextPoppins}>Jumlah Anak : {jumlah_anak}</Text>
+              <TouchableOpacity onPress={()=>CekQRCode(qrcode)} style={{marginRight:50}}>
+                <View style={styles.BtnPrimary}>
+                    <Text style={styles.TextPoppinsBtn}>QR-Code</Text>
+                </View>
+              </TouchableOpacity>
             </View>
             {/* Foto */}
             <View>
@@ -201,6 +212,43 @@ const DataTernak = ({navigation, route}) => {
       );
     
     const renderItem = ({ item }) => <Item nomor_urut={item.nomor_urut} id_ternak={item.id_ternak} id_kandang={item.id_kandang} qrcode={item.qrcode} nama_ternak={item.nama_ternak} kelamin={item.kelamin} tanggal_kepemilikan={item.tanggal_kepemilikan} tanggal_kawin={item.tanggal_kawin} umur_kandungan={item.umur_kandungan} umur_ternak={item.umur_ternak} tanggal_melahirkan={item.tanggal_melahirkan} jumlah_anak={item.jumlah_anak} foto={item.foto} pertumbuhan={item.pertumbuhan} reproduksi={item.reproduksi} kesehatan={item.kesehatan} produksi_susu={item.produksi_susu}/>;
+
+    const CekQRCode = (qrcode) => {
+        console.log(qrcode);
+        setQRCodeValue(qrcode)
+        setModalCekQRCode(!ModalCekQRCode);
+    }
+
+    const hasAndroidPermission = async() => {
+    const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+    const hasPermission = 
+    await PermissionsAndroid.check(permission);
+        if (hasPermission) {
+        return true;
+        }
+        const status = 
+        await PermissionsAndroid.request(permission);
+        return status === 'granted';
+    }
+
+    const SimpanQRCode = async () => {
+        if (Platform.OS === "android" &&
+        !(await hasAndroidPermission())) {
+            return;
+        }
+        DataQRCode.toDataURL((data) => {
+            // console.log(data)
+            let filePath =  RNFS.CachesDirectoryPath+`/tes.png`;
+            RNFS.writeFile(filePath, data, 'base64')
+            .then((success) => {
+                return CameraRoll.save(filePath, 'photo')
+            })
+            .then(() => {
+            ToastAndroid.show('QR-Code Berhasil Disimpan', ToastAndroid.LONG);
+            });
+        });  
+        setModalCekQRCode(!ModalCekQRCode)
+    }
 
     const GetDetailTernak = async () => {
       await axios.get('https://alicestech.com/kelasbertani/api/ternak', {
@@ -378,8 +426,8 @@ const DataTernak = ({navigation, route}) => {
             confirmText='Ok'
             cancelText='Batal'
         />
-      {/* Modal Ternak */}
-      <Modal
+        {/* Modal Ternak */}
+        <Modal
         animationType="slide"
         transparent={true}
         visible={ModalFormTernak}
@@ -560,7 +608,36 @@ const DataTernak = ({navigation, route}) => {
                 <View style={{marginBottom:50}}></View>
             </ScrollView>
         </View>
-    </Modal>
+        </Modal>
+
+        {/* Modal QrCode */}
+        <Modal
+        animationType="slide"
+        transparent={true}
+        visible={ModalCekQRCode}
+        onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            setModalCekQRCode(!ModalCekQRCode);
+        }}
+        >
+        <View style={{backgroundColor:'rgba(0, 0, 0, 0.3)', flex:1, alignItems:'center', justifyContent:'center', paddingHorizontal:20}}>
+            <View style={{backgroundColor:'white', paddingHorizontal:10, paddingVertical:20, borderRadius:10, width:'100%', paddingHorizontal:20, alignItems:'center', justifyContent:'center'}}>
+                <TouchableOpacity onPress={()=> setModalCekQRCode(!ModalCekQRCode)} style={{position:'absolute', top:10, right:10, zIndex:10}}>
+                    <SimpleLineIcons name="close" size={20} color="black" />
+                </TouchableOpacity>
+                <Text style={styles.TextPoppinsBold}>QR-Code Ternak</Text>
+                <QRCode
+                    value={QRCodeValue}
+                    size={250}
+                    getRef={(c) => setDataQRCode(c)}
+                />
+                <View style={{marginTop:10}}></View>
+                <TouchableOpacity onPress={()=>SimpanQRCode()} style={styles.BtnPrimary}>
+                    <Text style={styles.TextPoppinsBtn}>Simpan QR-Code</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+        </Modal>
         {/* Top Bar */}
         <View style={{width:'100%'}}>
             <View style={styles.TopBarBox}>

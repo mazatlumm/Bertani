@@ -25,7 +25,8 @@ const SplashScreen = ({navigation}) => {
             navigation.navigate('Dashboard');
         }
         } catch(e) {
-        // error reading value
+            // error reading value
+            navigation.navigate('Login');
         }
     }
 

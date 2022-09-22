@@ -48,7 +48,7 @@ const WebviewInfoTani = () => {
         <View style={{flex:1}}>
           <WebView 
             style={styles.container}
-            source={{ uri: 'https://kelasbertani.com/infotani'}}
+            source={{ uri: 'https://bbppketindan.bppsdmp.pertanian.go.id/'}}
             ref={webViewRef}
           />
           <TouchableOpacity onPress={()=> BackHalaman()} style={{width:50, height:50, borderRadius:25, backgroundColor:'grey', position:'absolute', right:10, bottom:30, alignItems:'center', justifyContent:'center'}}>

@@ -11,28 +11,28 @@ const SplashScreen = ({navigation}) => {
     }, []);
 
     const LihatDataUser = async () => {
-        try {
+        console.log('splash screen')
         const jsonValue = await AsyncStorage.getItem('@DataUser')
-        const ParsingDataUser = JSON.parse(jsonValue);
+        // const ParsingDataUser = JSON.parse(jsonValue);
         console.log(jsonValue)
-        if(jsonValue == '' || jsonValue == null){
-            navigation.navigate('Login');
-        }else{
+        if(jsonValue){
             navigation.reset({
                 index: 0,
                 routes: [{ name: 'Dashboard' }],
             });
-            navigation.navigate('Dashboard');
-        }
-        } catch(e) {
-            // error reading value
-            navigation.navigate('Login');
+            setTimeout(() => {
+                navigation.navigate('Dashboard');
+            }, 2000);
+        }else{
+            setTimeout(() => {
+                navigation.navigate('Login');
+            }, 2000);
         }
     }
 
     return (
         <View style={styles.Container}>
-            <Image source={SplashScreenLogo} style={{width:'100%', resizeMode:'contain'}} />
+            <Image source={SplashScreenLogo} style={{width:'90%', resizeMode:'contain'}} />
         </View>
     )
 }
@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     Container:{
         flex:1,
         alignItems:'center',
-        justifyContent:'center'
+        justifyContent:'center',
+        backgroundColor:'#9CE5CB'
     }
 })

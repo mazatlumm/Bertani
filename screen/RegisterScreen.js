@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import DatePicker from 'react-native-date-picker'
 import axios from 'axios';
+import { WebView } from 'react-native-webview';
 
 import farmer from '../assets/images/farmer.png'
 
@@ -32,6 +33,8 @@ const RegisterScreen = ({navigation}) => {
     const [modalVisibleJenisKelamin, setModalVisibleJenisKelamin] = useState(false);
     const [date, setDate] = useState(new Date())
     const [open, setOpen] = useState(false)
+    const [SyaratKetentuan, setSyaratKetentuan] = useState(false)
+    const [ModalSyaratKetentuan, setModalSyaratKetentuan] = useState(false)
 
     const SimpanDataUSerAsyn = async (value) => {
         try {
@@ -154,6 +157,11 @@ const RegisterScreen = ({navigation}) => {
         }
     }
 
+    const SetujuiSyaratKetentuan = () => {
+      setModalSyaratKetentuan(!ModalSyaratKetentuan);
+      setSyaratKetentuan(true);
+    }
+
     const isFocused = useIsFocused();
     useEffect(() => {
         
@@ -209,6 +217,28 @@ const RegisterScreen = ({navigation}) => {
                 <TouchableOpacity onPress={()=>PilihKelamin('Perempuan')} style={{borderWidth:1, borderRadius:10, paddingHorizontal:10, paddingVertical:5, alignItems:'center', marginTop:10}}>
                   <Text style={styles.TextInputForm}>Perempuan</Text>
                 </TouchableOpacity>
+            </View>
+         </View>
+      </Modal>
+        
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={ModalSyaratKetentuan}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            setModalVisibleJenisKelamin(!ModalSyaratKetentuan);
+          }}
+        >
+         <View style={{backgroundColor:'rgba(0, 0, 0, 0.3)', flex:1, alignItems:'center', justifyContent:'center', paddingHorizontal:20}}>
+            <View style={{backgroundColor:'white', paddingHorizontal:10, paddingVertical:20, borderRadius:10, flex:1, width:'100%',paddingHorizontal:20}}>
+            <WebView 
+              style={{flex:1}}
+              source={{ uri: 'https://alicestech.com/kelasbertani/syarat_ketentuan'}}
+            />
+            <TouchableOpacity onPress={()=>SetujuiSyaratKetentuan()} style={styles.BtnBox}>
+              <Text style={styles.TextBtn}>Setuju Syarat & Ketentuan</Text>
+            </TouchableOpacity>
             </View>
          </View>
       </Modal>
@@ -307,11 +337,30 @@ const RegisterScreen = ({navigation}) => {
                     </View>
                     {WarningPassword()}
                 </View>
-                
+                <TouchableOpacity onPress={()=>setSyaratKetentuan(!SyaratKetentuan)} style={{flexDirection:'row', alignItems:'center', marginTop:15}}>
+                  <View style={{width:14, height:14, borderRadius:7, borderWidth:0.5, marginRight:5, alignItems:'center', justifyContent:'center'}}>
+                    {SyaratKetentuan ? 
+                      <View style={{width:8, height:8, borderRadius:4, borderWidth:0.5, backgroundColor:'blue'}}></View>
+                      :
+                      <View></View>
+                    }
 
+                  </View>
+                  <Text style={styles.TextPoppins}>Menyetujui Syarat & Ketentuan yang berlaku</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={()=>setModalSyaratKetentuan(!ModalSyaratKetentuan)} style={{marginLeft:20}}>
+                  <Text style={styles.TextPoppinsBlueUnderline}>Baca Syarat & Ketentuan Pengguna</Text>
+                </TouchableOpacity>
+                {SyaratKetentuan ?
                 <TouchableOpacity style={styles.BtnBox} onPress={()=>UserRegister()}>
                     <Text style={styles.BtnTitle}>Daftar Sekarang</Text>
                 </TouchableOpacity>
+                :
+                <View style={styles.BtnBoxDisable}>
+                  <Text style={styles.BtnTitle}>Daftar Sekarang</Text>
+                  </View>
+                }
             </View>
            
         </ScrollView>
@@ -376,6 +425,12 @@ const styles = StyleSheet.create({
                 fontSize:16
             }
         })
+    },
+    TextPoppinsBlueUnderline:{
+        fontFamily:'Poppins-Bold',
+        fontSize:12,
+        color:'blue',
+        textDecorationLine:'underline'
     },
     TextPoppins:{
         fontFamily:'Poppins-Regular',
@@ -497,6 +552,16 @@ const styles = StyleSheet.create({
         alignItems:'center',
         marginTop:10,
         flexDirection:'row'
+    },
+    BtnBoxDisable:{
+        borderRadius:10,
+        backgroundColor:'rgba(0,128,0,0.5)',
+        paddingHorizontal:10,
+        paddingVertical:10,
+        justifyContent:'center',
+        alignItems:'center',
+        marginTop:10,
+        flexDirection:'row',
     },
     BtnTitle:{
         fontFamily:'Poppins-Bold',

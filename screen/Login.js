@@ -1,9 +1,10 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput, ScrollView, Alert, StatusBar } from 'react-native'
+import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput, ScrollView, Alert, StatusBar, Modal } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TopImage from '../assets/images/LoginImage.png'
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
+import { WebView } from 'react-native-webview';
 
 //statusbar
 const STYLES = ['default', 'dark-content', 'light-content'];
@@ -24,6 +25,8 @@ const Login = ({navigation}) => {
     const [hidden, setHidden] = useState(false);
     const [statusBarStyle, setStatusBarStyle] = useState(STYLES[0]);
     const [statusBarTransition, setStatusBarTransition] = useState(TRANSITIONS[0]);
+    const [SyaratKetentuan, setSyaratKetentuan] = useState(false)
+    const [ModalSyaratKetentuan, setModalSyaratKetentuan] = useState(false)
 
     useEffect(() => {
         LihatDataUser()
@@ -60,6 +63,11 @@ const Login = ({navigation}) => {
         } catch (e) {
           // saving error
         }
+      }
+
+      const SetujuiSyaratKetentuan = () => {
+        setModalSyaratKetentuan(!ModalSyaratKetentuan);
+        setSyaratKetentuan(true);
       }
 
     let [fontsLoaded] = useFonts({
@@ -122,6 +130,27 @@ const Login = ({navigation}) => {
         barStyle={statusBarStyle}
         showHideTransition={statusBarTransition}
         hidden={hidden} />
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={ModalSyaratKetentuan}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            setModalVisibleJenisKelamin(!ModalSyaratKetentuan);
+          }}
+        >
+         <View style={{backgroundColor:'rgba(0, 0, 0, 0.3)', flex:1, alignItems:'center', justifyContent:'center', paddingHorizontal:20}}>
+            <View style={{backgroundColor:'white', paddingHorizontal:10, paddingVertical:20, borderRadius:10, flex:1, width:'100%',paddingHorizontal:20}}>
+            <WebView 
+              style={{flex:1}}
+              source={{ uri: 'https://alicestech.com/kelasbertani/syarat_ketentuan'}}
+            />
+            <TouchableOpacity onPress={()=>SetujuiSyaratKetentuan()} style={styles.BtnBox}>
+              <Text style={styles.BtnTitle}>Setuju Syarat & Ketentuan</Text>
+            </TouchableOpacity>
+            </View>
+         </View>
+        </Modal>
         <ScrollView>
         <View style={{alignItems: 'center', marginBottom:30}}>
             <Image source={TopImage} style={{width:'100%', resizeMode:'cover',height:400}} />
@@ -149,10 +178,30 @@ const Login = ({navigation}) => {
                     <FontAwesome name={IconPassword} size={20} color="black" />
                 </TouchableOpacity>
             </View>
+            <TouchableOpacity onPress={()=>setSyaratKetentuan(!SyaratKetentuan)} style={{flexDirection:'row', alignItems:'center', marginTop:15}}>
+                  <View style={{width:14, height:14, borderRadius:7, borderWidth:0.5, marginRight:5, alignItems:'center', justifyContent:'center'}}>
+                    {SyaratKetentuan ? 
+                      <View style={{width:8, height:8, borderRadius:4, borderWidth:0.5, backgroundColor:'blue'}}></View>
+                      :
+                      <View></View>
+                    }
 
-            <TouchableOpacity style={styles.LoginButton} onPress={()=>getDataUsingPost()}>
-                <Text style={styles.TextLoginButton}>Masuk</Text>
-            </TouchableOpacity>
+                  </View>
+                  <Text style={styles.TextPoppins}>Menyetujui Syarat & Ketentuan yang berlaku</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=>setModalSyaratKetentuan(!ModalSyaratKetentuan)} style={{marginLeft:20}}>
+                  <Text style={styles.TextPoppinsBlueUnderline}>Baca Syarat & Ketentuan Pengguna</Text>
+                </TouchableOpacity>
+            {SyaratKetentuan ?
+                <TouchableOpacity style={styles.LoginButton} onPress={()=>getDataUsingPost()}>
+                    <Text style={styles.TextLoginButton}>Masuk</Text>
+                </TouchableOpacity>
+                :
+                <View style={styles.BtnBoxDisable}>
+                    <Text style={styles.TextLoginButton}>Masuk</Text>
+                </View>
+            }
+
                 <Text style={styles.TextFooter}>Belum Memiliki Akun?</Text>
             <TouchableOpacity style={styles.RegisterButton} onPress={()=>navigation.navigate('RegisterScreen')}>
                 <Text style={styles.TextLoginButton}>Daftar Sekarang</Text>
@@ -239,5 +288,41 @@ const styles = StyleSheet.create({
         fontSize:12,
         color:'grey',
         fontFamily:'Poppins-Regular',
-    }
+    },
+    TextPoppinsBlueUnderline:{
+        fontFamily:'Poppins-Bold',
+        fontSize:12,
+        color:'blue',
+        textDecorationLine:'underline'
+    },
+    TextPoppins:{
+        fontFamily:'Poppins-Regular',
+        fontSize:12,
+        color:'black'
+    },
+    BtnBox:{
+        borderRadius:10,
+        backgroundColor:'green',
+        paddingHorizontal:10,
+        paddingVertical:10,
+        justifyContent:'center',
+        alignItems:'center',
+        marginTop:10,
+        flexDirection:'row'
+    },
+    BtnTitle:{
+        fontFamily:'Poppins-Bold',
+        fontSize:12,
+        color:'white',
+    },
+    BtnBoxDisable:{
+        backgroundColor:'rgba(0,128,0,0.5)',
+        height:40,
+        borderRadius:20,
+        justifyContent:'center',
+        alignItems:'center',
+        width:200,
+        marginTop:20,
+        marginBottom:10
+    },
 })

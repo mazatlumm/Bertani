@@ -5,6 +5,7 @@ import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Tembakau from '../assets/images/tembakau.jpeg'
 
@@ -20,6 +21,8 @@ const CaptureDaun = ({navigation}) => {
   const [ResourcePath, setResourchPath] = useState('');
   const [UriPhoto, setUriPhoto] = useState(null);
   const [pickedImagePath, setPickedImagePath] = useState('');
+  const [IDUser, setIDUser] = useState('');
+  const [Role, setRole] = useState('');
   const [Rekesa1, setRekesa1] = useState('');
   const [Rekesa2, setRekesa2] = useState('');
   const [Rekesa3, setRekesa3] = useState('');
@@ -30,6 +33,20 @@ const CaptureDaun = ({navigation}) => {
   const [Rekesa8, setRekesa8] = useState('');
   const [ModalStandardNitrogen, setModalStandardNitrogen] = useState(false);
 
+  const LihatDataUser =  async() => {
+    try {
+    const jsonValue = await AsyncStorage.getItem('@DataUser')
+    const ParsingDataUser = JSON.parse(jsonValue);
+    console.log(jsonValue)
+    if(jsonValue){
+        setIDUser(ParsingDataUser[0].id_user)
+        setRole(ParsingDataUser[0].role);
+    }
+    } catch(e) {
+      // console.log(e)
+    }
+  }
+  
   // This function is triggered when the "Open camera" button pressed
   const openCamera = async () => {
     // Ask the user for the permission to access the camera
@@ -113,6 +130,7 @@ const CaptureDaun = ({navigation}) => {
   const isFocused = useIsFocused();
   useEffect(() => {
       console.log('Standard Nitrogen')
+      LihatDataUser();
       GetStandardNitrogen();
     }, [isFocused]);
 
@@ -279,9 +297,14 @@ const CaptureDaun = ({navigation}) => {
               </ScrollView>
           </View>
         </Modal>
-          <TouchableOpacity style={styles.SettingStandard} onPress={()=>SettingStandard()}>
-              <AntDesign name="setting" size={24} color="white" />
-          </TouchableOpacity>
+          {Role == 'admin' ? 
+            <TouchableOpacity style={styles.SettingStandard} onPress={()=>SettingStandard()}>
+                <AntDesign name="setting" size={24} color="white" />
+            </TouchableOpacity>
+            :
+            <View></View>
+          }
+
           <View style={styles.ColorTopBar}></View>
             {UriPhoto != null ? 
                 <Image

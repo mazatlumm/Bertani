@@ -22,6 +22,7 @@ const KasihModal = ({navigation, route}) => {
 
     const [ArrayModal, setArrayModal] = useState([]);
     const [IDUser, setIDUser] = useState('');
+    const [Role, setRole] = useState('');
     const [NamaUser, setNamaUser] = useState('');
     const [IDPermodalan, setIDPermodalan] = useState('');
     const [NamaModal, setNamaModal] = useState('');
@@ -32,6 +33,7 @@ const KasihModal = ({navigation, route}) => {
     const [ModalTambahPinjaman, setModalTambahPinjaman] = useState(false);
     const [ModalUbahPinjaman, setModalUbahPinjaman] = useState(false);
     const [ModalLihatFotoPetani, setModalLihatFotoPetani] = useState(false);
+    const [ModalHapus, setModalHapus] = useState(false);
 
     const LihatDataUser =  async() => {
         try {
@@ -42,6 +44,7 @@ const KasihModal = ({navigation, route}) => {
         if(ParsingDataUser[0].id_user){
             setIDUser(ParsingDataUser[0].id_user);
             setNamaUser(ParsingDataUser[0].nama);
+            setRole(ParsingDataUser[0].role);
         }
         } catch(e) {
         // error reading value
@@ -114,6 +117,42 @@ const KasihModal = ({navigation, route}) => {
     }
   }
 
+  const OpenModalHapus = (id_permodalan) => {
+      if(Role == 'admin'){
+          setModalHapus(!ModalHapus);
+          setIDPermodalan(id_permodalan)
+      }
+  }
+
+  const HapusSekarang = () => {
+    Alert.alert("Hapus Modal", "Apakah Anda yakin menghapus Modal ini?", [
+        {
+            text: "Batal",
+            onPress: () => console.log("Batal"),
+            style: "cancel"
+        },
+        { text: "Iya", onPress: () => {
+             axios.get('https://alicestech.com/kelasbertani/api/permodalan/hapus', {
+                params: {
+                  id_permodalan: IDPermodalan,
+                }
+              })
+              .then(response => {
+                console.log('Hapus Modal Berhasil');
+                console.log(response.data)
+                setModalHapus(!ModalHapus)
+                GetDaftarPermodalan()
+              })
+              .catch(e => {
+                if (e.response.status === 404) {
+                  console.log(e.response.data)
+                  setModalHapus(!ModalHapus)
+                }
+            });
+        }}
+    ]);
+  }
+
     const isFocused = useIsFocused();
     useEffect(() => {
         LihatDataUser()
@@ -126,7 +165,7 @@ const KasihModal = ({navigation, route}) => {
     }
 
     const Item = ({ id_permodalan, id_user, nama, keperluan, jumlah, wa, foto, created, updated}) => (
-        <TouchableOpacity onPress={()=>LihatFotoModal(foto)} style={styles.CardModal}>
+        <TouchableOpacity onLongPress={()=>OpenModalHapus(id_permodalan)} onPress={()=>LihatFotoModal(foto)} style={styles.CardModal}>
             <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
                 {foto == null ?
                     <FontAwesome name="image" size={70} color="black" />
@@ -184,6 +223,31 @@ const KasihModal = ({navigation, route}) => {
                             <Text style={styles.TextPoppins}>Foto Petani Belum Ditambahkan</Text>
                         </View>
                     }
+                </View>
+            </View>
+        </Modal>
+
+        {/* Modal Hapus */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={ModalHapus}
+          onRequestClose={() => {
+            setModalHapus(!ModalHapus);
+          }}
+        >
+            <View style={{flex: 1, alignItems: "center", justifyContent: 'center', padding: 10, backgroundColor:'rgba(0, 0, 0, 0.2)'}}>
+                <View style={{paddingHorizontal:20, width:'100%', backgroundColor:'white', borderRadius:10, paddingVertical:20,}}>
+                    <TouchableOpacity style={{position:'absolute', top:10, right:5, alignItems:'center', justifyContent:'center'}} onPress={()=> setModalHapus(!ModalHapus)}>
+                        <EvilIcons name="close-o" size={30} color="black" />
+                    </TouchableOpacity>
+                    <Text style={styles.TextPoppinsBold}>Hapus Data Pencarian Modal</Text>
+                    <Text style={styles.TextPoppins}>Data yang sudah dihapus tidak dapat dikembalikan lagi</Text>
+                    <View style={{flexDirection:'row'}}>
+                        <TouchableOpacity onPress={()=>HapusSekarang()} style={styles.BtnDanger}>
+                            <Text style={styles.TextBtnWhite}>Hapus Sekarang</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         </Modal>

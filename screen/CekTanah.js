@@ -44,6 +44,7 @@ const CekTanah = ({navigation, route}) => {
     const [currentDate, setCurrentDate] = useState('');
     const [TimeClock, setTimeClock] = useState('');
     const [IDUser, setIDUser] = useState('');
+    const [Role, setRole] = useState('');
     const [IDDevice, setIDDevice] = useState('ID DEVICE');
     const [StatusDevice, setStatusDevice] = useState('Tidak Terhubung');
     const [Nitrogen, setNitrogen] = useState('');
@@ -126,6 +127,60 @@ const CekTanah = ({navigation, route}) => {
           .then(response => {
             if(response.data.status == true){
                 const DataResult = response.data.result[0];
+                setNitrogenMin(DataResult.nitrogen);
+                setNitrogenMax(DataResult.nitrogen_max);
+                setNitrogenKurang(DataResult.nitrogen_kurang);
+                setNitrogenSesuai(DataResult.nitrogen_sesuai);
+                setNitrogenBerlebih(DataResult.nitrogen_berlebih);
+
+                setPhosporusMin(DataResult.phosporus);
+                setPhosporusMax(DataResult.phosporus_max);
+                setPhosporusKurang(DataResult.phosporus_kurang);
+                setPhosporusSesuai(DataResult.phosporus_sesuai);
+                setPhosporusBerlebih(DataResult.phosporus_berlebih);
+
+                setKaliumMin(DataResult.kalium);
+                setKaliumMax(DataResult.kalium_max);
+                setKaliumKurang(DataResult.kalium_kurang);
+                setKaliumSesuai(DataResult.kalium_sesuai);
+                setKaliumBerlebih(DataResult.kalium_berlebih);
+
+                setSuhuMin(DataResult.suhu);
+                setSuhuMax(DataResult.suhu_max);
+                setSuhuKurang(DataResult.suhu_kurang);
+                setSuhuSesuai(DataResult.suhu_sesuai);
+                setSuhuBerlebih(DataResult.suhu_berlebih);
+            
+                setKelembabanMin(DataResult.kelembaban);
+                setKelembabanMax(DataResult.kelembaban_max);
+                setKelembabanKurang(DataResult.kelembaban_kurang);
+                setKelembabanSesuai(DataResult.kelembaban_sesuai);
+                setKelembabanBerlebih(DataResult.kelembaban_berlebih);
+                
+                setPHMin(DataResult.ph);
+                setPHMax(DataResult.ph_max);
+                setPHKurang(DataResult.ph_kurang);
+                setPHSesuai(DataResult.ph_sesuai);
+                setPHBerlebih(DataResult.ph_berlebih);
+                
+                setKonduktifitasMin(DataResult.konduktifitas);
+                setKonduktifitasMax(DataResult.konduktifitas_max);
+                setKonduktifitasKurang(DataResult.konduktifitas_kurang);
+                setKonduktifitasSesuai(DataResult.konduktifitas_sesuai);
+                setKonduktifitasBerlebih(DataResult.konduktifitas_berlebih);
+                
+                setSalinitasMin(DataResult.salinitas);
+                setSalinitasMax(DataResult.salinitas_max);
+                setSalinitasKurang(DataResult.salinitas_kurang);
+                setSalinitasSesuai(DataResult.salinitas_sesuai);
+                setSalinitasBerlebih(DataResult.salinitas_berlebih);
+                
+                setTDSMin(DataResult.tds);
+                setTDSMax(DataResult.tds_max);
+                setTDSKurang(DataResult.tds_kurang);
+                setTDSSesuai(DataResult.tds_sesuai);
+                setTDSBerlebih(DataResult.tds_berlebih);
+
                 SimpanStandardTanahLocal(DataResult);
             }
           })
@@ -305,6 +360,7 @@ const CekTanah = ({navigation, route}) => {
         const jsonValue = await AsyncStorage.getItem('@DataUser')
         const ParsingDataUser = JSON.parse(jsonValue);
         setIDUser(ParsingDataUser[0].id_user); 
+        setRole(ParsingDataUser[0].role); 
         } catch(e) {
         // error reading value
         }
@@ -725,9 +781,13 @@ const CekTanah = ({navigation, route}) => {
             <View style={{paddingHorizontal:20, position:'relative', height:300}}>
                 <Text style={{fontFamily:'Poppins-Regular', fontSize:12}}>Nama Perangkat</Text>
                 <Text style={{fontFamily:'Philosopher-Bold', fontSize:24, marginTop:5}}>{IDDevice}</Text>
-                <TouchableOpacity style={{backgroundColor:'white', paddingVertical:5, paddingHorizontal:10, borderRadius:10, position:'absolute', top:10, right:20 }} onPress={()=> navigation.navigate('KalibrasiKualitasTanah', {id_device:IDDevice})}>
-                    <Text style={{fontFamily:'Poppins-Regular', color:'#0D986A', fontSize:12}}>Kalibrasi</Text>
-                </TouchableOpacity>
+                {Role == 'admin' ? 
+                    <TouchableOpacity style={{backgroundColor:'white', paddingVertical:5, paddingHorizontal:10, borderRadius:10, position:'absolute', top:10, right:20 }} onPress={()=> navigation.navigate('KalibrasiKualitasTanah', {id_device:IDDevice})}>
+                        <Text style={{fontFamily:'Poppins-Regular', color:'#0D986A', fontSize:12}}>Kalibrasi</Text>
+                    </TouchableOpacity>
+                    :
+                    <View></View>
+                }
                 <Text style={{fontFamily:'Poppins-Regular', fontSize:12, marginTop:40}}>STATUS</Text>
                 <Text style={{fontFamily:'Poppins-Bold', fontSize:14, marginTop:0}}>{StatusDevice}</Text>
                 <Text style={{fontFamily:'Poppins-Regular', fontSize:12, marginTop:10}}>LAST UPDATE</Text>
@@ -855,9 +915,15 @@ const CekTanah = ({navigation, route}) => {
                 <View></View>
                 }
 
-                <TouchableOpacity onPress={()=>navigation.navigate('StandardKualitasTanah')} style={{paddingVertical:7, paddingHorizontal:10, borderRadius:10, backgroundColor:'#0D986A', marginBottom:20, alignItems:'center'}}>
-                    <Text style={{color:"white", fontFamily:'Poppins-Bold', fontSize:12}}>Standard Kualitas Tanah</Text>
-                </TouchableOpacity>
+                <View>
+                    {Role == 'admin' ? 
+                        <TouchableOpacity onPress={()=>navigation.navigate('StandardKualitasTanah')} style={{paddingVertical:7, paddingHorizontal:10, borderRadius:10, backgroundColor:'#0D986A', marginBottom:20, alignItems:'center'}}>
+                            <Text style={{color:"white", fontFamily:'Poppins-Bold', fontSize:12}}>Standard Kualitas Tanah</Text>
+                        </TouchableOpacity>
+                        :
+                        <View></View>
+                    }
+                </View>
         </View>
         </ScrollView>
         

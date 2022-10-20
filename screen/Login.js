@@ -110,6 +110,10 @@ const Login = ({navigation}) => {
             SimpanDataUSer(responseJson.result)
             setTimeout(() => {
                 navigation.navigate('Dashboard');
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Dashboard' }],
+                });
             }, 1000);
         }else{
             Alert.alert('Status Login', 'Username & Password Tidak Sesuai');

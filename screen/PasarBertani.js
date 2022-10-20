@@ -22,8 +22,11 @@ const PasarBertani = ({navigation, route}) => {
 
     const [ArrayProduk, setArrayProduk] = useState([]);
     const [IDUser, setIDUser] = useState('');
+    const [Role, setRole] = useState('');
+    const [IDProduk, setIDProduk] = useState('');
     const [ModalLihatFotoProduk, setModalLihatFotoProduk] = useState('');
     const [NamaFotoProduk, setNamaFotoProduk] = useState('');
+    const [ModalHapusProduk, setModalHapusProduk] = useState(false);
 
     const LihatDataUser =  async() => {
         try {
@@ -33,6 +36,7 @@ const PasarBertani = ({navigation, route}) => {
         console.log(ParsingDataUser[0].id_user)
         if(ParsingDataUser[0].id_user){
             setIDUser(ParsingDataUser[0].id_user);
+            setRole(ParsingDataUser[0].role);
         }
         } catch(e) {
         // error reading value
@@ -101,6 +105,46 @@ const PasarBertani = ({navigation, route}) => {
         setModalLihatFotoProduk(!ModalLihatFotoProduk)
     }
 
+    const HapusProduk = async () => {
+        Alert.alert("Hapus Produk", "Apakah Anda yakin menghapus produk ini?", [
+            {
+                text: "Batal",
+                onPress: () => {
+                    console.log("Batal")
+                    setModalHapusProduk(!ModalHapusProduk)
+                },
+                style: "cancel"
+            },
+            { text: "Iya", onPress: () => {
+                 axios.get('https://alicestech.com/kelasbertani/api/produk/hapus', {
+                    params: {
+                      id_produk: IDProduk,
+                    }
+                  })
+                  .then(response => {
+                    console.log('Hapus Produk Berhasil');
+                    console.log(response.data)
+                    GetDaftarProduk()
+                    setModalHapusProduk(!ModalHapusProduk)
+                  })
+                  .catch(e => {
+                    if (e.response.status === 404) {
+                      console.log(e.response.data)
+                      setModalHapusProduk(!ModalHapusProduk)
+                    }
+                });
+            }}
+        ]);
+    }
+
+    const OpenModalHapusProduk = (id_produk) => {
+        if(Role == 'admin'){
+            console.log('id_produk : ' + id_produk)
+            setIDProduk(id_produk);
+            setModalHapusProduk(!ModalHapusProduk);
+        }
+    }   
+
     const isFocused = useIsFocused();
     useEffect(() => {
         LihatDataUser()
@@ -108,7 +152,7 @@ const PasarBertani = ({navigation, route}) => {
     }, [isFocused, IDUser]);
 
     const Item = ({ id_produk, id_user, nama_produk, stok, harga, wa, foto, nama_penjual, created, updated}) => (
-        <TouchableOpacity style={styles.CardProduk}>
+        <TouchableOpacity onLongPress={()=>OpenModalHapusProduk(id_produk)} style={styles.CardProduk}>
             <TouchableOpacity onPress={()=>LihatFotoProduk(foto)} style={{flex:1, justifyContent:'center', alignItems:'center'}}>
                 {foto == null ?
                     <FontAwesome name="image" size={70} color="black" />
@@ -167,6 +211,31 @@ const PasarBertani = ({navigation, route}) => {
                             <Text style={styles.TextPoppins}>Foto Produk Belum Ditambahkan</Text>
                         </View>
                     }
+                </View>
+            </View>
+        </Modal>
+
+        {/* Modal Hapus Produk */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={ModalHapusProduk}
+          onRequestClose={() => {
+            setModalHapusProduk(!ModalHapusProduk);
+          }}
+        >
+            <View style={{flex: 1, alignItems: "center", justifyContent: 'center', padding: 10, backgroundColor:'rgba(0, 0, 0, 0.2)'}}>
+                <View style={{paddingHorizontal:20, width:'100%', backgroundColor:'white', borderRadius:10, paddingVertical:20,}}>
+                    <TouchableOpacity style={{position:'absolute', top:10, right:5, alignItems:'center', justifyContent:'center'}} onPress={()=> setModalHapusProduk(!ModalHapusProduk)}>
+                        <EvilIcons name="close-o" size={30} color="black" />
+                    </TouchableOpacity>
+                    <Text style={styles.TextPoppinsBold}>Hapus Data Produk</Text>
+                    <Text style={styles.TextPoppins}>Data yang sudah dihapus tidak dapat dikembalikan lagi</Text>
+                    <View style={{flexDirection:'row'}}>
+                        <TouchableOpacity onPress={()=>HapusProduk()} style={styles.BtnDanger}>
+                            <Text style={styles.TextBtnWhite}>Hapus Sekarang</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         </Modal>
